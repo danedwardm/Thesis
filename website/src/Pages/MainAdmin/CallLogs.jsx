@@ -4,6 +4,7 @@ import Data from "../../JSON/callLogs.json";
 import Navbar from "../../Components/NavBar";
 
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { HiOutlineDocumentReport } from "react-icons/hi";
 
 const CallLogs = () => {
   // Pagination state
@@ -53,13 +54,13 @@ const CallLogs = () => {
                   <p className="text-white font-semibold text-sm">call logs</p>
                 </div>
                 <div>
-                  <button className="bg-white text-main font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-textSecond ease-in-out duration-500">
+                  <button className="bg-second text-main font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500">
                     FILTER
                   </button>
                 </div>
               </div>
               {/* table header*/}
-              <div className="px-5 py-5 h-full">
+              <div className="hidden md:block px-5 py-5 h-full">
                 <table className="w-full table-fixed">
                   <thead className="text-xs font-bold text-gray-500">
                     <tr className="border-b">
@@ -110,6 +111,45 @@ const CallLogs = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* card report  */}
+              <div className="block md:hidden px-5 py-5">
+                {currentData.map((data, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[150px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
+                  >
+                    <div className="flex flex-col flex-1">
+                      <div className="flex gap-4">
+                        <div className="flex items-center justify-center rounded-md">
+                          <div className="bg-square p-4 rounded-lg">
+                            <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />
+                          </div>
+                        </div>
+                        <div className="flex flex-col justify-between py-1 w-full">
+                          <div className="grid gap-1 text-start">
+                            <p className="text-xs font-bold text-[#113e21] truncate">
+                              {data.name}
+                            </p>
+                            <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                              {data.report_type}
+                            </p>
+                            <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                              {data.location}
+                            </p>
+                            <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                              {data.duration}
+                            </p>
+                            <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                              {data.date}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* pagination  */}

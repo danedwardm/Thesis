@@ -7,6 +7,7 @@ import AddAccount from "../../Components/Modals/AddAccount";
 import DenyVerification from "../../Components/Modals/DenyVerification";
 
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { HiOutlineDocumentReport } from "react-icons/hi";
 
 const Accounts = () => {
   const [showAddAccount, setShowAddAccount] = useState(false);
@@ -31,6 +32,10 @@ const Accounts = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
+  const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
+  const [selectedAccountType, setSelectedAccountType] = useState(""); // Selected report type filter
+  const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
+  const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
 
   // Calculate total pages
   const totalItems = Data.length;
@@ -50,7 +55,22 @@ const Accounts = () => {
   // Get current page data
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = Data.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Filter data based on selected filters
+  const filteredData = Data.filter((item) => {
+    return (
+      (selectedAccountType === "" || item.type === selectedAccountType) &&
+      (selectedStatus === "" || item.status === selectedStatus) &&
+      (selectedVerified === "" || item.verified === selectedVerified)
+    );
+  });
+
+  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Get unique report types and statuses for dropdown options
+  const accountType = [...new Set(Data.map((item) => item.type))];
+  const statuses = [...new Set(Data.map((item) => item.status))];
+  const accountVerified = [...new Set(Data.map((item) => item.verified))];
 
   return (
     <>
@@ -74,20 +94,122 @@ const Accounts = () => {
                 <div className="flex justify-center items-center py-3 px-8">
                   <p className="text-white font-semibold text-sm">accounts</p>
                 </div>
-                <div>
-                  <button
-                    className="bg-main text-white font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-textSecond ease-in-out duration-500 z-10"
+                <div className="flex flex-row">
+                  <div
+                    className="bg-second text-main font-bold text-sm py-3 px-6 border border-accent border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer"
                     onClick={handleAddAccount}
                   >
                     ADD ACCOUNT
-                  </button>
-                  <button className="bg-white text-main font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-square ease-in-out duration-500">
-                    FILTER
-                  </button>
+                  </div>
+                  <div>
+                    <div
+                      className="bg-second text-main font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer h-full"
+                      onClick={() => setFilterOpen(!filterOpen)}
+                    >
+                      FILTER
+                    </div>
+                    {filterOpen && (
+                      <div className="absolute top-auto right-10 mt-2 bg-white border rounded-md shadow-lg w-48">
+                        <div className="p-2">
+                          <p className="font-bold text-main">Report Type</p>
+                          <ul className="list-disc pl-4">
+                            <div>
+                              <button
+                                onClick={() => setSelectedAccountType("")}
+                                className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300 ${
+                                  selectedAccountType === ""
+                                    ? "font-bold text-main"
+                                    : "text-textSecond"
+                                }`}
+                              >
+                                All
+                              </button>
+                            </div>
+                            {accountType.map((type, index) => (
+                              <div key={index}>
+                                <button
+                                  onClick={() => setSelectedAccountType(type)}
+                                  className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
+                                    selectedAccountType === type
+                                      ? "font-bold text-main"
+                                      : "text-textSecond"
+                                  }`}
+                                >
+                                  {type}
+                                </button>
+                              </div>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="p-2 border-t">
+                          <p className="font-bold text-main">Status</p>
+                          <ul className="list-disc pl-4">
+                            <div>
+                              <button
+                                onClick={() => setSelectedStatus("")}
+                                className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
+                                  selectedStatus === ""
+                                    ? "font-bold text-main"
+                                    : "text-textSecond"
+                                }`}
+                              >
+                                All
+                              </button>
+                            </div>
+                            {statuses.map((status, index) => (
+                              <div key={index}>
+                                <button
+                                  onClick={() => setSelectedStatus(status)}
+                                  className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
+                                    selectedStatus === status
+                                      ? "font-bold text-main"
+                                      : "text-textSecond"
+                                  }`}
+                                >
+                                  {status}
+                                </button>
+                              </div>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="p-2 border-t">
+                          <p className="font-bold text-main">Verified</p>
+                          <ul className="list-disc pl-4">
+                            <div>
+                              <button
+                                onClick={() => setSelectedVerified("")}
+                                className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
+                                  selectedVerified === ""
+                                    ? "font-bold text-main"
+                                    : "text-textSecond"
+                                }`}
+                              >
+                                All
+                              </button>
+                            </div>
+                            {accountVerified.map((verified, index) => (
+                              <div key={index}>
+                                <button
+                                  onClick={() => setSelectedVerified(verified)}
+                                  className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
+                                    selectedVerified === verified
+                                      ? "font-bold text-main"
+                                      : "text-textSecond"
+                                  }`}
+                                >
+                                  {verified}
+                                </button>
+                              </div>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               {/* table header*/}
-              <div className="px-5 py-5 h-full">
+              <div className="hidden md:block px-5 py-5 h-full">
                 <table className="w-full table-fixed">
                   <thead className="text-xs font-bold text-gray-500">
                     <tr className="border-b">
@@ -208,6 +330,107 @@ const Accounts = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* card report  */}
+              <div className="block md:hidden px-5 py-5">
+                {currentData.map((data, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
+                  >
+                    <div className="flex flex-col flex-1">
+                      <div className="flex gap-4">
+                        <div className="flex items-center justify-center rounded-md">
+                          <div className="bg-square p-4 rounded-lg">
+                            <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />
+                          </div>
+                        </div>
+                        <div className="flex flex-col justify-between py-1 w-full">
+                          <div className="grid gap-1 text-start">
+                            <p className="text-xs font-bold text-[#113e21] truncate">
+                              {data.name}
+                            </p>
+                            <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                              {data.phone_number}
+                            </p>
+                            <p className="text-xs font-bold capitalize truncate">
+                              {data.verified === "no" ? (
+                                <span className="text-[#a10b00]">
+                                  {data.verified}
+                                </span>
+                              ) : (
+                                <span className="text-[#007a3f]">
+                                  {data.verified}
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                              {data.violation}
+                            </p>
+                            <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                              {data.assigned_to
+                                ? data.assigned_to
+                                : "Not Assigned"}
+                            </p>
+                            <p className="text-xs font-bold capitalize truncate">
+                              {data.type === "admin" ? (
+                                <span className="text-[#a10b00]">
+                                  {data.type}
+                                </span>
+                              ) : data.type === "user" ? (
+                                <span className="text-[#007a3f]">
+                                  {data.type}
+                                </span>
+                              ) : (
+                                <span className="text-[#363636]">
+                                  {data.type}
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-xs font-bold capitalize truncate">
+                              {data.status === "assigned" ? (
+                                <span className="text-[#a10b00]">
+                                  {data.status}
+                                </span>
+                              ) : data.status === "ongoing" ? (
+                                <span className="text-[#007a3f]">
+                                  {data.status}
+                                </span>
+                              ) : (
+                                <span className="text-[#363636]">
+                                  {data.status}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-center items-center mt-4">
+                      <button
+                        className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                        onClick={() => {
+                          setShowAccount(true);
+                          setName(data.name);
+                          setPhoneNumber(data.phone_number);
+                          setVerified(data.verified);
+                          setViolation(data.violation);
+                          setStatus(data.status);
+                          setType(data.type);
+                          setAddress(data.address);
+                          setEmailAddress(data.email_address);
+                          setIdNumber(data.id_number);
+                          setPhoto(data.photo);
+                          setSelfieWId(data.selfie_w_id);
+                          setIdPicture(data.id_picture);
+                        }}
+                      >
+                        REVIEW
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* pagination  */}

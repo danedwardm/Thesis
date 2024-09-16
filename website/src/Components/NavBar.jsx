@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import logo from "../assets/thesisLogo.png";
-
 import { FaUser } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 
 const NavBar = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const Links = [
     { name: "Dashboard", path: "/dashboard" },
     { name: "Reports", path: "/reports" },
@@ -12,6 +13,8 @@ const NavBar = () => {
     { name: "Call Logs", path: "/callLogs" },
     { name: "Accounts", path: "/accounts" },
   ];
+
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   return (
     <div className="fixed w-full px-8 overflow-hidden font-dm z-30">
@@ -25,14 +28,40 @@ const NavBar = () => {
             CRISP
           </p>
         </div>
-        <div className="flex gap-2 ">
-          <div className="rounded-full bg-second w-[35px] h-[35px]">
-            <FaUser className="text-main text-lg m-2" />
+        <div className="relative flex gap-2">
+          <div
+            className="rounded-full bg-second w-[35px] h-[35px] flex items-center justify-center cursor-pointer"
+            onClick={toggleDropdown}
+          >
+            <FaUser className="text-main text-lg" />
           </div>
+          {isDropdownOpen && (
+            <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-lg border  w-48">
+              <ul className="flex flex-col">
+                <li>
+                  <NavLink
+                    to="/profile"
+                    className="block px-4 py-2 font-bold text-textSecond hover:text-main"
+                  >
+                    Profile
+                  </NavLink>
+                  <hr class="h-px px-2 bg-gray-200 border-0 dark:bg-gray-200"></hr>
+                </li>
+                <li>
+                  <NavLink
+                    to="/logout"
+                    className="block px-4 py-2 font-bold text-textSecond hover:text-main"
+                  >
+                    Logout
+                  </NavLink>
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
       </div>
       <div>
-        <ul className={"flex justify-center items-center uppercase"}>
+        <ul className="flex justify-center items-center uppercase">
           {Links.map((link, index) => (
             <li key={index} className="font-bold my-7 ml-12 text-lg">
               <NavLink
