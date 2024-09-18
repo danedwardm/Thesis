@@ -10,6 +10,8 @@ const CallLogs = () => {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
+  const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
+  const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
 
   // Calculate total pages
   const totalItems = Data.length;
@@ -29,7 +31,18 @@ const CallLogs = () => {
   // Get current page data
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = Data.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Filter data based on selected filters
+  const filteredData = Data.filter((item) => {
+    return (
+      selectedReportType === "" || item.emergency_type === selectedReportType
+    );
+  });
+
+  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Get unique report types and statuses for dropdown options
+  const reportTypes = [...new Set(Data.map((item) => item.emergency_type))];
 
   return (
     <>
@@ -53,10 +66,61 @@ const CallLogs = () => {
                 <div className="flex justify-center items-center py-3 px-8">
                   <p className="text-white font-semibold text-sm">call logs</p>
                 </div>
+                {/* filter */}
                 <div>
-                  <button className="bg-second text-main font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500">
+                  <button
+                    className={`font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer h-full ${
+                      filterOpen ? "bg-main text-white" : "bg-white text-main"
+                    }`}
+                    onClick={() => setFilterOpen(!filterOpen)}
+                  >
                     FILTER
                   </button>
+                  {filterOpen && (
+                    <div className="absolute top-auto right-10 mt-2 bg-white border rounded-md shadow-lg w-48">
+                      <div className="p-2">
+                        <p className="font-bold text-main">Report Type</p>
+                        <ul className="list-disc pl-4">
+                          <div>
+                            <button
+                              onClick={() => {
+                                setSelectedReportType("");
+                                setFilterOpen(
+                                  (prevFilterOpen) => !prevFilterOpen
+                                );
+                              }}
+                              className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300 ${
+                                selectedReportType === ""
+                                  ? "font-bold text-main"
+                                  : "text-textSecond"
+                              }`}
+                            >
+                              All
+                            </button>
+                          </div>
+                          {reportTypes.map((type, index) => (
+                            <div key={index}>
+                              <button
+                                onClick={() => {
+                                  setSelectedReportType(type);
+                                  setFilterOpen(
+                                    (prevFilterOpen) => !prevFilterOpen
+                                  );
+                                }}
+                                className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
+                                  selectedReportType === type
+                                    ? "font-bold text-main"
+                                    : "text-textSecond"
+                                }`}
+                              >
+                                {type}
+                              </button>
+                            </div>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               {/* table header*/}

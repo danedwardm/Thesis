@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 
-const AddAccount = ({ isVisible, onClose, onAdd }) => {
+import Prompt from "./Prompt";
+
+const AddAccount = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
+  const [showPrompt, setShowPrompt] = useState(false);
+
+  const handlePromtClick = () => {
+    setShowPrompt(true);
+  };
+
+  const handleLeave = () => {
+    setShowPrompt(false);
+    onClose(); // Close the AddAccount modal
+  };
+
   return (
     <>
       <div className="fixed top-0 left-0 w-full h-[100svh] items-center justify-center bg-black/50 flex z-30 font-figtree">
@@ -10,8 +23,7 @@ const AddAccount = ({ isVisible, onClose, onAdd }) => {
           id="container"
           onClick={(e) => {
             if (e.target.id === "container") {
-              onClose();
-              //   setActiveDetails(false);
+              handlePromtClick();
             }
           }}
         >
@@ -159,9 +171,7 @@ const AddAccount = ({ isVisible, onClose, onAdd }) => {
                   </button>
                   <button
                     className="py-3 px-4 border border-main bg-white text-main rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
-                    onClick={() => {
-                      onClose();
-                    }}
+                    onClick={handlePromtClick}
                   >
                     CANCEL
                   </button>
@@ -171,6 +181,11 @@ const AddAccount = ({ isVisible, onClose, onAdd }) => {
           </div>
         </div>
       </div>
+      <Prompt
+        isVisible={showPrompt}
+        onClose={() => setShowPrompt(false)}
+        onLeave={handleLeave}
+      />
     </>
   );
 };
