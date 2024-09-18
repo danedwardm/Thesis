@@ -96,14 +96,16 @@ const Accounts = () => {
                 </div>
                 <div className="flex flex-row">
                   <div
-                    className="bg-second text-main font-bold text-sm py-3 px-6 border border-accent border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer"
+                    className="bg-white text-main font-bold text-sm py-3 px-6 border border-accent border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer"
                     onClick={handleAddAccount}
                   >
                     ADD ACCOUNT
                   </div>
                   <div>
                     <div
-                      className="bg-second text-main font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer h-full"
+                      className={`font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer h-full ${
+                        filterOpen ? "bg-main text-white" : "bg-white text-main"
+                      }`}
                       onClick={() => setFilterOpen(!filterOpen)}
                     >
                       FILTER
@@ -111,11 +113,16 @@ const Accounts = () => {
                     {filterOpen && (
                       <div className="absolute top-auto right-10 mt-2 bg-white border rounded-md shadow-lg w-48">
                         <div className="p-2">
-                          <p className="font-bold text-main">Report Type</p>
+                          <p className="font-bold text-main">Account Type</p>
                           <ul className="list-disc pl-4">
                             <div>
                               <button
-                                onClick={() => setSelectedAccountType("")}
+                                onClick={() => {
+                                  setSelectedAccountType("");
+                                  setFilterOpen(
+                                    (prevFilterOpen) => !prevFilterOpen
+                                  );
+                                }}
                                 className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300 ${
                                   selectedAccountType === ""
                                     ? "font-bold text-main"
@@ -128,7 +135,12 @@ const Accounts = () => {
                             {accountType.map((type, index) => (
                               <div key={index}>
                                 <button
-                                  onClick={() => setSelectedAccountType(type)}
+                                  onClick={() => {
+                                    setSelectedAccountType(type);
+                                    setFilterOpen(
+                                      (prevFilterOpen) => !prevFilterOpen
+                                    );
+                                  }}
                                   className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
                                     selectedAccountType === type
                                       ? "font-bold text-main"
@@ -146,7 +158,12 @@ const Accounts = () => {
                           <ul className="list-disc pl-4">
                             <div>
                               <button
-                                onClick={() => setSelectedStatus("")}
+                                onClick={() => {
+                                  setSelectedStatus("");
+                                  setFilterOpen(
+                                    (prevFilterOpen) => !prevFilterOpen
+                                  );
+                                }}
                                 className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
                                   selectedStatus === ""
                                     ? "font-bold text-main"
@@ -159,7 +176,12 @@ const Accounts = () => {
                             {statuses.map((status, index) => (
                               <div key={index}>
                                 <button
-                                  onClick={() => setSelectedStatus(status)}
+                                  onClick={() => {
+                                    setSelectedStatus(status);
+                                    setFilterOpen(
+                                      (prevFilterOpen) => !prevFilterOpen
+                                    );
+                                  }}
                                   className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
                                     selectedStatus === status
                                       ? "font-bold text-main"
@@ -177,7 +199,12 @@ const Accounts = () => {
                           <ul className="list-disc pl-4">
                             <div>
                               <button
-                                onClick={() => setSelectedVerified("")}
+                                onClick={() => {
+                                  setSelectedVerified("");
+                                  setFilterOpen(
+                                    (prevFilterOpen) => !prevFilterOpen
+                                  );
+                                }}
                                 className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
                                   selectedVerified === ""
                                     ? "font-bold text-main"
@@ -190,7 +217,12 @@ const Accounts = () => {
                             {accountVerified.map((verified, index) => (
                               <div key={index}>
                                 <button
-                                  onClick={() => setSelectedVerified(verified)}
+                                  onClick={() => {
+                                    setSelectedVerified(verified);
+                                    setFilterOpen(
+                                      (prevFilterOpen) => !prevFilterOpen
+                                    );
+                                  }}
                                   className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
                                     selectedVerified === verified
                                       ? "font-bold text-main"

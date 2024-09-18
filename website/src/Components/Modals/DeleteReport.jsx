@@ -66,7 +66,7 @@ const DeleteReport = ({ isVisible, onClose }) => {
             </div>
             <div className="w-full flex flex-row gap-4 items-center justify-end mt-4">
               <button className="py-2 px-3 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
-                DENY
+                DELETE
               </button>
               <button
                 className="py-2 px-3 border border-main bg-white text-main rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
