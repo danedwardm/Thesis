@@ -20,7 +20,7 @@ const Dashboard = () => {
         {/* content */}
         <div className="relative h-full w-screen flex flex-col items-center z-30 overflow-auto">
           <Navbar />
-          <div className="w-full mt-[22vh] grid md:grid-cols-4 grid-cols-2 md:gap-6 gap-2 px-6">
+          <div className="w-full md:mt-[21vh] mt-[30vh] grid md:grid-cols-4 grid-cols-2 md:gap-6 gap-2 px-6">
             {/* num of calls */}
             <div className="col-span-1 m-3 md:px-3 py-5 text-2xl font-bold text-main mb-2 bg-white border border-main rounded-lg flex flex-col md:flex-row md:gap-2 gap-1 justify-between items-center overflow-hidden">
               <div className="lg:flex justify-center items-center ml-3 hidden">
@@ -98,12 +98,12 @@ const Dashboard = () => {
           <div className="w-full grid grid-cols-2 justify-between items-center md:mt-3 mt-4 px-6">
             <div className="flex flex-col px-3">
               <p className="md:text-xl text-sm font-bold text-main">
-                Map of Reports
+                map of reports
               </p>
             </div>
             {/* filter button */}
             <div className="flex flex-col justify-center items-end px-3">
-              <button className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase hover:bg-main hover:text-accent ease-in-out duration-500">
+              <button className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase hover:bg-textSecond hover:text-accent ease-in-out duration-500">
                 Filter
               </button>
             </div>

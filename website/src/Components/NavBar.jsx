@@ -22,6 +22,7 @@ const NavBar = () => {
 
   const handleAddAccount = () => {
     setShowProfile(true);
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -72,9 +73,12 @@ const NavBar = () => {
         </div>
         {/* Links */}
         <div>
-          <ul className="flex justify-center items-center uppercase">
+          <div className="flex flex-wrap justify-center items-center uppercase">
             {Links.map((link, index) => (
-              <li key={index} className="font-bold my-7 ml-12 text-lg">
+              <div
+                key={index}
+                className="w-auto font-bold md:my-7 md:ml-12 my-3 ml-6 md:text-lg text-md"
+              >
                 <NavLink
                   to={link.path}
                   className={({ isActive }) =>
@@ -83,9 +87,9 @@ const NavBar = () => {
                 >
                   {link.name}
                 </NavLink>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
       <Profile isVisible={showProfile} onClose={() => setShowProfile(false)} />

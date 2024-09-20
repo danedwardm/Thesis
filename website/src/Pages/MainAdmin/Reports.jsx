@@ -77,7 +77,7 @@ const Reports = () => {
         {/* content */}
         <div className="relative h-[100vh] w-[100vw] flex flex-col items-center z-30 overflow-auto">
           <Navbar />
-          <div className="flex pt-5 mt-[21vh] mb-[5vh]">
+          <div className="flex pt-5 md:mt-[21vh] mt-[30vh] mb-[5vh]">
             <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased min-h-[70vh] w-full mx-10">
               {/* header and filter button */}
               <div className="flex flex-row justify-between bg-main">

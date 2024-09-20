@@ -26,9 +26,11 @@ const ReviewAccount = ({
   if (!isVisible) return null;
 
   const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [showDenyModal, setShowDenyModal] = useState(false);
 
-  const handleImageClick = () => {
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
     setShowImageModal(true);
   };
 
@@ -232,7 +234,7 @@ const ReviewAccount = ({
                     {photo && photo.length > 0 ? (
                       <div
                         className="w-full  h-[210px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
-                        onClick={handleImageClick}
+                        onClick={() => handleImageClick(photo)}
                       >
                         <img
                           src={photo}
@@ -249,7 +251,7 @@ const ReviewAccount = ({
                     {selfieWId && selfieWId.length > 0 ? (
                       <div
                         className="w-full h-[210px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
-                        onClick={handleImageClick}
+                        onClick={() => handleImageClick(selfieWId)}
                       >
                         <img
                           src={selfieWId}
@@ -272,7 +274,7 @@ const ReviewAccount = ({
                   {idPicture && idPicture.length > 0 ? (
                     <div
                       className="w-full h-[280px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
-                      onClick={handleImageClick}
+                      onClick={() => handleImageClick(idPicture)}
                     >
                       <img
                         src={idPicture}
@@ -328,7 +330,7 @@ const ReviewAccount = ({
       <ImageModal
         isVisible={showImageModal}
         onClose={() => setShowImageModal(false)}
-        attachment={[photo, selfieWId, idPicture]}
+        attachment={selectedImage}
       />
       <DenyVerification
         isVisible={showDenyModal}
