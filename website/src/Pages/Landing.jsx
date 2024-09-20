@@ -14,8 +14,12 @@ const Landing = () => {
         <div className="absolute h-[30vh] w-[30vh] bg-square rounded-[20px] rotate-45 top-96 left-2/3 z-10"></div>
       </div>
       <div className="relative h-[100vh] w-[100vw] flex flex-col justify-center items-center z-20">
-        <img src={logo} alt="logo" className="h-[35vh] w-[35vh] mb-7" />
-        <div className="lg:text-6xl text-5xl font-bold text-second mb-2">
+        <img
+          src={logo}
+          alt="logo"
+          className="md:h-[35vh] md:w-[35vh] h-[20vh] w-[20vh] mb-7"
+        />
+        <div className="md:text-5xl text-4xl font-bold text-second mb-2">
           CRISP
         </div>
         <div className="w-full flex lg:text-xl text-xs font-semibold px-5 justify-center text-center items-center text-second">
@@ -25,7 +29,7 @@ const Landing = () => {
           A Smarter Way to Protect Your Neighborhood
         </div>
         <Link to={"/login"}>
-          <button className="bg-main border-accent border text-second py-2 lg:w-[50vh] w-[30vh] rounded-[10px] font-bold lg:text-lg text-xs mt-6">
+          <button className="bg-main border-accent border text-second py-2 lg:w-[50vh] w-[30vh] font-bold lg:text-lg text-xs mt-6 rounded-md hover:bg-square ease-in-out duration-700">
             Login{" "}
           </button>
         </Link>

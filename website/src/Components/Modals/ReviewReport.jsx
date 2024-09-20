@@ -166,7 +166,7 @@ const ReviewReport = ({
                 <div className="w-full flex flex-col items-center justify-center">
                   {attachment && attachment.length > 0 ? (
                     <div
-                      className="w-full h-[360px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
+                      className="w-full md:h-[360px] h-[200px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
                       onClick={handleImageClick}
                     >
                       <img
@@ -176,7 +176,7 @@ const ReviewReport = ({
                       />
                     </div>
                   ) : (
-                    <div className="w-full min-h-[360px] bg-white rounded-md flex flex-col items-center justify-center border border-main">
+                    <div className="w-full md:h-[360px] h-[200px] bg-white rounded-md flex flex-col items-center justify-center border border-main">
                       <PiImages className="text-xl" />
                       <p className="text-xs font-normal">No media file</p>
                     </div>

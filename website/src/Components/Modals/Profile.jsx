@@ -11,6 +11,7 @@ const Profile = ({ isVisible, onClose }) => {
   const [newPassword, setNewPassword] = useState("");
   const [reenterNewPassword, setReenterNewPassword] = useState("");
   const [passwordMatchError, setPasswordMatchError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Assuming you get the password from the data
   const [userPassword] = Data.map((data) => data.password);
@@ -21,6 +22,10 @@ const Profile = ({ isVisible, onClose }) => {
       setPasswordMatchError(false);
     } else {
       setPasswordMatchError(true);
+      setErrorMessage("Incorrect Previous Password!");
+      setTimeout(() => {
+        setErrorMessage(""); // Clear the message after 3 seconds
+      }, 3000);
     }
   };
 
@@ -32,8 +37,12 @@ const Profile = ({ isVisible, onClose }) => {
     if (newPassword === reenterNewPassword) {
       // Handle password change logic here
       console.log("Password changed successfully");
+      onClose();
     } else {
-      console.log("Passwords do not match");
+      setErrorMessage("Passwords do not match");
+      setTimeout(() => {
+        setErrorMessage(""); // Clear the message after 3 seconds
+      }, 3000);
     }
   };
 
@@ -182,6 +191,15 @@ const Profile = ({ isVisible, onClose }) => {
                         </div>
                       </div>
                     </>
+                  )}
+
+                  {/*Error Message*/}
+                  {errorMessage && (
+                    <div className="w-full flex justify-start mt-2">
+                      <p className="text-xs font-bold text-red-700">
+                        {errorMessage}
+                      </p>
+                    </div>
                   )}
 
                   <div className="w-full flex flex-row gap-4 items-center justify-end mt-5">
