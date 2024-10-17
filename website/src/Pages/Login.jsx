@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import logo from "../assets/thesisLogo.png";
-
 import { Link } from "react-router-dom";
 import { LuUser, LuKey, LuEye, LuEyeOff } from "react-icons/lu";
+import axiosInstance from '../axios-instance'; // Ensure this imports your configured axios instance
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -14,20 +14,26 @@ const Login = () => {
     setIsPasswordVisible((prev) => !prev);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulated login credentials
-    const validEmail = "dan@gmail.com";
-    const validPassword = "12345678";
+    try {
+      const response = await axiosInstance.post('http://127.0.0.1:8000/api/token/', {
+        username: email,  // Adjusted to use 'username' as your Django login may require this instead of 'email'
+        password: password,
+      });
+      console.log('Login successful:', response.data);
 
-    if (email === validEmail && password === validPassword) {
-      // Redirect to dashboard
-      // You can replace the link here with your routing logic
+      // Store tokens in local storage for future authenticated requests
+      localStorage.setItem('accessToken', response.data.access);
+      localStorage.setItem('refreshToken', response.data.refresh);
+
+      // Redirect to dashboard (adjust the path as needed)
       window.location.href = "/dashboard";
-    } else {
+    } catch (error) {
+      console.error('Login failed:', error.response ? error.response.data : error.message);
       setErrorMessage("Please check your credentials!");
       setTimeout(() => {
-        setErrorMessage(""); // Clear the message after 3 seconds
+        setErrorMessage("");
       }, 3000);
     }
   };
@@ -42,7 +48,7 @@ const Login = () => {
         <div className="absolute h-[30vh] w-[30vh] bg-square rounded-[20px] rotate-45 -top-40 -right-10 z-10"></div>
         <div className="absolute h-[30vh] w-[30vh] bg-square rounded-[20px] rotate-45 top-96 left-2/3 z-10"></div>
       </div>
-      {/* page*/}
+      {/* page */}
       <div className="relative h-[100vh] w-[100vw] flex flex-col md:flex-row gap-4 md:gap-6 justify-items-center items-center z-20 overflow-auto">
         {/* logo and title */}
         <div className="relative flex flex-col justify-center items-center w-full h-auto">
@@ -84,6 +90,7 @@ const Login = () => {
                       autoComplete="off"
                       onChange={(e) => setEmail(e.target.value)}
                       id="email-input"
+                      value={email}
                     />
                   </div>
                 </div>
@@ -92,7 +99,6 @@ const Login = () => {
                   <div className="py-3 px-4 bg-[#f6edff] rounded-md flex flex-row w-full gap-3 items-center justify-center">
                     <LuKey className="text-md text-main" />
                     <input
-                      // Password field
                       type={isPasswordVisible ? "text" : "password"}
                       placeholder="enter password"
                       className="text-xs w-full outline-none bg-[#f6edff] truncate"
@@ -100,6 +106,7 @@ const Login = () => {
                       autoComplete="off"
                       onChange={(e) => setPassword(e.target.value)}
                       id="password-input"
+                      value={password}
                     />
                     <button type="button" onClick={togglePasswordVisibility}>
                       {isPasswordVisible ? (
@@ -110,7 +117,7 @@ const Login = () => {
                     </button>
                   </div>
                 </div>
-                {/*Error Message*/}
+                {/* Error Message */}
                 {errorMessage && (
                   <div className="w-full flex justify-start">
                     <p className="text-xs font-bold text-red-700">
@@ -119,12 +126,12 @@ const Login = () => {
                   </div>
                 )}
                 <div className="w-full flex justify-end">
-                  <a
-                    href="#"
+                  <Link
+                    to="/forgot-password" // Adjust the path to your forgot password page
                     className="text-main font-bold md:text-sm text-xs"
                   >
                     Forgot Password?
-                  </a>
+                  </Link>
                 </div>
                 <div className="w-full flex items-end justify-end pt-4">
                   <button className="text-xs font-semibold text-white bg-main px-6 py-2 rounded-md hover:bg-textSecond ease-in-out duration-700">
