@@ -18,26 +18,47 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axiosInstance.post('http://127.0.0.1:8000/api/token/', {
-        username: email,  // Adjusted to use 'username' as your Django login may require this instead of 'email'
+        username: email,
         password: password,
       });
-      console.log('Login successful:', response.data);
-
+  
+      const { access, refresh, account_type } = response.data;
+  
       // Store tokens in local storage for future authenticated requests
-      localStorage.setItem('accessToken', response.data.access);
-      localStorage.setItem('refreshToken', response.data.refresh);
-
-      // Redirect to dashboard (adjust the path as needed)
-      window.location.href = "/dashboard";
+      localStorage.setItem('accessToken', access);
+      localStorage.setItem('refreshToken', refresh);
+  
+      // Check if the account type is 'citizen'
+      if (account_type === 'citizen') {
+        setErrorMessage("Access restricted to admins only.");
+        setTimeout(() => {
+          setErrorMessage("");
+        }, 3000);
+        return; // Exit the function
+      } 
+      // Check if the account type is 'admin'
+      else if (account_type === 'admin') {
+        // Redirect to the dashboard
+        window.location.href = "/dashboard";
+      }
+  
     } catch (error) {
       console.error('Login failed:', error.response ? error.response.data : error.message);
-      setErrorMessage("Please check your credentials!");
+  
+      // Provide a more specific error message based on the backend response
+      if (error.response && error.response.data) {
+        const detailMessage = error.response.data.detail || "Please check your credentials!";
+        setErrorMessage(detailMessage);
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
+  
+      // Clear the error message after 3 seconds
       setTimeout(() => {
         setErrorMessage("");
       }, 3000);
     }
   };
-
   return (
     <div className="relative bg-main h-[100vh] w-[100vw] overflow-hidden">
       {/* background */}
