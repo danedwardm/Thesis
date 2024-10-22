@@ -37,7 +37,7 @@ const Login = () => {
         return; // Exit the function
       } 
       // Check if the account type is 'admin'
-      else if (account_type === 'admin') {
+      else if (account_type === 'admin' || 'depthead') {
         // Redirect to the dashboard
         window.location.href = "/dashboard";
       }
