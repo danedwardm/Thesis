@@ -158,13 +158,13 @@ const ReviewAccount = ({
                     <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                       <div className="w-full flex bg-white resize-none outline-none text-xs ritems-center justify-center">
                         <p className="text-xs font-bold uppercase truncate">
-                          {verified === "yes" ? (
+                          {verified ? (
                             <span className=" w-full font-bold truncate text-[#1a722f]">
-                              {verified}
+                              verified
                             </span>
                           ) : (
                             <span className=" w-full truncate font-bold text-[#a10b00]">
-                              {verified}
+                              not verified
                             </span>
                           )}
                         </p>
