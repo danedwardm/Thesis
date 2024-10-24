@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Data from "../../JSON/reports.json";
 import Navbar from "../../Components/NavBar";
@@ -6,8 +6,10 @@ import ReviewReport from "../../Components/Modals/ReviewReport";
 
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
+import { useAuth } from "../../AuthContext/AuthContext";
 
 const Reports = () => {
+  const { reports } = useAuth()
   const [showReport, setShowReport] = useState(false);
   const [name, setName] = useState("");
   const [reportType, setReportType] = useState("");
@@ -28,6 +30,9 @@ const Reports = () => {
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
+  const [newReports, setNewReports] = useState([])
+
+
 
   // Calculate total pages
   const totalItems = Data.length;
@@ -51,15 +56,18 @@ const Reports = () => {
   // Filter data based on selected filters
   const filteredData = Data.filter((item) => {
     return (
-      (selectedReportType === "" || item.report_type === selectedReportType) &&
+      (selectedReportType === "" || item.type_of_report === selectedReportType) &&
       (selectedStatus === "" || item.status === selectedStatus)
     );
   });
-
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  // useEffect(() => {
+  //   const currentData = reports.slice(indexOfFirstItem, indexOfLastItem);
+  //   console.log(currentData)
+  // }, [])
+  const currentData = reports.slice(indexOfFirstItem, indexOfLastItem);
 
   // Get unique report types and statuses for dropdown options
-  const reportTypes = [...new Set(Data.map((item) => item.report_type))];
+  const reportTypes = [...new Set(Data.map((item) => item.type_of_report))];
   const statuses = [...new Set(Data.map((item) => item.status))];
 
   return (
@@ -223,20 +231,20 @@ const Reports = () => {
                           scope="row"
                           className="text-[#24693c] text-start p-4"
                         >
-                          <p className="w-full truncate">{data.name}</p>
+                          <p className="w-full truncate">{data.username}</p>
                         </th>
                         <td className="p-4 font-semibold uppercase" scope="row">
                           <p className="w-full line-clamp-2">
-                            {data.report_type}
+                            {data.type_of_report}
                           </p>
                         </td>
                         <td className="p-4">
                           <p className="w-full line-clamp-2">
-                            {data.description}
+                            {data.report_description}
                           </p>
                         </td>
                         <td className="p-4">
-                          <p className="w-full line-clamp-2">{data.location}</p>
+                          <p className="w-full line-clamp-2">{`${data.longitude} + ' ' + ${data.latitude}`}</p>
                         </td>
                         <td className="p-4">
                           <p className="w-full font-semibold line-clamp-2">
@@ -246,7 +254,7 @@ const Reports = () => {
                           </p>
                         </td>
                         <td className="p-4 text-center">
-                          <p className="w-full truncate">{data.date}</p>
+                          <p className="w-full truncate">{data.report_date}</p>
                         </td>
                         <td className="p-4 text-center font-semibold uppercase">
                           {data.status === "assigned" ? (
@@ -268,11 +276,11 @@ const Reports = () => {
                             className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
                             onClick={() => {
                               setShowReport(true);
-                              setName(data.name);
-                              setLocation(data.location);
-                              setReportType(data.report_type);
-                              setDescription(data.description);
-                              setDate(data.date);
+                              setName(data.username);
+                              setLocation(`${data.longitude} + ' ' + ${data.latitude}`);
+                              setReportType(data.type_of_report);
+                              setDescription(data.report_description);
+                              setDate(data.report_date);
                               setStatus(data.status);
                               setAssignedTo(data.assigned_to);
                               setAttachment(data.attachment);
@@ -308,13 +316,13 @@ const Reports = () => {
                         <div className="flex flex-col justify-between py-1 w-full">
                           <div className="grid gap-1 text-start">
                             <p className="text-xs font-bold text-[#113e21] truncate">
-                              {data.name}
+                              {data.username}
                             </p>
                             <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
-                              {data.report_type}
+                              {data.type_of_report}
                             </p>
                             <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
-                              {data.location}
+                              {`${data.longitude} + ' ' + ${data.latitude}`}
                             </p>
                             <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
                               {data.assigned_to
@@ -322,7 +330,7 @@ const Reports = () => {
                                 : "Not Assigned"}
                             </p>
                             <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
-                              {data.date}
+                              {data.report_date}
                             </p>
                             <p className="text-xs font-bold capitalize truncate">
                               {data.status === "assigned" ? (
@@ -350,7 +358,7 @@ const Reports = () => {
                           setShowReport(true);
                           setName(data.name);
                           setLocation(data.location);
-                          setReportType(data.report_type);
+                          setReportType(data.type_of_report);
                           setDescription(data.description);
                           setDate(data.date);
                           setStatus(data.status);

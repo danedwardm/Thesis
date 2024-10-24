@@ -3,62 +3,33 @@ import logo from "../assets/thesisLogo.png";
 import { Link } from "react-router-dom";
 import { LuUser, LuKey, LuEye, LuEyeOff } from "react-icons/lu";
 import axiosInstance from '../axios-instance'; // Ensure this imports your configured axios instance
-
+import { useAuth } from "../AuthContext/AuthContext";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const { onLogin, authenticated } = useAuth()
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
   };
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axiosInstance.post('http://127.0.0.1:8000/api/token/', {
-        username: email,
-        password: password,
-      });
-  
-      const { access, refresh, account_type } = response.data;
-  
-      // Store tokens in local storage for future authenticated requests
-      localStorage.setItem('accessToken', access);
-      localStorage.setItem('refreshToken', refresh);
-  
-      // Check if the account type is 'citizen'
-      if (account_type === 'citizen') {
-        setErrorMessage("Access restricted to admins only.");
-        setTimeout(() => {
-          setErrorMessage("");
-        }, 3000);
-        return; // Exit the function
-      } 
-      // Check if the account type is 'admin'
-      else if (account_type === 'admin' || 'depthead') {
-        // Redirect to the dashboard
-        window.location.href = "/dashboard";
+    e.preventDefault()
+      try {
+        // NOTE!!!!!!! NOTE!!!!!! BAGO MAG LOGIN MAKE SURE NA superadmin yung ROLE 
+        const res = await onLogin(email, password)
+        if(res){
+          navigate('/dashboard')
+        }
+      } catch (error) {
+        console.log(error.message)
       }
-  
-    } catch (error) {
-      console.error('Login failed:', error.response ? error.response.data : error.message);
-  
-      // Provide a more specific error message based on the backend response
-      if (error.response && error.response.data) {
-        const detailMessage = error.response.data.detail || "Please check your credentials!";
-        setErrorMessage(detailMessage);
-      } else {
-        setErrorMessage("An unexpected error occurred. Please try again.");
-      }
-  
-      // Clear the error message after 3 seconds
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000);
-    }
-  };
+  }
+
   return (
     <div className="relative bg-main h-[100vh] w-[100vw] overflow-hidden">
       {/* background */}
