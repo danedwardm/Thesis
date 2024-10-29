@@ -9,7 +9,7 @@ import { HiOutlineDocumentReport } from "react-icons/hi";
 import { useAuth } from "../../AuthContext/AuthContext";
 
 const Reports = () => {
-  const { reports } = useAuth()
+  const { reports } = useAuth();
   const [showReport, setShowReport] = useState(false);
   const [name, setName] = useState("");
   const [reportType, setReportType] = useState("");
@@ -30,9 +30,7 @@ const Reports = () => {
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
-  const [newReports, setNewReports] = useState([])
-
-
+  const [newReports, setNewReports] = useState([]);
 
   // Calculate total pages
   const totalItems = Data.length;
@@ -56,7 +54,8 @@ const Reports = () => {
   // Filter data based on selected filters
   const filteredData = Data.filter((item) => {
     return (
-      (selectedReportType === "" || item.type_of_report === selectedReportType) &&
+      (selectedReportType === "" ||
+        item.type_of_report === selectedReportType) &&
       (selectedStatus === "" || item.status === selectedStatus)
     );
   });
@@ -244,7 +243,7 @@ const Reports = () => {
                           </p>
                         </td>
                         <td className="p-4">
-                          <p className="w-full line-clamp-2">{`${data.longitude} + ' ' + ${data.latitude}`}</p>
+                          <p className="w-full line-clamp-2">{`${data.longitude} , ${data.latitude}`}</p>
                         </td>
                         <td className="p-4">
                           <p className="w-full font-semibold line-clamp-2">
@@ -277,7 +276,9 @@ const Reports = () => {
                             onClick={() => {
                               setShowReport(true);
                               setName(data.username);
-                              setLocation(`${data.longitude} + ' ' + ${data.latitude}`);
+                              setLocation(
+                                `${data.longitude} + ' ' + ${data.latitude}`
+                              );
                               setReportType(data.type_of_report);
                               setDescription(data.report_description);
                               setDate(data.report_date);
