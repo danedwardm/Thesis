@@ -31,23 +31,35 @@ const Accounts = () => {
   const [error, setError] = useState('');
 
 
+  const [selectedAccountType, setSelectedAccountType] = useState(""); 
+  const accountType = ["department head", "citizen", "worker"]; 
+
+  const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
+  const accountStatuses = ["Status", "Suspended", "Blocked"];
+
+
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/api/users/', {
-          params: { role: selectedRole }, // Add the selected role as a query parameter
         });
-        setUsers(response.data)
-        console.log('connected ka na'); // Output 'connected' when successful
+        setUsers(response.data);
+        console.log('Data fetched successfully');
       } catch (err) {
         setError('Failed to fetch users.');
+        console.error('Error fetching users:', err); // Log any errors
       }
     };
   
     fetchUsers();
-  }, []);
+  }, [selectedAccountType, selectedStatus]); // Re-fetch when selectedAccountType changes
   
-  
+const filteredUsers = users.filter(user => {
+  const matchesType = selectedAccountType === "" || user.role === selectedAccountType;
+  const matchesStatus = selectedStatus === "" || user.account_status === selectedStatus;
+  return matchesType && matchesStatus; // Only include users that match both filters
+});
 
   const handleAddAccount = () => {
     setShowAddAccount(true);
@@ -57,8 +69,7 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
-  const [selectedAccountType, setSelectedAccountType] = useState(""); // Selected report type filter
-  const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
+
   const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
 
   // Calculate total pages
@@ -279,7 +290,7 @@ const Accounts = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((data) => (
+          {filteredUsers.map((data) => (
             <tr
               className="text-xs font-normal even:bg-square hover:bg-[#f6edff] ease-in-out duration-500 cursor-pointer border-b"
               key={data.id} // Use the unique id from the user data
@@ -301,7 +312,7 @@ const Accounts = () => {
                 <p className="w-full truncate">{data.violation}</p>
               </td>
               <td className="p-4 text-center font-semibold uppercase">
-                {data.role === "admin" ? (
+                {data.role === "superadmin" ? (
                   <p className="w-full font-bold truncate text-[#363636]">{data.role}</p>
                 ) : data.role === "citizen" ? (
                   <p className="w-full truncate font-bold text-[#363636]">{data.role}</p>
@@ -311,12 +322,13 @@ const Accounts = () => {
               </td>
               <td className="p-4 text-center font-semibold uppercase">
                 {data.account_status == "Active" || data.account_status == "active" ? (
-                  <p className="w-full font-bold truncate text-[#af3232]">{data.account_status}</p>
-                ) : data.account_status === "suspended" ? (
+                  <p className="w-full font-bold truncate text-[#007a3f]">{data.account_status}</p>
+                ) : data.account_status == "suspended" || data.account_status == "Suspended" ? (
                   <p className="w-full truncate font-bold text-[#a10b00]">{data.account_status}</p>
-                ) : (
+                ) : data.account_status == "blocked" || data.account_status == "Blocked" ? (
                   <p className="w-full truncate font-bold text-[#363636]">{data.account_status}</p>
-                )}
+                ) : <p className="w-full truncate font-bold text-[#363636]">{data.account_status}</p>
+                }
               </td>
               <td className="p-4 text-center">
                 <button
@@ -349,7 +361,7 @@ const Accounts = () => {
 
               {/* small screen  */}
               <div className="block md:hidden px-5 py-5">
-                {users.map((data, index) => (
+                {filteredUsers.map((data, index) => (
                   <div
                     key={data.id}
                     className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
@@ -385,7 +397,7 @@ const Accounts = () => {
                             </p>
                             
                             <p className="text-xs font-bold capitalize truncate">
-                              {data.role === "admin" ? (
+                              {data.role === "superadmin" ? (
                                 <span className="text-[#363636]">
                                   {data.role}
                                 </span>
