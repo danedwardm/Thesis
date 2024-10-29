@@ -296,7 +296,7 @@ const filteredUsers = users.filter(user => {
               key={data.id} // Use the unique id from the user data
             >
               <th scope="row" className="text-[#24693c] text-start p-4">
-                <p className="w-full truncate">{data.full_name}</p> 
+                <p className="w-full truncate">{data.username}</p> 
               </th>
               <td className="p-4">
                 <p className="w-full truncate">{data.contact_number}</p>
@@ -336,7 +336,7 @@ const filteredUsers = users.filter(user => {
                   onClick={() => {
                     // Handle the review button click
                     setShowAccount(true);
-                    setName(data.full_name);
+                    setName(data.username);
                     setPhoneNumber(data.contact_number);
                     setVerified(data.is_verified);
                     setViolation(data.violation);
@@ -376,7 +376,7 @@ const filteredUsers = users.filter(user => {
                         <div className="flex flex-col justify-between py-1 w-full">
                           <div className="grid gap-1 text-start">
                             <p className="text-xs font-bold text-[#113e21] truncate">
-                              {data.full_name}
+                              {data.username}
                             </p>
                             <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
                               {data.contact_number}
@@ -435,7 +435,7 @@ const filteredUsers = users.filter(user => {
                         className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
                         onClick={() => {
                           setShowAccount(true);
-                          setName(data.full_name);
+                          setName(data.username);
                           setPhoneNumber(data.contact_number);
                           setVerified(data.verified);
                           setViolation(data.violation);
