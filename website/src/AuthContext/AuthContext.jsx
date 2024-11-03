@@ -74,8 +74,16 @@ const AuthProvider = ({children}) => {
         }
     };
 
+    const logout = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        axios.defaults.headers.common["Authorization"] = ''; // Clear the auth header
+        setAuthenticated(false); // Update the authenticated state
+      
+    };
+
     const value = {
-        onLogin: login,
+        onLogin: login, logout,
         authenticated,
     reports 
     };

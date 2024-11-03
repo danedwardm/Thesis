@@ -4,11 +4,19 @@ import Profile from "./Modals/Profile";
 
 import logo from "../assets/thesisLogo.png";
 import { FaUser } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext/AuthContext"; // Import the Auth context
+
+
 import { NavLink } from "react-router-dom";
+
+
 
 const NavBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const navigate = useNavigate(); // Use navigate for redirecting
+  const { logout } = useAuth(); // Get the logout function from the context
 
   const Links = [
     { name: "Dashboard", path: "/dashboard" },
@@ -23,6 +31,13 @@ const NavBar = () => {
   const handleAddAccount = () => {
     setShowProfile(true);
     setIsDropdownOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await logout(); // Call the logout function
+    setIsDropdownOpen(false); // Close the dropdown after logout
+    navigate("/login", { replace: true }); // Use replace to prevent going back to the dashboard
+    
   };
 
   return (
@@ -59,12 +74,12 @@ const NavBar = () => {
                     <hr className="h-px px-2 bg-gray-200 border-0 dark:bg-gray-200"></hr>
                   </li>
                   <li>
-                    <NavLink
-                      to="/"
-                      className="block px-4 py-2 font-bold text-textSecond hover:text-main"
+                  <div
+                      onClick={handleLogout} // Change from NavLink to div and handleLogout
+                      className="block px-4 py-2 font-bold text-textSecond hover:text-main cursor-pointer"
                     >
                       Logout
-                    </NavLink>
+                    </div>
                   </li>
                 </ul>
               </div>
