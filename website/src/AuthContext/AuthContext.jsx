@@ -28,15 +28,28 @@ const AuthProvider = ({ children }) => {
       "others",
       "road incidents",
     ];
+
     const unsubscribeFunctions = categories.map((category) => {
       return onSnapshot(
         collection(db, `reports/${category}/reports`),
         (snapshot) => {
-          const updateReports = snapshot.docs.map((doc) => doc.data());
-          setReports((prevReports) => [...prevReports, ...updateReports]);
+          const updateReports = snapshot.docs.map((doc) => ({
+            id: doc.id, // Ensure you get the document ID
+            ...doc.data(),
+          }));
+
+          // Set reports to include only unique reports
+          setReports((prevReports) => {
+            const existingIds = new Set(prevReports.map((report) => report.id));
+            const newReports = updateReports.filter(
+              (report) => !existingIds.has(report.id)
+            );
+            return [...prevReports, ...newReports]; // Append only new reports
+          });
         }
       );
     });
+
     return () => {
       unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
     };
@@ -44,6 +57,8 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      // Optionally clear reports here if needed
+      setReports([]); // Clear existing reports when component mounts
       const unsubscribe = await fetchDocuments();
       return unsubscribe;
     };

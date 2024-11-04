@@ -35,6 +35,14 @@ const Accounts = () => {
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
 
+  const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
+  const accountVerified = ["Verified", "Not Verified"];
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Number of items per page
+  const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -58,22 +66,18 @@ const Accounts = () => {
       selectedAccountType === "" || user.role === selectedAccountType;
     const matchesStatus =
       selectedStatus === "" || user.account_status === selectedStatus;
-    return matchesType && matchesStatus; // Only include users that match both filters
+    const matchesVerified =
+      selectedVerified === "" ||
+      (selectedVerified === "Verified" ? user.is_verified : !user.is_verified);
+    return matchesType && matchesStatus && matchesVerified; // Only include users that match both filters
   });
 
   const handleAddAccount = () => {
     setShowAddAccount(true);
   };
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Number of items per page
-  const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
-
-  const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
-
   // Calculate total pages
-  const totalItems = Data.length;
+  const totalItems = filteredUsers.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // Create an array of page numbers
@@ -100,12 +104,12 @@ const Accounts = () => {
     );
   });
 
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const statuses = [...new Set(Data.map((item) => item.status))];
 
   // Get unique report types and statuses for dropdown options
   // const accountType = [...new Set(Data.map((item) => item.type))];
-  const statuses = [...new Set(Data.map((item) => item.status))];
-  const accountVerified = [...new Set(Data.map((item) => item.verified))];
+  // const accountVerified = [...new Set(Data.map((item) => item.verified))];
 
   return (
     <>
@@ -258,7 +262,7 @@ const Accounts = () => {
                                       (prevFilterOpen) => !prevFilterOpen
                                     );
                                   }}
-                                  className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
+                                  className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300 ${
                                     selectedVerified === verified
                                       ? "font-bold text-main"
                                       : "text-textSecond"
@@ -304,7 +308,7 @@ const Accounts = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredUsers.map((data) => (
+                    {currentUsers.map((data) => (
                       <tr
                         className="text-xs font-normal even:bg-square hover:bg-[#f6edff] ease-in-out duration-500 cursor-pointer border-b"
                         key={data.id} // Use the unique id from the user data
@@ -313,7 +317,7 @@ const Accounts = () => {
                           scope="row"
                           className="text-[#24693c] text-start p-4"
                         >
-                          <p className="w-full truncate">{data.full_name}</p>
+                          <p className="w-full truncate">{data.username}</p>
                         </th>
                         <td className="p-4">
                           <p className="w-full truncate">
@@ -377,7 +381,7 @@ const Accounts = () => {
                             onClick={() => {
                               // Handle the review button click
                               setShowAccount(true);
-                              setName(data.full_name);
+                              setName(data.username);
                               setPhoneNumber(data.contact_number);
                               setVerified(data.is_verified);
                               setViolation(data.violation);
@@ -402,7 +406,7 @@ const Accounts = () => {
 
               {/* small screen  */}
               <div className="block md:hidden px-5 py-5">
-                {filteredUsers.map((data, index) => (
+                {currentUsers.map((data, index) => (
                   <div
                     key={data.id}
                     className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
@@ -417,7 +421,7 @@ const Accounts = () => {
                         <div className="flex flex-col justify-between py-1 w-full">
                           <div className="grid gap-1 text-start">
                             <p className="text-xs font-bold text-[#113e21] truncate">
-                              {data.full_name}
+                              {data.username}
                             </p>
                             <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
                               {data.contact_number}
@@ -474,7 +478,7 @@ const Accounts = () => {
                         className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
                         onClick={() => {
                           setShowAccount(true);
-                          setName(data.full_name);
+                          setName(data.username);
                           setPhoneNumber(data.contact_number);
                           setVerified(data.verified);
                           setViolation(data.violation);
@@ -496,6 +500,7 @@ const Accounts = () => {
               </div>
 
               {/* pagination  */}
+              {/* Pagination controls */}
               {totalPages > 1 && (
                 <div className="flex flex-row gap-1 items-center justify-end w-full px-12 py-6">
                   <button

@@ -110,7 +110,17 @@ const Dashboard = () => {
           </div>
           {/* map */}
           <div className="w-full h-auto bg-black md:mt-5 mt-3 border-2 border-t-main">
-            <div className="h-[400px] lg:h-[311px] bg-white">Map</div>
+            <div className="h-[400px] lg:h-[311px] bg-white">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1821.6989330449946!2d120.99383760593415!3d14.653352779376187!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b686dd24e859%3A0xe442b57504cbf05f!2sUniversity%20of%20Caloocan%20City%20-%20South%20Campus!5e0!3m2!1sen!2sph!4v1730254011557!5m2!1sen!2sph"
+                width="100%"
+                height="350"
+                style={{ border: "0" }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
           </div>
         </div>
       </div>

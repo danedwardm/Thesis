@@ -13,6 +13,7 @@ const Reports = () => {
   const [showReport, setShowReport] = useState(false);
   const [name, setName] = useState("");
   const [reportType, setReportType] = useState("");
+  const [customType, setCustomType] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -26,15 +27,28 @@ const Reports = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Number of items per page
+  const itemsPerPage = 3; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const [newReports, setNewReports] = useState([]);
 
-  // Calculate total pages
-  const totalItems = Data.length;
+  // Filter data based on selected filters
+  const filteredData = reports.filter((item) => {
+    return (
+      (selectedReportType === "" ||
+        item.type_of_report === selectedReportType) &&
+      (selectedStatus === "" || item.status === selectedStatus)
+    );
+  });
+
+  // Pagination logic
+  const totalItems = filteredData.length; // Total items based on filtered data
   const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Create an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -47,27 +61,9 @@ const Reports = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  // Get current page data
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-  // Filter data based on selected filters
-  const filteredData = Data.filter((item) => {
-    return (
-      (selectedReportType === "" ||
-        item.type_of_report === selectedReportType) &&
-      (selectedStatus === "" || item.status === selectedStatus)
-    );
-  });
-  // useEffect(() => {
-  //   const currentData = reports.slice(indexOfFirstItem, indexOfLastItem);
-  //   console.log(currentData)
-  // }, [])
-  const currentData = reports.slice(indexOfFirstItem, indexOfLastItem);
-
   // Get unique report types and statuses for dropdown options
-  const reportTypes = [...new Set(Data.map((item) => item.type_of_report))];
-  const statuses = [...new Set(Data.map((item) => item.status))];
+  const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
+  const statuses = [...new Set(reports.map((item) => item.status))];
 
   return (
     <>
@@ -221,161 +217,210 @@ const Reports = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentData.map((data, index) => (
-                      <tr
-                        className="text-xs font-normal even:bg-square hover:bg-[#f6edff] ease-in-out duration-500 cursor-pointer border-b"
-                        key={index.id}
-                      >
-                        <th
-                          scope="row"
-                          className="text-[#24693c] text-start p-4"
-                        >
-                          <p className="w-full truncate">{data.username}</p>
-                        </th>
-                        <td className="p-4 font-semibold uppercase" scope="row">
-                          <p className="w-full line-clamp-2">
-                            {data.type_of_report}
-                          </p>
-                        </td>
-                        <td className="p-4">
-                          <p className="w-full line-clamp-2">
-                            {data.report_description}
-                          </p>
-                        </td>
-                        <td className="p-4">
-                          <p className="w-full line-clamp-2">{`${data.longitude} , ${data.latitude}`}</p>
-                        </td>
-                        <td className="p-4">
-                          <p className="w-full font-semibold line-clamp-2">
-                            {data.assigned_to
-                              ? data.assigned_to
-                              : "Not Assigned"}
-                          </p>
-                        </td>
-                        <td className="p-4 text-center">
-                          <p className="w-full truncate">{data.report_date}</p>
-                        </td>
-                        <td className="p-4 text-center font-semibold uppercase">
-                          {data.status === "assigned" ? (
-                            <p className=" w-full font-bold truncate text-[#a10b00]">
-                              {data.status}
-                            </p>
-                          ) : data.status === "ongoing" ? (
-                            <p className=" w-full truncate font-bold text-[#007a3f]">
-                              {data.status}
-                            </p>
-                          ) : (
-                            <p className="w-full truncate font-bold text-[#363636]">
-                              {data.status}
-                            </p>
-                          )}
-                        </td>
-                        <td className="w-full p-4 text-center">
-                          <button
-                            className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
-                            onClick={() => {
-                              setShowReport(true);
-                              setName(data.username);
-                              setLocation(
-                                `${data.longitude} + ' ' + ${data.latitude}`
-                              );
-                              setReportType(data.type_of_report);
-                              setDescription(data.report_description);
-                              setDate(data.report_date);
-                              setStatus(data.status);
-                              setAssignedTo(data.assigned_to);
-                              setAttachment(data.attachment);
-                              setUpvote(data.upvote);
-                              setDownvote(data.downvote);
-                              setFeedback(data.feedback);
-                              setProof(data.proof);
-                            }}
+                    {currentData
+                      .sort(
+                        (a, b) =>
+                          new Date(b.report_date) - new Date(a.report_date)
+                      ) // Sort in descending order
+                      .map((data, index) => {
+                        const reportDate = new Date(data.report_date);
+                        const formattedDate = reportDate.toLocaleDateString(); // e.g., "10/28/2024"
+                        const formattedTime = reportDate.toLocaleTimeString(
+                          [],
+                          {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        );
+
+                        return (
+                          <tr
+                            className="text-xs font-normal even:bg-square hover:bg-[#f6edff] ease-in-out duration-500 cursor-pointer border-b"
+                            key={index.id}
                           >
-                            REVIEW
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                            <th
+                              scope="row"
+                              className="text-[#24693c] text-start p-4"
+                            >
+                              <p className="w-full truncate">{data.username}</p>
+                            </th>
+                            <td
+                              className="p-4 font-semibold uppercase"
+                              scope="row"
+                            >
+                              <p className="w-full line-clamp-2">
+                                {data.custom_type
+                                  ? data.type_of_report +
+                                    " , " +
+                                    data.custom_type
+                                  : data.type_of_report}
+                              </p>
+                            </td>
+                            <td className="p-4">
+                              <p className="w-full line-clamp-2">
+                                {data.report_description}
+                              </p>
+                            </td>
+                            <td className="p-4">
+                              <p className="w-full line-clamp-2">{`${data.longitude} , ${data.latitude}`}</p>
+                            </td>
+                            <td className="p-4">
+                              <p className="w-full font-semibold line-clamp-2">
+                                {data.assigned_to
+                                  ? data.assigned_to
+                                  : "Not Assigned"}
+                              </p>
+                            </td>
+                            <td className="p-4 text-center">
+                              <p className="w-full truncate">
+                                {`${formattedDate} ${formattedTime}`}
+                              </p>
+                            </td>
+                            <td className="p-4 text-center font-semibold uppercase">
+                              {data.status === "assigned" ? (
+                                <p className=" w-full font-bold truncate text-[#a10b00]">
+                                  {data.status}
+                                </p>
+                              ) : data.status === "ongoing" ? (
+                                <p className=" w-full truncate font-bold text-[#007a3f]">
+                                  {data.status}
+                                </p>
+                              ) : (
+                                <p className="w-full truncate font-bold text-[#363636]">
+                                  {data.status}
+                                </p>
+                              )}
+                            </td>
+                            <td className="w-full p-4 text-center">
+                              <button
+                                className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                                onClick={() => {
+                                  setShowReport(true);
+                                  setName(data.username);
+                                  setLocation(
+                                    `${data.longitude} , ${data.latitude}`
+                                  );
+                                  setReportType(
+                                    data.custom_type
+                                      ? data.type_of_report +
+                                          " , " +
+                                          data.custom_type
+                                      : data.type_of_report
+                                  );
+                                  setDescription(data.report_description);
+                                  setDate(`${formattedDate} ${formattedTime}`);
+                                  setStatus(data.status);
+                                  setAssignedTo(data.assigned_to);
+                                  setAttachment(data.image_path);
+                                  setUpvote(data.upvote);
+                                  setDownvote(data.downvote);
+                                  setFeedback(data.feedback);
+                                  setProof(data.proof);
+                                }}
+                              >
+                                REVIEW
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                   </tbody>
                 </table>
               </div>
 
               {/* card report  */}
               <div className="block md:hidden px-5 py-5">
-                {currentData.map((data, index) => (
-                  <div
-                    key={index}
-                    className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
-                  >
-                    <div className="flex flex-col flex-1">
-                      <div className="flex gap-4">
-                        <div className="flex items-center justify-center rounded-md">
-                          <div className="bg-square p-4 rounded-lg">
-                            <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />
+                {currentData.map((data, index) => {
+                  const reportDate = new Date(data.report_date);
+                  const formattedDate = reportDate.toLocaleDateString(); // e.g., "10/28/2024"
+                  const formattedTime = reportDate.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+
+                  return (
+                    <div
+                      key={index}
+                      className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
+                    >
+                      <div className="flex flex-col flex-1">
+                        <div className="flex gap-4">
+                          <div className="flex items-center justify-center rounded-md">
+                            <div className="bg-square p-4 rounded-lg">
+                              <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex flex-col justify-between py-1 w-full">
-                          <div className="grid gap-1 text-start">
-                            <p className="text-xs font-bold text-[#113e21] truncate">
-                              {data.username}
-                            </p>
-                            <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
-                              {data.type_of_report}
-                            </p>
-                            <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
-                              {`${data.longitude} + ' ' + ${data.latitude}`}
-                            </p>
-                            <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
-                              {data.assigned_to
-                                ? data.assigned_to
-                                : "Not Assigned"}
-                            </p>
-                            <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
-                              {data.report_date}
-                            </p>
-                            <p className="text-xs font-bold capitalize truncate">
-                              {data.status === "assigned" ? (
-                                <span className="text-[#a10b00]">
-                                  {data.status}
-                                </span>
-                              ) : data.status === "ongoing" ? (
-                                <span className="text-[#007a3f]">
-                                  {data.status}
-                                </span>
-                              ) : (
-                                <span className="text-[#363636]">
-                                  {data.status}
-                                </span>
-                              )}
-                            </p>
+                          <div className="flex flex-col justify-between py-1 w-full">
+                            <div className="grid gap-1 text-start">
+                              <p className="text-xs font-bold text-[#113e21] truncate">
+                                {data.username}
+                              </p>
+                              <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                                {data.custom_type
+                                  ? data.type_of_report +
+                                    " , " +
+                                    data.custom_type
+                                  : data.type_of_report}
+                              </p>
+                              <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                                {`${data.longitude} , ${data.latitude}`}
+                              </p>
+                              <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                                {data.assigned_to
+                                  ? data.assigned_to
+                                  : "Not Assigned"}
+                              </p>
+                              <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                                {`${formattedDate} ${formattedTime}`}
+                              </p>
+                              <p className="text-xs font-bold capitalize truncate">
+                                {data.status === "assigned" ? (
+                                  <span className="text-[#a10b00]">
+                                    {data.status}
+                                  </span>
+                                ) : data.status === "ongoing" ? (
+                                  <span className="text-[#007a3f]">
+                                    {data.status}
+                                  </span>
+                                ) : (
+                                  <span className="text-[#363636]">
+                                    {data.status}
+                                  </span>
+                                )}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
+                      <div className="flex justify-center items-center mt-4">
+                        <button
+                          className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                          onClick={() => {
+                            setShowReport(true);
+                            setName(data.username);
+                            setLocation(`${data.longitude} , ${data.latitude}`);
+                            setReportType(
+                              data.custom_type
+                                ? data.type_of_report + " , " + data.custom_type
+                                : data.type_of_report
+                            );
+                            setDescription(data.description);
+                            setDate(`${formattedDate} ${formattedTime}`);
+                            setStatus(data.status);
+                            setAssignedTo(data.assigned_to);
+                            setAttachment(data.image_path);
+                            setUpvote(data.upvote);
+                            setDownvote(data.downvote);
+                            setFeedback(data.feedback);
+                            setProof(data.proof);
+                          }}
+                        >
+                          REVIEW
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex justify-center items-center mt-4">
-                      <button
-                        className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
-                        onClick={() => {
-                          setShowReport(true);
-                          setName(data.name);
-                          setLocation(data.location);
-                          setReportType(data.type_of_report);
-                          setDescription(data.description);
-                          setDate(data.date);
-                          setStatus(data.status);
-                          setAssignedTo(data.assigned_to);
-                          setAttachment(data.attachment);
-                          setUpvote(data.upvote);
-                          setDownvote(data.downvote);
-                          setFeedback(data.feedback);
-                          setProof(data.proof);
-                        }}
-                      >
-                        REVIEW
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* pagination  */}
