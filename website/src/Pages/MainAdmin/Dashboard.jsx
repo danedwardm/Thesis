@@ -8,7 +8,7 @@ import { MdReport } from "react-icons/md";
 // Google Maps container style
 const mapContainerStyle = {
   width: "100%",
-  height: "400px", // Set a fixed height for the map container
+  height: "100%", // Let the map take 100% height of its parent container
 };
 
 const Dashboard = () => {
@@ -69,7 +69,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="relative bg-second h-screen w-screen overflow-hidden">
+      <div className="relative bg-second h-screen w-screen overflow-hidden flex flex-col">
         {/* bg square */}
         <div className="z-10">
           <div className="absolute h-[30vh] w-[30vh] bg-square rounded-[20px] rotate-45 -top-24 -left-24"></div>
@@ -79,7 +79,7 @@ const Dashboard = () => {
           <div className="absolute h-[30vh] w-[30vh] bg-square rounded-[20px] rotate-45 top-96 left-2/3"></div>
         </div>
         {/* content */}
-        <div className="relative h-full w-screen flex flex-col items-center z-30 overflow-auto">
+        <div className="relative w-full flex flex-col items-center z-30 overflow-auto flex-grow">
           <Navbar />
           <div className="w-full md:mt-[21vh] mt-[30vh] grid md:grid-cols-4 grid-cols-2 md:gap-6 gap-2 px-6">
             {/* Other dashboard items here */}
@@ -97,7 +97,7 @@ const Dashboard = () => {
             </div>
           </div>
           {/* map */}
-          <div className="w-full h-auto bg-black md:mt-5 mt-3 border-2 border-t-main">
+          <div className="w-full flex-grow bg-black md:mt-5 mt-3 border-2 border-t-main">
             <div ref={mapRef} style={mapContainerStyle}></div>
           </div>
         </div>
