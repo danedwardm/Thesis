@@ -27,7 +27,7 @@ const Reports = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Number of items per page
+  const itemsPerPage = 5; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter

@@ -480,7 +480,7 @@ const Accounts = () => {
                           setShowAccount(true);
                           setName(data.username);
                           setPhoneNumber(data.contact_number);
-                          setVerified(data.verified);
+                          setVerified(data.is_verified);
                           setViolation(data.violation);
                           setStatus(data.account_status);
                           setType(data.role);

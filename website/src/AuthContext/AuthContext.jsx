@@ -32,8 +32,25 @@ const AuthProvider = ({ children }) => {
       return onSnapshot(
         collection(db, `reports/${category}/reports`),
         (snapshot) => {
-          const updateReports = snapshot.docs.map((doc) => doc.data());
-          setReports((prevReports) => [...prevReports, ...updateReports]);
+          const updateReports = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            console.log(data); // Log to check if the `id` exists and is unique
+            return {
+              ...data,
+              id: doc.id, // Ensure that the Firestore `id` is being used for uniqueness
+            };
+          });
+
+          // Use Set to filter out duplicates based on `id`
+          setReports((prevReports) => {
+            const combinedReports = [...prevReports, ...updateReports];
+            const uniqueReports = [
+              ...new Map(
+                combinedReports.map((item) => [item.id, item])
+              ).values(),
+            ];
+            return uniqueReports;
+          });
         }
       );
     });

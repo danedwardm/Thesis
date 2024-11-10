@@ -5,6 +5,7 @@ import Profile from "./Modals/Profile";
 import logo from "../assets/thesisLogo.png";
 import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../AuthContext/AuthContext"; // Import the Auth context
 
 import { NavLink } from "react-router-dom";
