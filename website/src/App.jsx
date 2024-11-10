@@ -8,6 +8,9 @@ import Accounts from "./Pages/MainAdmin/Accounts";
 import ProtectedRoutes from "./Components/ProtectedRoutes";  // Import the new component
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ReportTrends from "./Chart/ReportTrends";
+import ReportCategoryChart from "./Chart/ReportCategoryChart";
+import PieChart from "./Chart/PieChart";
 
 function App() {
   return (
@@ -23,6 +26,9 @@ function App() {
           <Route path="/analysis" element={<Analysis />} />
           <Route path="/callLogs" element={<CallLogs />} />
           <Route path="/accounts" element={<Accounts />} />
+          <Route path="/linechart" element={<ReportTrends/>}/>
+          <Route path="/barchart" element={<ReportCategoryChart/>}/>
+          <Route path="/piechart" element={<PieChart/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

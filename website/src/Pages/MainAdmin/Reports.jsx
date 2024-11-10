@@ -283,7 +283,7 @@ const Reports = () => {
                               setDate(data.report_date);
                               setStatus(data.status);
                               setAssignedTo(data.assigned_to);
-                              setAttachment(data.attachment);
+                              setAttachment(data.image_path);
                               setUpvote(data.upvote);
                               setDownvote(data.downvote);
                               setFeedback(data.feedback);
@@ -363,7 +363,7 @@ const Reports = () => {
                           setDate(data.date);
                           setStatus(data.status);
                           setAssignedTo(data.assigned_to);
-                          setAttachment(data.attachment);
+                          setAttachment(data.image_path);                     
                           setUpvote(data.upvote);
                           setDownvote(data.downvote);
                           setFeedback(data.feedback);
