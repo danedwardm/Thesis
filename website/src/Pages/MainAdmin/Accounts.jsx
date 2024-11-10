@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from 'axios';
-
+import axios from "axios";
 
 import Data from "../../JSON/accounts.json";
 import Navbar from "../../Components/NavBar";
@@ -28,52 +27,57 @@ const Accounts = () => {
   const [idPicture, setIdPicture] = useState("");
 
   const [users, setUsers] = useState([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
-
-  const [selectedAccountType, setSelectedAccountType] = useState(""); 
-  const accountType = ["department head", "citizen", "worker"]; 
+  const [selectedAccountType, setSelectedAccountType] = useState("");
+  const accountType = ["department head", "citizen", "worker"];
 
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
 
+  const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
+  const accountVerified = ["Verified", "Not Verified"];
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Number of items per page
+  const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/users/', {
-        });
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/users/",
+          {}
+        );
         setUsers(response.data);
-        console.log('Data fetched successfully');
+        console.log("Data fetched successfully");
       } catch (err) {
-        setError('Failed to fetch users.');
-        console.error('Error fetching users:', err); // Log any errors
+        setError("Failed to fetch users.");
+        console.error("Error fetching users:", err); // Log any errors
       }
     };
-  
+
     fetchUsers();
   }, [selectedAccountType, selectedStatus]); // Re-fetch when selectedAccountType changes
-  
-const filteredUsers = users.filter(user => {
-  const matchesType = selectedAccountType === "" || user.role === selectedAccountType;
-  const matchesStatus = selectedStatus === "" || user.account_status === selectedStatus;
-  return matchesType && matchesStatus; // Only include users that match both filters
-});
+
+  const filteredUsers = users.filter((user) => {
+    const matchesType =
+      selectedAccountType === "" || user.role === selectedAccountType;
+    const matchesStatus =
+      selectedStatus === "" || user.account_status === selectedStatus;
+    const matchesVerified =
+      selectedVerified === "" ||
+      (selectedVerified === "Verified" ? user.is_verified : !user.is_verified);
+    return matchesType && matchesStatus && matchesVerified; // Only include users that match both filters
+  });
 
   const handleAddAccount = () => {
     setShowAddAccount(true);
   };
 
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Number of items per page
-  const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
-
-  const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
-
   // Calculate total pages
-  const totalItems = Data.length;
+  const totalItems = filteredUsers.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   // Create an array of page numbers
@@ -100,12 +104,12 @@ const filteredUsers = users.filter(user => {
     );
   });
 
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const statuses = [...new Set(Data.map((item) => item.status))];
 
   // Get unique report types and statuses for dropdown options
   // const accountType = [...new Set(Data.map((item) => item.type))];
-  const statuses = [...new Set(Data.map((item) => item.status))];
-  const accountVerified = [...new Set(Data.map((item) => item.verified))];
+  // const accountVerified = [...new Set(Data.map((item) => item.verified))];
 
   return (
     <>
@@ -258,7 +262,7 @@ const filteredUsers = users.filter(user => {
                                       (prevFilterOpen) => !prevFilterOpen
                                     );
                                   }}
-                                  className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300  ${
+                                  className={`block py-1 px-2 text-sm capitalize hover:text-main duration-300 ${
                                     selectedVerified === verified
                                       ? "font-bold text-main"
                                       : "text-textSecond"
@@ -277,91 +281,132 @@ const filteredUsers = users.filter(user => {
               </div>
               {/* table header*/}
               <div className="hidden md:block px-5 py-5 h-full">
-      <table className="w-full table-fixed">
-        <thead className="text-xs font-bold text-gray-500">
-          <tr className="border-b">
-            <th scope="col" className="text-start p-3 truncate">Name</th>
-            <th scope="col" className="text-start p-3 truncate">Phone Number</th>
-            <th scope="col" className="text-center p-3 truncate">Verified</th>
-            <th scope="col" className="text-center p-3 truncate">Violation</th>
-            <th scope="col" className="text-center p-3 truncate">Type</th>
-            <th scope="col" className="text-center p-3 truncate">Status</th>
-            <th scope="col" className="text-center p-3 truncate">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map((data) => (
-            <tr
-              className="text-xs font-normal even:bg-square hover:bg-[#f6edff] ease-in-out duration-500 cursor-pointer border-b"
-              key={data.id} // Use the unique id from the user data
-            >
-              <th scope="row" className="text-[#24693c] text-start p-4">
-                <p className="w-full truncate">{data.username}</p> 
-              </th>
-              <td className="p-4">
-                <p className="w-full truncate">{data.contact_number}</p>
-              </td>
-              <td className="p-4 text-center font-semibold uppercase">
-                  {data.is_verified ? (
-                    <p className="w-full font-bold truncate text-[#007a3f]">Verified</p>
-                  ) : (
-                    <p className="w-full truncate font-bold text-[#a10b00]">Not Verified</p>
-                  )}
-              </td>
-              <td className="p-4 text-center font-semibold uppercase">
-                <p className="w-full truncate">{data.violation}</p>
-              </td>
-              <td className="p-4 text-center font-semibold uppercase">
-                {data.role === "superadmin" ? (
-                  <p className="w-full font-bold truncate text-[#363636]">{data.role}</p>
-                ) : data.role === "citizen" ? (
-                  <p className="w-full truncate font-bold text-[#363636]">{data.role}</p>
-                ) : (
-                  <p className="w-full truncate font-bold text-[#363636]">{data.role}</p>
-                )}
-              </td>
-              <td className="p-4 text-center font-semibold uppercase">
-                {data.account_status == "Active" || data.account_status == "active" ? (
-                  <p className="w-full font-bold truncate text-[#007a3f]">{data.account_status}</p>
-                ) : data.account_status == "suspended" || data.account_status == "Suspended" ? (
-                  <p className="w-full truncate font-bold text-[#a10b00]">{data.account_status}</p>
-                ) : data.account_status == "blocked" || data.account_status == "Blocked" ? (
-                  <p className="w-full truncate font-bold text-[#363636]">{data.account_status}</p>
-                ) : <p className="w-full truncate font-bold text-[#363636]">{data.account_status}</p>
-                }
-              </td>
-              <td className="p-4 text-center">
-                <button
-                  className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond ease-in-out duration-500 truncate"
-                  onClick={() => {
-                    // Handle the review button click
-                    setShowAccount(true);
-                    setName(data.username);
-                    setPhoneNumber(data.contact_number);
-                    setVerified(data.is_verified);
-                    setViolation(data.violation);
-                    setStatus(data.account_status);
-                    setType(data.role);
-                    setAddress(data.address);
-                    setEmailAddress(data.email);
-                    setIdNumber(data.id_number);
-                    setPhoto(data.photo);
-                    setSelfieWId(data.selfie_w_id);
-                    setIdPicture(data.id_picture);
-                  }}
-                >
-                  REVIEW
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                <table className="w-full table-fixed">
+                  <thead className="text-xs font-bold text-gray-500">
+                    <tr className="border-b">
+                      <th scope="col" className="text-start p-3 truncate">
+                        Name
+                      </th>
+                      <th scope="col" className="text-start p-3 truncate">
+                        Phone Number
+                      </th>
+                      <th scope="col" className="text-center p-3 truncate">
+                        Verified
+                      </th>
+                      <th scope="col" className="text-center p-3 truncate">
+                        Violation
+                      </th>
+                      <th scope="col" className="text-center p-3 truncate">
+                        Type
+                      </th>
+                      <th scope="col" className="text-center p-3 truncate">
+                        Status
+                      </th>
+                      <th scope="col" className="text-center p-3 truncate">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentUsers.map((data) => (
+                      <tr
+                        className="text-xs font-normal even:bg-square hover:bg-[#f6edff] ease-in-out duration-500 cursor-pointer border-b"
+                        key={data.id} // Use the unique id from the user data
+                      >
+                        <th
+                          scope="row"
+                          className="text-[#24693c] text-start p-4"
+                        >
+                          <p className="w-full truncate">{data.username}</p>
+                        </th>
+                        <td className="p-4">
+                          <p className="w-full truncate">
+                            {data.contact_number}
+                          </p>
+                        </td>
+                        <td className="p-4 text-center font-semibold uppercase">
+                          {data.is_verified ? (
+                            <p className="w-full font-bold truncate text-[#007a3f]">
+                              Verified
+                            </p>
+                          ) : (
+                            <p className="w-full truncate font-bold text-[#a10b00]">
+                              Not Verified
+                            </p>
+                          )}
+                        </td>
+                        <td className="p-4 text-center font-semibold uppercase">
+                          <p className="w-full truncate">{data.violation}</p>
+                        </td>
+                        <td className="p-4 text-center font-semibold uppercase">
+                          {data.role === "superadmin" ? (
+                            <p className="w-full font-bold truncate text-[#363636]">
+                              {data.role}
+                            </p>
+                          ) : data.role === "citizen" ? (
+                            <p className="w-full truncate font-bold text-[#363636]">
+                              {data.role}
+                            </p>
+                          ) : (
+                            <p className="w-full truncate font-bold text-[#363636]">
+                              {data.role}
+                            </p>
+                          )}
+                        </td>
+                        <td className="p-4 text-center font-semibold uppercase">
+                          {data.account_status == "Active" ||
+                          data.account_status == "active" ? (
+                            <p className="w-full font-bold truncate text-[#007a3f]">
+                              {data.account_status}
+                            </p>
+                          ) : data.account_status == "suspended" ||
+                            data.account_status == "Suspended" ? (
+                            <p className="w-full truncate font-bold text-[#a10b00]">
+                              {data.account_status}
+                            </p>
+                          ) : data.account_status == "blocked" ||
+                            data.account_status == "Blocked" ? (
+                            <p className="w-full truncate font-bold text-[#363636]">
+                              {data.account_status}
+                            </p>
+                          ) : (
+                            <p className="w-full truncate font-bold text-[#363636]">
+                              {data.account_status}
+                            </p>
+                          )}
+                        </td>
+                        <td className="p-4 text-center">
+                          <button
+                            className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond ease-in-out duration-500 truncate"
+                            onClick={() => {
+                              // Handle the review button click
+                              setShowAccount(true);
+                              setName(data.username);
+                              setPhoneNumber(data.contact_number);
+                              setVerified(data.is_verified);
+                              setViolation(data.violation);
+                              setStatus(data.account_status);
+                              setType(data.role);
+                              setAddress(data.address);
+                              setEmailAddress(data.email);
+                              setIdNumber(data.id_number);
+                              setPhoto(data.photo);
+                              setSelfieWId(data.selfie_w_id);
+                              setIdPicture(data.id_picture);
+                            }}
+                          >
+                            REVIEW
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
               {/* small screen  */}
               <div className="block md:hidden px-5 py-5">
-                {filteredUsers.map((data, index) => (
+                {currentUsers.map((data, index) => (
                   <div
                     key={data.id}
                     className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
@@ -383,19 +428,17 @@ const filteredUsers = users.filter(user => {
                             </p>
                             <p className="text-xs font-bold capitalize truncate">
                               {data.is_verified ? (
-                                <span className="text-[#007a3f]">
-                                    Verified
-                                </span>
+                                <span className="text-[#007a3f]">Verified</span>
                               ) : (
                                 <span className="text-[#a10b00]">
-                                   Not Verified
+                                  Not Verified
                                 </span>
                               )}
                             </p>
                             <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
                               {data.violation}
                             </p>
-                            
+
                             <p className="text-xs font-bold capitalize truncate">
                               {data.role === "superadmin" ? (
                                 <span className="text-[#363636]">
@@ -437,7 +480,7 @@ const filteredUsers = users.filter(user => {
                           setShowAccount(true);
                           setName(data.username);
                           setPhoneNumber(data.contact_number);
-                          setVerified(data.verified);
+                          setVerified(data.is_verified);
                           setViolation(data.violation);
                           setStatus(data.account_status);
                           setType(data.role);
@@ -457,6 +500,7 @@ const filteredUsers = users.filter(user => {
               </div>
 
               {/* pagination  */}
+              {/* Pagination controls */}
               {totalPages > 1 && (
                 <div className="flex flex-row gap-1 items-center justify-end w-full px-12 py-6">
                   <button

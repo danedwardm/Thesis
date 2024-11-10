@@ -14,7 +14,7 @@ const mapContainerStyle = {
 const Dashboard = () => {
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef(null);
-  
+
   const [location, setLocation] = useState({
     lat: 14.9767, // Default fallback coordinates (e.g., UCC South Campus)
     lng: 120.9705,
@@ -98,7 +98,9 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
-              <div className="rounded-full text-main md:text-4xl text-xl">11</div>
+              <div className="rounded-full text-main md:text-4xl text-xl">
+                11
+              </div>
             </div>
           </div>
 
@@ -115,7 +117,9 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
-              <div className="rounded-full text-main md:text-4xl text-xl">11</div>
+              <div className="rounded-full text-main md:text-4xl text-xl">
+                11
+              </div>
             </div>
           </div>
 
@@ -132,7 +136,9 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
-              <div className="rounded-full text-main md:text-4xl text-xl">11</div>
+              <div className="rounded-full text-main md:text-4xl text-xl">
+                11
+              </div>
             </div>
           </div>
 
@@ -149,7 +155,9 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
-              <div className="rounded-full text-main md:text-4xl text-xl">11</div>
+              <div className="rounded-full text-main md:text-4xl text-xl">
+                11
+              </div>
             </div>
           </div>
         </div>
@@ -157,7 +165,9 @@ const Dashboard = () => {
         {/* Filter section */}
         <div className="w-full grid grid-cols-2 justify-between items-center md:mt-3 mt-4 px-6">
           <div className="flex flex-col px-3">
-            <p className="md:text-xl text-sm font-bold text-main">Map of Reports</p>
+            <p className="md:text-xl text-sm font-bold text-main">
+              Map of Reports
+            </p>
           </div>
           <div className="flex flex-col justify-center items-end px-3">
             <button className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase hover:bg-textSecond hover:text-accent ease-in-out duration-500">

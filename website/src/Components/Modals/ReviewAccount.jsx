@@ -28,6 +28,7 @@ const ReviewAccount = ({
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showDenyModal, setShowDenyModal] = useState(false);
+  console.log("ReviewAccount", verified);
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -295,7 +296,7 @@ const ReviewAccount = ({
                     </button>
                     <button
                       className={
-                        !(verified === "yes")
+                        verified !== true && verified !== "true"
                           ? "py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                           : "hidden"
                       }
@@ -304,8 +305,8 @@ const ReviewAccount = ({
                     </button>
                     <button
                       className={
-                        !(verified === "yes")
-                          ? "py-3 px-4 border border-main bg-textSecond text-black  rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                        verified !== true && verified !== "true"
+                          ? "py-3 px-4 border border-main bg-textSecond text-black rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                           : "hidden"
                       }
                       onClick={handleDenyClick}

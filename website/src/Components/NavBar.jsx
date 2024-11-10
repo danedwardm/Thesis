@@ -8,10 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../AuthContext/AuthContext"; // Import the Auth context
 
-
 import { NavLink } from "react-router-dom";
-
-
 
 const NavBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -38,7 +35,6 @@ const NavBar = () => {
     await logout(); // Call the logout function
     setIsDropdownOpen(false); // Close the dropdown after logout
     navigate("/login", { replace: true }); // Use replace to prevent going back to the dashboard
-    
   };
 
   return (
@@ -75,7 +71,7 @@ const NavBar = () => {
                     <hr className="h-px px-2 bg-gray-200 border-0 dark:bg-gray-200"></hr>
                   </li>
                   <li>
-                  <div
+                    <div
                       onClick={handleLogout} // Change from NavLink to div and handleLogout
                       className="block px-4 py-2 font-bold text-textSecond hover:text-main cursor-pointer"
                     >
