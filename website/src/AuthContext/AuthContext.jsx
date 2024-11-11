@@ -17,11 +17,13 @@ const AuthProvider = ({ children }) => {
 
   // Check authentication on initial load from localStorage
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem('accessToken'); // Example token check
     if (token) {
-      setAuthenticated(true); // User is authenticated if accessToken exists
+      setAuthenticated(true);
+    } else {
+      setAuthenticated(false);
     }
-  }, []);
+  }, []); 
 
   const fetchDocuments = async () => {
     const categories = [

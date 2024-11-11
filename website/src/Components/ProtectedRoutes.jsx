@@ -1,13 +1,11 @@
+// ProtectedRoute.js
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import ProtectedRoute from './ProtectedRoute';
+import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../AuthContext/AuthContext';  // Adjust the import path as necessary
 
-const ProtectedRoutes = () => {
-  return (
-    <ProtectedRoute>
-      <Outlet />  
-    </ProtectedRoute>
-  );
+const ProtectedRoute = () => {
+  const authenticated = localStorage.getItem('accessToken')
+  return authenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
-export default ProtectedRoutes;
+export default ProtectedRoute;
