@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import Data from "../../JSON/callLogs.json";
 import Navbar from "../../Components/NavBar";
+import NavText from "../../Components/NavText";
 
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
@@ -44,9 +45,64 @@ const CallLogs = () => {
   // Get unique report types and statuses for dropdown options
   const reportTypes = [...new Set(Data.map((item) => item.emergency_type))];
 
+  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  const mapRef = useRef(null);
+
+  const [location, setLocation] = useState({
+    lat: 14.9767, // Default fallback coordinates (e.g., UCC South Campus)
+    lng: 120.9705,
+  });
+
+  useEffect(() => {
+    // Get current location using Geolocation API
+    const getCurrentLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setLocation({ lat: latitude, lng: longitude });
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+            // You can use default location here if geolocation fails
+          }
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    };
+
+    getCurrentLocation();
+  }, []);
+
+  useEffect(() => {
+    const loadGoogleMapsScript = () => {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        const map = new google.maps.Map(mapRef.current, {
+          center: location, // Dynamically set map center to user's location
+          zoom: 15, // Adjust zoom level as needed
+        });
+
+        // Create a marker at the user's current location
+        const marker = new google.maps.Marker({
+          position: location,
+          map: map,
+          title: "Your Current Location",
+        });
+      };
+      document.head.appendChild(script);
+    };
+
+    loadGoogleMapsScript();
+  }, [googleMapsApiKey, location]);
+
   return (
     <>
-      <div className="relative bg-second h-[100vh] w-[100vw] overflow-hidden">
+      <div className="relative bg-second h-[100vh] w-full overflow-hidden">
         {/* bg square */}
         <div className="absolute inset-0 z-10">
           <div className="absolute h-[30vh] w-[30vh] bg-square rounded-[20px] rotate-45 -top-24 -left-24"></div>
@@ -57,10 +113,17 @@ const CallLogs = () => {
         </div>
 
         {/* content */}
-        <div className="relative h-[100vh] w-[100vw] flex flex-col items-center z-30 overflow-auto">
+        <div className="relative h-[100vh] w-full flex flex-col items-center z-30 overflow-auto">
           <Navbar />
-          <div className="flex pt-5 md:mt-[21vh] mt-[30vh] mb-[5vh]">
-            <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased min-h-[70vh] w-full mx-10">
+          <NavText />
+          <div className="grid grid-cols-2 pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[20vh] px-10 gap-8">
+            <div className="flex flex-col items-center">
+              <div
+                className=" md:h-2/3 sticky top-0 w-full bg-main rounded-[20px]"
+                ref={mapRef}
+              ></div>
+            </div>
+            <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased w-full overflow-y-auto  mb-[5vh] ">
               {/* header and filter button */}
               <div className="flex flex-row justify-between bg-main">
                 <div className="flex justify-center items-center py-3 px-8">
