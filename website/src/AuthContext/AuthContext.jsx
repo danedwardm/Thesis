@@ -1,17 +1,12 @@
-import { React, createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import axiosInstance from "../axios-instance";
-import axios from "axios";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  onSnapshot,
-} from "firebase/firestore";
-import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import { app } from "../Firebase/firebaseConfig";
+
 const db = getFirestore(app);
 
 const AuthContext = createContext();
+
 export const useAuth = () => {
   return useContext(AuthContext);
 };
@@ -19,6 +14,15 @@ export const useAuth = () => {
 const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
   const [reports, setReports] = useState([]);
+
+  // Check authentication on initial load from localStorage
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setAuthenticated(true); // User is authenticated if accessToken exists
+    }
+  }, []);
+
   const fetchDocuments = async () => {
     const categories = [
       "fires",
@@ -28,6 +32,7 @@ const AuthProvider = ({ children }) => {
       "others",
       "road accident",
     ];
+
     const unsubscribeFunctions = categories.map((category) => {
       return onSnapshot(
         collection(db, `reports/${category}/reports`),
@@ -41,19 +46,18 @@ const AuthProvider = ({ children }) => {
             };
           });
 
-          // Use Set to filter out duplicates based on `id`
+          // Combine and filter reports to ensure uniqueness based on `id`
           setReports((prevReports) => {
             const combinedReports = [...prevReports, ...updateReports];
             const uniqueReports = [
-              ...new Map(
-                combinedReports.map((item) => [item.id, item])
-              ).values(),
+              ...new Map(combinedReports.map((item) => [item.id, item])).values(),
             ];
             return uniqueReports;
           });
         }
       );
     });
+
     return () => {
       unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
     };
@@ -69,31 +73,24 @@ const AuthProvider = ({ children }) => {
     });
   }, []);
 
-  const login = async (email, password) => {
+  const onLogin = async (email, password) => {
     try {
       const res = await axiosInstance.post("api/token/", {
         username: email,
         password,
       });
 
-      if (res.status !== 200) {
-        // Check response status, not res.ok
-        throw new Error("Response was not okay");
+      const { access, refresh, account_type } = res.data;
+      if (account_type !== "superadmin" && account_type !== "department_admin") {
+        alert("You are not permitted to enter this site.");
+        return null;
       }
 
-      const { access, refresh, account_type } = res.data;
+      // Set tokens and authentication state
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
-
-      if (
-        account_type !== "superadmin" &&
-        account_type !== "department_admin"
-      ) {
-        alert("You are not permitted to enter this site.");
-        return false;
-      }
-      setAuthenticated(true);
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+      setAuthenticated(true); // Set user as authenticated
       return res;
     } catch (error) {
       if (error.response && error.response.data) {
@@ -106,20 +103,18 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const onLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    axios.defaults.headers.common["Authorization"] = ""; // Clear the auth header
-    setAuthenticated(false); // Update the authenticated state
+    delete axiosInstance.defaults.headers.common["Authorization"];
+    setAuthenticated(false); // Set user as not authenticated
   };
 
-  const value = {
-    onLogin: login,
-    logout,
-    authenticated,
-    reports,
-  };
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ onLogin, onLogout, authenticated, reports }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export { AuthProvider };
