@@ -5,7 +5,7 @@ import { LuEye, LuEyeOff } from "react-icons/lu";
 
 const AddAccount = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
-
+  
   const [showPrompt, setShowPrompt] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
