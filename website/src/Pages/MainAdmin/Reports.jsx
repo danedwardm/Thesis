@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import Data from "../../JSON/reports.json";
 import Navbar from "../../Components/NavBar";
+import NavText from "../../Components/NavText";
 import ReviewReport from "../../Components/Modals/ReviewReport";
 
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
@@ -80,7 +81,8 @@ const Reports = () => {
         {/* content */}
         <div className="relative h-[100vh] w-[100vw] flex flex-col items-center z-30 overflow-auto">
           <Navbar />
-          <div className="flex pt-5 md:mt-[21vh] mt-[30vh] mb-[5vh]">
+          <NavText />
+          <div className="flex pt-5 mb-[5vh] mt-[30vh] md:mt-[30vh] lg:mt-[20vh] ">
             <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased min-h-[70vh] w-full mx-10">
               {/* header and filter button */}
               <div className="flex flex-row justify-between bg-main">
@@ -212,6 +214,9 @@ const Reports = () => {
                         Status
                       </th>
                       <th scope="col" className="text-center p-3 truncate">
+                        Validated
+                      </th>
+                      <th scope="col" className="text-center p-3 truncate">
                         Action
                       </th>
                     </tr>
@@ -290,6 +295,11 @@ const Reports = () => {
                                   {data.status}
                                 </p>
                               )}
+                            </td>
+                            <td className="p-4 text-center">
+                              <p className="w-full truncate font-bold text-[#363636]">
+                                {data.is_validated ? "Yes" : "No"}
+                              </p>
                             </td>
                             <td className="w-full p-4 text-center">
                               <button

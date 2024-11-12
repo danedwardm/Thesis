@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../../Components/NavBar";
+import NavText from "../../Components/NavText";
 import { FaUser } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import { IoCall } from "react-icons/io5";
+import { IoIosNotifications } from "react-icons/io";
 import { MdReport } from "react-icons/md";
 
 // Google Maps container style
@@ -80,21 +81,19 @@ const Dashboard = () => {
 
       {/* Main content */}
       <div className="relative w-full flex flex-col items-center z-30 overflow-auto flex-grow">
-        {/* Navbar */}
         <Navbar />
-
-        {/* Stats cards */}
-        <div className="w-full md:mt-[21vh] mt-[30vh] grid md:grid-cols-4 grid-cols-2 md:gap-6 gap-2 px-6">
+        <NavText />
+        <div className="w-full mt-[30vh] md:mt-[30vh] lg:mt-[20vh] grid md:grid-cols-4 grid-cols-2 md:gap-6 gap-2 px-6">
           {/* Number of calls */}
           <div className="col-span-1 m-3 md:px-3 py-5 text-2xl font-bold text-main mb-2 bg-white border border-main rounded-lg flex flex-col md:flex-row md:gap-2 gap-1 justify-between items-center overflow-hidden">
             <div className="lg:flex justify-center items-center ml-3 hidden">
               <div className="flex justify-center items-center rounded-full bg-main w-[55px] h-[55px]">
-                <IoCall className="text-second w-[30px] h-[30px]" />
+                <IoIosNotifications className="text-second w-[30px] h-[30px]" />
               </div>
             </div>
             <div className="flex justify-center items-center md:ml-3 w-full">
               <p className="font-bold lg:text-sm text-xs text-center md:text-start uppercase text-main w-full">
-                Daily Calls
+                New Notification
               </p>
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">

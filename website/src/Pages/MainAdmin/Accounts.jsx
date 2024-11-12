@@ -3,6 +3,7 @@ import axios from "axios";
 
 import Data from "../../JSON/accounts.json";
 import Navbar from "../../Components/NavBar";
+import NavText from "../../Components/NavText";
 import ReviewAccount from "../../Components/Modals/ReviewAccount";
 import AddAccount from "../../Components/Modals/AddAccount";
 import DenyVerification from "../../Components/Modals/DenyVerification";
@@ -126,7 +127,8 @@ const Accounts = () => {
         {/* content */}
         <div className="relative h-[100vh] w-[100vw] flex flex-col items-center z-30 overflow-auto">
           <Navbar />
-          <div className="flex pt-5 md:mt-[21vh] mt-[30vh]  mb-[5vh]">
+          <NavText />
+          <div className="flex pt-5 mb-[5vh] mt-[30vh] md:mt-[30vh] lg:mt-[20vh] ">
             <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased min-h-[70vh] w-full mx-10">
               {/* header and filter button */}
               <div className="flex flex-row justify-between bg-main">

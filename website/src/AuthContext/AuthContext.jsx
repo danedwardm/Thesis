@@ -16,6 +16,8 @@ const AuthProvider = ({ children }) => {
   const [departments, setDepartment] = useState([])
   const [account_type, setAccountType] = useState("");
   const [reports, setReports] = useState([]);
+  const [accountRole, setAccountRole] = useState(null);
+  
 
   // Check authentication on initial load from localStorage
   useEffect(() => {
@@ -132,7 +134,7 @@ const AuthProvider = ({ children }) => {
       });
 
       const { access, refresh, account_type } = res.data;
-      if (account_type !== "superadmin" && account_type !== "department_admin") {
+      if (account_type !== "superadmin" && account_type !== "department_admin" && account_type !== "department_head") {
         alert("You are not permitted to enter this site.");
         return null;
       }
