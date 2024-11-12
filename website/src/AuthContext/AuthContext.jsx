@@ -36,21 +36,26 @@ const AuthProvider = ({ children }) => {
     const unsubscribeFunctions = categories.map((category) => {
       return onSnapshot(
         collection(db, `reports/${category}/reports`),
-        (snapshot) => {
-          const updateReports = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            console.log(data); // Log to check if the `id` exists and is unique
-            return {
-              ...data,
-              id: doc.id, // Ensure that the Firestore `id` is being used for uniqueness
-            };
-          });
+        async (snapshot) => {
+          const updateReports = await Promise.all(
+            snapshot.docs.map(async (doc) => {
+              const data = doc.data();
+              const reportId = doc.id;
+
+              return {
+                ...data,
+                id: doc.id, // Include the Firestore document ID
+              };
+            })
+          );
 
           // Combine and filter reports to ensure uniqueness based on `id`
           setReports((prevReports) => {
             const combinedReports = [...prevReports, ...updateReports];
             const uniqueReports = [
-              ...new Map(combinedReports.map((item) => [item.id, item])).values(),
+              ...new Map(
+                combinedReports.map((item) => [item.id, item])
+              ).values(),
             ];
             return uniqueReports;
           });
@@ -81,7 +86,10 @@ const AuthProvider = ({ children }) => {
       });
 
       const { access, refresh, account_type } = res.data;
-      if (account_type !== "superadmin" && account_type !== "department_admin") {
+      if (
+        account_type !== "superadmin" &&
+        account_type !== "department_admin"
+      ) {
         alert("You are not permitted to enter this site.");
         return null;
       }
@@ -89,14 +97,16 @@ const AuthProvider = ({ children }) => {
       // Set tokens and authentication state
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
-      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+      axiosInstance.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${access}`;
       setAuthenticated(true); // Set user as authenticated
       return res;
     } catch (error) {
       if (error.response && error.response.data) {
         const detailMessage =
           error.response.data.detail || "Please check your credentials!";
-        console.log(detailMessage);
+        // console.log(detailMessage);
       } else {
         console.log("Error");
       }

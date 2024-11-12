@@ -116,10 +116,10 @@ const CallLogs = () => {
         <div className="relative h-[100vh] w-full flex flex-col items-center z-30 overflow-auto">
           <Navbar />
           <NavText />
-          <div className="grid grid-cols-2 pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[20vh] px-10 gap-8">
-            <div className="flex flex-col items-center">
+          <div className="grid grid-col md:grid-cols-2 pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[20vh] px-10 gap-8">
+            <div className="md:h-2/3 md:sticky md:top-0 w-full flex flex-col items-center rounded-2xl border-2 border-main">
               <div
-                className=" md:h-2/3 sticky top-0 w-full bg-main rounded-[20px]"
+                className=" h-full lg:sticky lg:top-0 w-full bg-main rounded-2xl"
                 ref={mapRef}
               ></div>
             </div>

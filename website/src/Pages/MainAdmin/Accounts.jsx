@@ -20,6 +20,7 @@ const Accounts = () => {
   const [violation, setViolation] = useState("");
   const [status, setStatus] = useState("");
   const [type, setType] = useState("");
+  const [userID, setUserID] = useState("");
   const [address, setAddress] = useState(""); // Fixed typo from "aaddress" to "address"
   const [emailAddress, setEmailAddress] = useState("");
   const [idNumber, setIdNumber] = useState("");
@@ -41,7 +42,7 @@ const Accounts = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Number of items per page
+  const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
 
   useEffect(() => {
@@ -391,13 +392,10 @@ const Accounts = () => {
                               setType(data.role);
                               setAddress(data.address);
                               setEmailAddress(data.email);
-                              setIdNumber(data.id_number);
-                              setPhoto(data.photo);
-                              setSelfieWId(data.selfie_w_id);
-                              setIdPicture(data.id_picture);
+                              setUserID(data.id);
                             }}
                           >
-                            REVIEW
+                            {data.is_verified ? "REVIEW" : "VERIFY"}
                           </button>
                         </td>
                       </tr>
@@ -494,7 +492,7 @@ const Accounts = () => {
                           setIdPicture(data.id_picture);
                         }}
                       >
-                        REVIEW
+                        {data.is_verified ? "REVIEW" : "VERIFY"}
                       </button>
                     </div>
                   </div>
@@ -558,10 +556,7 @@ const Accounts = () => {
         type={type}
         address={address}
         emailAddress={emailAddress}
-        idNumber={idNumber}
-        photo={photo}
-        selfieWId={selfieWId}
-        idPicture={idPicture}
+        userId={userID}
       />
       <AddAccount
         isVisible={showAddAccount}

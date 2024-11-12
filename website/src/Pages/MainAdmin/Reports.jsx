@@ -282,12 +282,20 @@ const Reports = () => {
                               </p>
                             </td>
                             <td className="p-4 text-center font-semibold uppercase">
-                              {data.status === "assigned" ? (
+                              {data.status === "Pending" ? (
                                 <p className=" w-full font-bold truncate text-[#a10b00]">
                                   {data.status}
                                 </p>
-                              ) : data.status === "ongoing" ? (
+                              ) : data.status === "done" ? (
                                 <p className=" w-full truncate font-bold text-[#007a3f]">
+                                  {data.status}
+                                </p>
+                              ) : data.status === "reviewing" ? (
+                                <p className="w-full truncate font-bold text-[#6e4615]">
+                                  {data.status}
+                                </p>
+                              ) : data.status === "ongoing" ? (
+                                <p className="w-full truncate font-bold text-[#FFA500]">
                                   {data.status}
                                 </p>
                               ) : (
@@ -297,7 +305,13 @@ const Reports = () => {
                               )}
                             </td>
                             <td className="p-4 text-center">
-                              <p className="w-full truncate font-bold text-[#363636]">
+                              <p
+                                className={`w-full truncate font-bold ${
+                                  data.is_validated
+                                    ? "text-[#007a3f]"
+                                    : "text-[#a10b00]"
+                                }`}
+                              >
                                 {data.is_validated ? "Yes" : "No"}
                               </p>
                             </td>
@@ -328,7 +342,7 @@ const Reports = () => {
                                   setProof(data.proof);
                                 }}
                               >
-                                REVIEW
+                                {data.is_validated ? "REVIEW" : "VALIDATE"}
                               </button>
                             </td>
                           </tr>
@@ -425,7 +439,7 @@ const Reports = () => {
                             setProof(data.proof);
                           }}
                         >
-                          REVIEW
+                          {data.is_validated ? "REVIEW" : "VALIDATE"}
                         </button>
                       </div>
                     </div>

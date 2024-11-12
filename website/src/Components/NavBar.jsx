@@ -12,6 +12,7 @@ import { NavLink } from "react-router-dom";
 
 const NavBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [toggleNotifsOpen, setIsNotifsOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const navigate = useNavigate(); // Use navigate for redirecting
   const { onLogout } = useAuth(); // Get the logout function from the context
@@ -25,6 +26,7 @@ const NavBar = () => {
   ];
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const toggleNotifs = () => setIsNotifsOpen(!toggleNotifsOpen);
 
   const handleAddAccount = () => {
     setShowProfile(true);
@@ -54,7 +56,7 @@ const NavBar = () => {
           <div className="relative flex gap-2">
             <div
               className="flex items-center justify-center cursor-pointer px-2"
-              onClick={toggleDropdown}
+              onClick={toggleNotifs}
             >
               <MdNotificationsActive className="text-second text-3xl" />
               <div className="absolute top-0 right-12 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
@@ -65,6 +67,29 @@ const NavBar = () => {
             >
               <FaUser className="text-main text-lg" />
             </div>
+            {toggleNotifsOpen && (
+              <div className="absolute top-full right-12 mt-2 bg-white shadow-lg rounded-lg border  w-80">
+                <ul className="flex flex-col">
+                  <li>
+                    <div
+                      // onClick={handleAddAccount}
+                      className="block px-4 py-2 font-bold text-red-600 "
+                    >
+                      Notifications
+                    </div>
+                    <hr className="h-px px-2 bg-gray-200 border-0 dark:bg-gray-200"></hr>
+                  </li>
+                  <li>
+                    <div
+                      // onClick={handleLogout} // Change from NavLink to div and handleLogout
+                      className="block px-4 py-2 font-bold text-textSecond hover:text-main cursor-pointer"
+                    >
+                      Notifs here
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            )}
             {isDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-lg border  w-auto">
                 <ul className="flex flex-col">
