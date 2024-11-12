@@ -22,7 +22,7 @@ function App() {
         <Route index element={<Landing />} />
         <Route
           path="/login"
-          element={authenticated ? <Navigate to="/dashboard" /> : <Login />}
+          element={authenticated ? <Navigate to="/dashboard" replace/> : <Login />}
         />
 
         {/* Protect the routes that should only be accessible by authenticated users */}
