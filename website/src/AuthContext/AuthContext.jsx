@@ -13,18 +13,23 @@ export const useAuth = () => {
 
 const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
+  const [departments, setDepartment] = useState([])
+  const [account_type, setAccountType] = useState("");
   const [reports, setReports] = useState([]);
 
   // Check authentication on initial load from localStorage
   useEffect(() => {
     const token = localStorage.getItem('accessToken'); // Example token check
+    const account_type = localStorage.getItem('accountType'); // Example token check
     if (token) {
+      department()
+      setAccountType(account_type)
       setAuthenticated(true);
     } else {
+      setAccountType("")
       setAuthenticated(false);
     }
   }, []); 
-
   const fetchDocuments = async () => {
     const categories = [
       "fires",
@@ -74,6 +79,50 @@ const AuthProvider = ({ children }) => {
       console.error("Error in fetching documents:", error);
     });
   }, []);
+  
+  const department_admin_registration = async (username, email, phoneNumber, department, station, stationAddress, password, password_confirm) => {
+    try {
+      const data = {
+        username, email, contact_number: phoneNumber, department, station, station_address: stationAddress, password, password_confirm
+      };
+      const res = await axiosInstance.post('api/department_admin/registration/', data);
+
+      if (!res) {
+        throw new Error("Error in Department Registration");
+      }
+      return res;
+    } catch (error) {
+      if (error.response) {
+        // Server responded with an error status
+        console.log("Error Response:", error.response.data);
+        alert(`Error: ${error.response.data.detail || 'An error occurred'}`); // Customize this depending on your API error response format
+      } else if (error.request) {
+        // Request was made but no response was received
+        console.log("Error Request:", error.request);
+        alert("No response received from server. Please try again.");
+      } else {
+        // Something else happened in setting up the request
+        console.log("Error Message:", error.message);
+        alert(`Error: ${error.message}`);
+      }
+    }
+}
+
+  const department = async () => {
+    try {
+      const res = await axiosInstance.get('api/departments/')
+      setDepartment(prev => {
+        const newDepartments = res.data;
+        const uniqueDepartments = [
+          ...prev,
+          ...newDepartments.filter(dep => !prev.some(existingDep => existingDep.id === dep.id))
+        ];
+        return uniqueDepartments;
+      });
+    } catch (error) {
+      console.error(error)        
+    }
+}
 
   const onLogin = async (email, password) => {
     try {
@@ -91,7 +140,9 @@ const AuthProvider = ({ children }) => {
       // Set tokens and authentication state
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
+      localStorage.setItem("accountType", account_type);
       axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+      setAccountType(account_type)
       setAuthenticated(true); // Set user as authenticated
       return res;
     } catch (error) {
@@ -113,7 +164,7 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ onLogin, onLogout, authenticated, reports }}>
+    <AuthContext.Provider value={{ onLogin, onLogout, authenticated, reports, account_type, departments, department_admin_registration }}>
       {children}
     </AuthContext.Provider>
   );

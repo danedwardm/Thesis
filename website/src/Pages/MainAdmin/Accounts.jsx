@@ -9,6 +9,7 @@ import DenyVerification from "../../Components/Modals/DenyVerification";
 
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
+import { useAuth } from "../../AuthContext/AuthContext";
 
 const Accounts = () => {
   const [showAddAccount, setShowAddAccount] = useState(false);
@@ -30,8 +31,8 @@ const Accounts = () => {
   const [error, setError] = useState("");
 
   const [selectedAccountType, setSelectedAccountType] = useState("");
-  const accountType = ["department head", "citizen", "worker"];
-
+  const accountType = ["department_admin", "citizen", "worker", "superadmin"];
+  const {account_type, departments} = useAuth()
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
 
@@ -42,7 +43,6 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
-
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -563,6 +563,8 @@ const Accounts = () => {
       />
       <AddAccount
         isVisible={showAddAccount}
+        departments={departments}
+        account_type={account_type}
         onClose={() => setShowAddAccount(false)}
       />
     </>

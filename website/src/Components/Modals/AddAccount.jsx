@@ -2,12 +2,13 @@ import React, { useState } from "react";
 
 import Prompt from "./Prompt";
 import { LuEye, LuEyeOff } from "react-icons/lu";
+import { useAuth } from "../../AuthContext/AuthContext";
 
-const AddAccount = ({ isVisible, onClose }) => {
+const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
   if (!isVisible) return null;
   
   const [showPrompt, setShowPrompt] = useState(false);
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [department, setDepartment] = useState("");
@@ -15,11 +16,16 @@ const AddAccount = ({ isVisible, onClose }) => {
   const [stationAddress, setStationAddress] = useState("");
   const [homeAddress, setHomeAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [password_confirm, setPasswordConfirm] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isPasswordConfirmVisible, setIsPasswordConfirmVisible] = useState(false);
   const [incompleteInput, setIncompleteInput] = useState(false);
-
+  const { department_admin_registration } = useAuth()
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
+  };
+  const togglePasswordConfirmVisibility = () => {
+    setIsPasswordConfirmVisible((prev) => !prev);
   };
 
   const handlePromtClick = () => {
@@ -34,15 +40,16 @@ const AddAccount = ({ isVisible, onClose }) => {
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     if (
-      !name ||
+      !username ||
       !email ||
       !phoneNumber ||
       !department ||
       !station ||
       !stationAddress ||
-      !homeAddress ||
-      !password
+      !password ||
+      !password_confirm
     ) {
       setIncompleteInput(true);
       setTimeout(() => {
@@ -50,30 +57,32 @@ const AddAccount = ({ isVisible, onClose }) => {
       }, 3000);
       return;
     }
-
-    // Submit the form
+    
+    try {
+      const res = await department_admin_registration(username, email, phoneNumber, department, station, stationAddress, password, password_confirm);
+      if(res){
+        alert("Department Registration Success!")
+        onClose();
+        return;
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert(`Registration failed: ${error.message || 'Unknown error'}`);
+    }
+    
+    // Optionally reset form after submission
     console.log({
-      name,
+      username,
       email,
       phoneNumber,
       department,
       station,
       stationAddress,
-      homeAddress,
       password,
+      password_confirm,
     });
-
-    // Reset the form
-    setName("");
-    setEmail("");
-    setPhoneNumber("");
-    setDepartment("");
-    setStation("");
-    setStationAddress("");
-    setHomeAddress("");
-    setPassword("");
-    onClose(); // Close the modal after submission
   };
+  
 
   return (
     <>
@@ -105,18 +114,18 @@ const AddAccount = ({ isVisible, onClose }) => {
               <div className="w-full ">
                 <form onSubmit={handleSubmit}>
                   <div className="w-full flex flex-col mt-4">
-                    <div className="w-full flex flex-col items-center justify-center">
+                  <div className="w-full flex flex-col items-center justify-center">
                       <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
-                        <p className="text-xs font-semibold">Name</p>
+                        <p className="text-xs font-semibold">Username</p>
                         <p className="text-xs font-semibold text-red-700">*</p>
                       </div>
                       <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
                         <textarea
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
                           rows={1}
                           className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
-                          placeholder="Enter Name"
+                          placeholder="Enter Username"
                         ></textarea>
                       </div>
                     </div>
@@ -156,13 +165,22 @@ const AddAccount = ({ isVisible, onClose }) => {
                         <p className="text-xs font-semibold text-red-700">*</p>
                       </div>
                       <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
-                        <textarea
-                          value={department}
-                          onChange={(e) => setDepartment(e.target.value)}
-                          rows={1}
-                          className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
-                          placeholder="Enter Department"
-                        ></textarea>
+                      <select
+                            value={department} 
+                            onChange={(e) => setDepartment(e.target.value)}
+                            className="outline-none bg-white w-full text-xs font-normal "
+                          >
+                            <option value="" disabled>
+                              Select a Department
+                            </option>
+                            {departments.map((dep) => (
+                              <option key={dep.id} value={dep.id}>
+                                {dep.name}
+                              </option>
+                            ))}
+                          </select>
+
+
                       </div>
                     </div>
                     {/* only for new department accounts */}
@@ -200,7 +218,7 @@ const AddAccount = ({ isVisible, onClose }) => {
                     </div>
                     {/* end of only for new department accounts */}
                     {/* only for new employee accounts */}
-                    <div className="w-full flex flex-col items-center justify-center">
+                    {account_type === 'superadmin' ? null : <div className="w-full flex flex-col items-center justify-center">
                       <div className="flex justify-start items-center w-full py-2">
                         <p className="text-xs font-semibold ">Home Address</p>
                         <p className="text-xs font-semibold text-red-700">*</p>
@@ -214,7 +232,7 @@ const AddAccount = ({ isVisible, onClose }) => {
                           placeholder="Enter Home Address"
                         ></textarea>
                       </div>
-                    </div>
+                    </div>}
                     {/* end of only for new employee accounts */}
                     <div className="w-full flex flex-col items-center justify-center">
                       <div className="flex justify-start items-center w-full py-2">
@@ -234,6 +252,31 @@ const AddAccount = ({ isVisible, onClose }) => {
                           onClick={togglePasswordVisibility}
                         >
                           {isPasswordVisible ? (
+                            <LuEyeOff className="text-md text-main" />
+                          ) : (
+                            <LuEye className="text-md text-main" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="w-full flex flex-col items-center justify-center">
+                      <div className="flex justify-start items-center w-full py-2">
+                        <p className="text-xs font-semibold ">Confirm Password</p>
+                        <p className="text-xs font-semibold text-red-700">*</p>
+                      </div>
+                      <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
+                        <input
+                          type={isPasswordVisible ? "text" : "password"}
+                          value={password_confirm}
+                          onChange={(e) => setPasswordConfirm(e.target.value)}
+                          className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
+                          placeholder="Enter Password"
+                        />
+                        <button
+                          type="button"
+                          onClick={togglePasswordConfirmVisibility}
+                        >
+                          {isPasswordConfirmVisible ? (
                             <LuEyeOff className="text-md text-main" />
                           ) : (
                             <LuEye className="text-md text-main" />
