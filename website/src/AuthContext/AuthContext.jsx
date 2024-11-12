@@ -14,12 +14,18 @@ export const useAuth = () => {
 const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
   const [reports, setReports] = useState([]);
+  const [accountRole, setAccountRole] = useState(null);
+  
 
   // Check authentication on initial load from localStorage
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
+    const storedRole = localStorage.getItem("accountRole"); // Retrieve account role
+
     if (token) {
       setAuthenticated(true); // User is authenticated if accessToken exists
+      setAccountRole(storedRole); // Set the account role in state
+      console.log("Account role on initial load:", storedRole); // Log role to console
     }
   }, []);
 
@@ -81,7 +87,7 @@ const AuthProvider = ({ children }) => {
       });
 
       const { access, refresh, account_type } = res.data;
-      if (account_type !== "superadmin" && account_type !== "department_admin") {
+      if (account_type !== "superadmin" && account_type !== "department_admin" && account_type !== "department_head") {
         alert("You are not permitted to enter this site.");
         return null;
       }
@@ -89,6 +95,11 @@ const AuthProvider = ({ children }) => {
       // Set tokens and authentication state
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
+      localStorage.setItem("authenticated", "true");
+      localStorage.setItem("accountRole", account_type); // Store role in local storage
+      setAuthenticated(true);
+      setAccountRole(account_type); // Set role in state
+      console.log("Account role on login:", account_type); // Log role to console
       axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${access}`;
       setAuthenticated(true); // Set user as authenticated
       return res;
