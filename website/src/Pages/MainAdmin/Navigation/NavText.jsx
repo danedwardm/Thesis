@@ -4,11 +4,11 @@ import { NavLink } from "react-router-dom";
 
 const NavText = () => {
   const Links = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Reports", path: "/reports" },
-    { name: "Analysis", path: "/analysis" },
-    { name: "Notification", path: "/notification" },
-    { name: "Accounts", path: "/accounts" },
+    { name: "Dashboard", path: "/admin/dashboard" },
+    { name: "Reports", path: "/admin/reports" },
+    { name: "Analysis", path: "/admin/analysis" },
+    { name: "Notification", path: "/admin/notification" },
+    { name: "Accounts", path: "/admin/accounts" },
   ];
 
   return (

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
-import Profile from "./Modals/Profile";
+import Profile from "../../../Components/Modals/Profile";
 
-import logo from "../assets/thesisLogo.png";
+import logo from "../../../assets/thesisLogo.png";
 import { FaUser } from "react-icons/fa";
 import { MdNotificationsActive } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
-import { useAuth } from "../AuthContext/AuthContext"; // Import the Auth context
+import { useAuth } from "../../../AuthContext/AuthContext"; // Import the Auth context
 import { NavLink } from "react-router-dom";
 
 const NavBar = () => {
@@ -16,14 +16,6 @@ const NavBar = () => {
   const [showProfile, setShowProfile] = useState(false);
   const navigate = useNavigate(); // Use navigate for redirecting
   const { onLogout } = useAuth(); // Get the logout function from the context
-
-  const Links = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Reports", path: "/reports" },
-    { name: "Analysis", path: "/analysis" },
-    { name: "Notification", path: "/notification" },
-    { name: "Accounts", path: "/accounts" },
-  ];
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleNotifs = () => setIsNotifsOpen(!toggleNotifsOpen);
@@ -54,6 +46,11 @@ const NavBar = () => {
           </div>
           {/* menu dropdown */}
           <div className="relative flex gap-2">
+            <div className="flex items-center justify-center">
+              <p className="hidden md:block font-semibold text-sm uppercase text-second">
+                Department Admin
+              </p>
+            </div>
             <div
               className="flex items-center justify-center cursor-pointer px-2"
               onClick={toggleNotifs}
