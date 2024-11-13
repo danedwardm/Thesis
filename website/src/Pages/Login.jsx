@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import logo from "../assets/thesisLogo.png";
 import { Link } from "react-router-dom";
 import { LuUser, LuKey, LuEye, LuEyeOff } from "react-icons/lu";
-import axiosInstance from '../axios-instance'; // Ensure this imports your configured axios instance
+import axiosInstance from "../axios-instance"; // Ensure this imports your configured axios instance
 import { useAuth } from "../AuthContext/AuthContext";
 import { useNavigate } from "react-router-dom";
 const Login = () => {
@@ -11,24 +11,30 @@ const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { onLogin, authenticated } = useAuth()
+  const { onLogin, authenticated } = useAuth();
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
   };
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-      try {
-        // NOTE!!!!!!! NOTE!!!!!! BAGO MAG LOGIN MAKE SURE NA superadmin yung ROLE 
-        const res = await onLogin(email, password)
-        if(res){
-          navigate('/dashboard')
+    e.preventDefault();
+    try {
+      const res = await onLogin(email, password);
+      if (res && res.account_type) {
+        console.log("Account Type:", res.account_type);
+        if (res.account_type === "superadmin") {
+          navigate("/admin/dashboard");
+        } else if (res.account_type === "department_admin") {
+          navigate("/dept-admin/dashboard");
+        } else {
+          // navigate("/dept-admin/dashboard");
         }
-      } catch (error) {
-        console.log(error.message)
       }
-  }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <div className="relative bg-main h-[100vh] w-[100vw] overflow-hidden">

@@ -1,8 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { RiAttachment2 } from "react-icons/ri";
 import { TiInfoLarge } from "react-icons/ti";
 import { PiImages } from "react-icons/pi";
+import {
+  collection,
+  onSnapshot,
+  query,
+  where,
+  getFirestore,
+} from "firebase/firestore";
+import { app } from "../../Firebase/firebaseConfig";
+
+const db = getFirestore(app);
 
 import ImageModal from "./ImageModal";
 import DenyVerification from "./DenyVerification";
@@ -18,17 +28,16 @@ const ReviewAccount = ({
   type,
   address,
   emailAddress,
-  idNumber,
-  photo,
-  selfieWId,
-  idPicture,
+  userId,
 }) => {
   if (!isVisible) return null;
 
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showDenyModal, setShowDenyModal] = useState(false);
-  console.log("ReviewAccount", verified);
+  const [userInfo, setUserInfo] = useState([]);
+
+  // console.log("ReviewAccount", verified);
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -37,6 +46,26 @@ const ReviewAccount = ({
 
   const handleDenyClick = () => {
     setShowDenyModal(true);
+  };
+
+  useEffect(() => {
+    const verifyRef = collection(db, "verifyAccount");
+    const q = query(verifyRef, where("user", "==", userId));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedUserInfo = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setUserInfo(fetchedUserInfo);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [userId]);
+
+  const getUserInfo = (data, field, defaultValue) => {
+    return data ? data[field] || defaultValue : defaultValue;
   };
 
   return (
@@ -66,6 +95,7 @@ const ReviewAccount = ({
                 Report Details
               </p>
             </div>
+
             <div className="w-full flex flex-col lg:flex-row justify-center items-start gap-4 lg:gap-12 z-20">
               {/* Information Section */}
               <div className="w-full lg:w-1/2 flex flex-col mt-4">
@@ -83,7 +113,17 @@ const ReviewAccount = ({
                   </div>
                   <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
                     <p className="text-xs font-extrabold  text-main uppercase truncate">
-                      {userName}
+                      {userInfo.length > 0
+                        ? `${getUserInfo(
+                            userInfo[0],
+                            "last_name",
+                            "N/A"
+                          )}, ${getUserInfo(
+                            userInfo[0],
+                            "first_name",
+                            "N/A"
+                          )} ${getUserInfo(userInfo[0], "middle_name", "N/A")}`
+                        : userName || "N/A"}
                     </p>
                   </div>
                 </div>
@@ -93,7 +133,9 @@ const ReviewAccount = ({
                   </div>
                   <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                     <p className="text-xs font-semibold text-gray-500 truncate">
-                      {address}
+                      {userInfo.length > 0
+                        ? getUserInfo(userInfo[0], "text_address", "N/A")
+                        : address || "N/A"}
                     </p>
                   </div>
                 </div>
@@ -103,7 +145,7 @@ const ReviewAccount = ({
                   </div>
                   <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                     <p className="text-xs font-semibold text-gray-500 truncate">
-                      {phoneNumber}
+                      {phoneNumber || "N/A"}
                     </p>
                   </div>
                 </div>
@@ -113,7 +155,7 @@ const ReviewAccount = ({
                   </div>
                   <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                     <p className="text-xs font-semibold text-gray-500 truncate">
-                      {emailAddress}
+                      {emailAddress || "N/A"}
                     </p>
                   </div>
                 </div>
@@ -123,7 +165,9 @@ const ReviewAccount = ({
                   </div>
                   <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                     <p className="text-xs font-semibold text-gray-500 truncate">
-                      {idNumber}
+                      {userInfo.length > 0
+                        ? getUserInfo(userInfo[0], "id_number", "N/A")
+                        : "N/A"}
                     </p>
                   </div>
                 </div>
@@ -232,15 +276,17 @@ const ReviewAccount = ({
                     </div>
                   </div>
                   <div className="w-full flex flex-row justify-center items-start gap-4">
-                    {photo && photo.length > 0 ? (
+                    {userInfo[0]?.photo_image_path ? (
                       <div
                         className="w-full  h-[210px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
-                        onClick={() => handleImageClick(photo)}
+                        onClick={() =>
+                          handleImageClick(userInfo[0].photo_image_path)
+                        }
                       >
                         <img
-                          src={photo}
+                          src={userInfo[0].photo_image_path}
                           className="w-full h-full object-cover object-center hover:scale-105 ease-in-out duration-500"
-                          alt={`Image ${photo}`}
+                          alt={`Image ${userInfo[0].photo_image_path}`}
                         />
                       </div>
                     ) : (
@@ -249,15 +295,17 @@ const ReviewAccount = ({
                         <p className="text-xs font-normal">No media file</p>
                       </div>
                     )}
-                    {selfieWId && selfieWId.length > 0 ? (
+                    {userInfo[0]?.id_selfie_image_path ? (
                       <div
                         className="w-full h-[210px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
-                        onClick={() => handleImageClick(selfieWId)}
+                        onClick={() =>
+                          handleImageClick(userInfo[0].id_selfie_image_path)
+                        }
                       >
                         <img
-                          src={selfieWId}
+                          src={userInfo[0].id_selfie_image_path}
                           className="w-full h-full object-cover object-center hover:scale-105 ease-in-out duration-500"
-                          alt={`Image ${selfieWId}`}
+                          alt={`Image ${userInfo[0].id_selfie_image_path}`}
                         />
                       </div>
                     ) : (
@@ -272,15 +320,17 @@ const ReviewAccount = ({
                       Identification Card
                     </p>
                   </div>
-                  {idPicture && idPicture.length > 0 ? (
+                  {userInfo[0]?.id_picture_image_path ? (
                     <div
                       className="w-full h-[280px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
-                      onClick={() => handleImageClick(idPicture)}
+                      onClick={() =>
+                        handleImageClick(userInfo[0].id_picture_image_path)
+                      }
                     >
                       <img
-                        src={idPicture}
+                        src={userInfo[0].id_picture_image_path}
                         className="w-full h-full object-cover object-center hover:scale-105 ease-in-out duration-500"
-                        alt={`Image ${idPicture}`}
+                        alt={`Image ${userInfo[0].id_picture_image_path}`}
                       />
                     </div>
                   ) : (
