@@ -7,6 +7,7 @@ import { PiImages } from "react-icons/pi";
 import ImageModal from "./ImageModal";
 import Feedback from "./Feedback";
 import DeleteReport from "./DeleteReport";
+import { useEffect } from "react";
 
 const ReviewReport = ({
   isVisible,
@@ -41,6 +42,7 @@ const ReviewReport = ({
   const handleDeleteModal = () => {
     setShowDeleteModal(true);
   };
+
   return (
     <>
       <div className="fixed top-0 left-0 w-full h-[100svh] items-center justify-center bg-black/50 flex z-30 font-figtree">

@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ImageModal from "./ImageModal";
 
 const Feedback = ({ isVisible, onClose, attachment, feedback }) => {
   if (!isVisible) return null;
 
   const [showImageModal, setShowImageModal] = useState(false);
-
+  const [description, setDescription] = useState('')
+  const [proof, setProof] = useState('')
   const handleImageClick = () => {
     setShowImageModal(true);
   };
 
+  useEffect(() => feedback.forEach(({description, proof, id}) => {setDescription(description); setProof(proof)}),[feedback])
   return (
     <>
       <div className="fixed inset-0 w-full h-screen bg-black/75 flex items-center justify-center z-40">
@@ -49,7 +51,7 @@ const Feedback = ({ isVisible, onClose, attachment, feedback }) => {
                     rows={10}
                     className="outline-none bg-white w-full resize-none text-xs font-normal"
                     placeholder="Actions or Remarks"
-                    value={feedback}
+                    value={description}
                     readOnly={true}
                   ></textarea>
                 </div>
@@ -63,9 +65,9 @@ const Feedback = ({ isVisible, onClose, attachment, feedback }) => {
                   onClick={handleImageClick}
                 >
                   <img
-                    src={attachment}
+                    src={proof}
                     className="w-full h-full object-cover object-center hover:scale-105 ease-in-out duration-500"
-                    alt={`Image ${attachment}`}
+                    alt={`Image proof`}
                   />
                 </div>
                 <div className="w-full flex flex-row gap-4 items-center justify-end mt-4">

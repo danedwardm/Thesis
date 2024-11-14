@@ -74,17 +74,15 @@ const AuthProvider = ({ children }) => {
                 (doc) => ({
                   description: doc.data().description,
                   proof: doc.data().proof,
-                  submitted_at: doc.data().submited_at, // assuming 'submitted_at' is a Firestore timestamp
+                  submitted_at: doc.data().submited_at,
                 })
               );
               const workerFeedbackDescriptions =
                 workerFeedbackSnapshot.docs.map((doc) => ({
                   description: doc.data().description,
                   proof: doc.data().proof,
-                  submitted_at: doc.data().submited_at, // assuming 'submitted_at' is a Firestore timestamp
+                  submitted_at: doc.data().submited_at, 
                 }));
-
-              // Return the report along with feedback
               return {
                 ...data,
                 id: doc.id, // Ensure Firestore id is included
@@ -94,7 +92,7 @@ const AuthProvider = ({ children }) => {
             })
           );
 
-          console.log("Updated Reports:", updateReports);
+          
 
           // Combine and filter reports to ensure uniqueness based on 'id'
           setReports((prevReports) => {
@@ -253,6 +251,7 @@ const AuthProvider = ({ children }) => {
         account_type,
         departments,
         department_admin_registration,
+        reports
       }}
     >
       {children}

@@ -69,8 +69,8 @@ const Reports = () => {
   const statuses = [...new Set(reports.map((item) => item.status))];
 
   useEffect(() => {
-    console.log("Reports from AuthContext:", reports);
-  }, [reports]);
+    console.log("Reports from AuthContext:", feedback);
+  }, [feedback]);
 
   return (
     <>
@@ -344,7 +344,7 @@ const Reports = () => {
                                   setAttachment(data.image_path);
                                   setUpvote(data.upvote);
                                   setDownvote(data.downvote);
-                                  setFeedback(data.feedback);
+                                  setFeedback(data.userFeedback);
                                   setProof(data.proof);
                                 }}
                               >
@@ -441,7 +441,7 @@ const Reports = () => {
                             setAttachment(data.image_path);
                             setUpvote(data.upvote);
                             setDownvote(data.downvote);
-                            setFeedback(data.feedback);
+                            setFeedback(data.userFeedback);
                             setProof(data.proof);
                           }}
                         >
