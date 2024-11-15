@@ -22,6 +22,9 @@ const AuthProvider = ({ children }) => {
   const [account_type, setAccountType] = useState("");
   const [reports, setReports] = useState([]);
   const [accountRole, setAccountRole] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
+  const [error, setError] = useState(null);
 
   // Check authentication on initial load from localStorage
   useEffect(() => {
@@ -31,11 +34,29 @@ const AuthProvider = ({ children }) => {
       department();
       setAccountType(account_type);
       setAuthenticated(true);
+      fetchUserInfo(token);
     } else {
       setAccountType("");
       setAuthenticated(false);
     }
   }, []);
+
+  // Function to fetch user info using the stored token
+  const fetchUserInfo = async (token) => {
+    try {
+      const response = await axiosInstance.get("api/user/profile/", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(response.data);
+      setLoading(false); // Set loading to false after the user is fetched
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      setError("Failed to load user data.");
+      setLoading(false); // Set loading to false even if there's an error
+    }
+  };
+
+  console.log("User Info:", user);
 
   const fetchDocuments = async () => {
     const categories = [
@@ -218,6 +239,7 @@ const AuthProvider = ({ children }) => {
       ] = `Bearer ${access}`;
       setAccountType(account_type);
       setAuthenticated(true); // Set user as authenticated
+      fetchUserInfo(access);
       return res;
     } catch (error) {
       if (error.response && error.response.data) {
