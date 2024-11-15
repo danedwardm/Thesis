@@ -23,6 +23,7 @@ const ReviewReport = ({
   downvote,
   feedback,
   proof,
+  isValidated,
 }) => {
   if (!isVisible) return null;
 
@@ -231,12 +232,18 @@ const ReviewReport = ({
                     </div>
                   </div>
                   <div className="w-full flex flex-row gap-4 items-center justify-end mt-5">
-                    <button
+                    {/* <button
                       className="py-3 px-4 border border-main bg-textSecond text-black  rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                       onClick={handleFeeedbackClick}
                     >
                       FEEDBACK
-                    </button>
+                    </button> */}
+                    {!isValidated ? (
+                      <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
+                        VALIDATE
+                      </button>
+                    ) : null}
+
                     <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
                       ASSIGN
                     </button>

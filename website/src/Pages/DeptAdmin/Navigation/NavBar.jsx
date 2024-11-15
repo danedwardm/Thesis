@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import { AuthProvider } from "../../../AuthContext/AuthContext";
 import Profile from "../../../Components/Modals/Profile";
 
 import logo from "../../../assets/thesisLogo.png";
@@ -113,7 +114,12 @@ const NavBar = () => {
           </div>
         </div>
       </div>
-      <Profile isVisible={showProfile} onClose={() => setShowProfile(false)} />
+      <AuthProvider>
+        <Profile
+          isVisible={showProfile}
+          onClose={() => setShowProfile(false)}
+        />
+      </AuthProvider>
     </>
   );
 };
