@@ -7,7 +7,6 @@ const NavText = () => {
     { name: "Dashboard", path: "/dept-admin/dashboard" },
     { name: "Reports", path: "/dept-admin/reports" },
     { name: "Analysis", path: "/dept-admin/analysis" },
-    { name: "Notification", path: "/dept-admin/notification" },
     { name: "Accounts", path: "/dept-admin/accounts" },
   ];
 

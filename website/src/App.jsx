@@ -8,7 +8,6 @@ import Notification from "./Pages/MainAdmin/Notification";
 import DeptDashboard from "./Pages/DeptAdmin/Dashboard";
 import DeptReports from "./Pages/DeptAdmin/Reports";
 import DeptAnalysis from "./Pages/DeptAdmin/Analysis";
-import DeptNotification from "./Pages/DeptAdmin/Notification";
 import DeptAccounts from "./Pages/DeptAdmin/Accounts";
 import { useAuth } from "./AuthContext/AuthContext"; // Import the AuthContext
 import ProtectedRoutes from "./Components/ProtectedRoutes"; // Import the new component
@@ -25,11 +24,12 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route index element={<Landing />} />
+        {/* Login Route */}
         <Route
           path="/login"
           element={
             authenticated ? (
-              // Redirect to the correct dashboard based on account_type if already authenticated
+              // Redirect based on account_type if already authenticated
               account_type === "superadmin" ? (
                 <Navigate to="/admin/dashboard" replace />
               ) : account_type === "department_admin" ? (
@@ -43,22 +43,61 @@ function App() {
           }
         />
 
-        {/* Protect the routes that should only be accessible by authenticated users */}
-        <Route element={<ProtectedRoutes />}>
-          <Route path="/admin/dashboard" element={<Dashboard />} />
-          <Route path="/admin/reports" element={<Reports />} />
-          <Route path="/admin/analysis" element={<Analysis />} />
-          <Route path="/admin/notification" element={<Notification />} />
-          <Route path="/admin/accounts" element={<Accounts />} />
+        {/* Admin and Department Admin Redirects */}
+        <Route
+          path="/admin*"
+          element={
+            authenticated ? (
+              account_type === "superadmin" ? (
+                <Navigate to="/admin/dashboard" replace />
+              ) : (
+                <Navigate to="/dept-admin/dashboard" replace />
+              )
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
 
-          <Route path="/dept-admin/dashboard" element={<DeptDashboard />} />
-          <Route path="/dept-admin/reports" element={<DeptReports />} />
-          <Route path="/dept-admin/analysis" element={<DeptAnalysis />} />
-          <Route
-            path="/dept-admin/notification"
-            element={<DeptNotification />}
-          />
-          <Route path="/dept-admin/accounts" element={<DeptAccounts />} />
+        <Route
+          path="/dept-admin*"
+          element={
+            authenticated ? (
+              account_type === "department_admin" ? (
+                <Navigate to="/dept-admin/dashboard" replace />
+              ) : (
+                <Navigate to="/admin/dashboard" replace />
+              )
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        {/* Protect the routes based on authentication */}
+        <Route element={<ProtectedRoutes />}>
+          {/* Admin Routes */}
+          {account_type === "superadmin" && (
+            <>
+              <Route path="/admin/dashboard" element={<Dashboard />} />
+              <Route path="/admin/reports" element={<Reports />} />
+              <Route path="/admin/analysis" element={<Analysis />} />
+              <Route path="/admin/notification" element={<Notification />} />
+              <Route path="/admin/accounts" element={<Accounts />} />
+            </>
+          )}
+
+          {/* Department Admin Routes */}
+          {account_type === "department_admin" && (
+            <>
+              <Route path="/dept-admin/dashboard" element={<DeptDashboard />} />
+              <Route path="/dept-admin/reports" element={<DeptReports />} />
+              <Route path="/dept-admin/analysis" element={<DeptAnalysis />} />
+              <Route path="/dept-admin/accounts" element={<DeptAccounts />} />
+            </>
+          )}
+
+          {/* Chart Routes */}
           <Route path="/linechart" element={<ReportTrends />} />
           <Route path="/barchart" element={<ReportCategoryChart />} />
           <Route path="/piechart" element={<PieChart />} />

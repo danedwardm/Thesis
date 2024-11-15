@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Prompt from "./Prompt";
 import Data from "../../JSON/adminAcc.json";
+import { useAuth } from "../../AuthContext/AuthContext";
 
 const Profile = ({ isVisible, onClose }) => {
   if (!isVisible) return null;
+
+  const { user } = useAuth();
   const [showPrompt, setShowPrompt] = useState(false);
   const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -15,6 +18,10 @@ const Profile = ({ isVisible, onClose }) => {
 
   // Assuming you get the password from the data
   const [userPassword] = Data.map((data) => data.password);
+
+  useEffect(() => {
+    console.log("User", user); // Log user when it's available
+  }, [user]);
 
   const handleChangePassword = () => {
     if (currentPassword === userPassword) {

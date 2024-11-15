@@ -24,6 +24,7 @@ const Reports = () => {
   const [upvote, setUpvote] = useState(0);
   const [downvote, setDownvote] = useState(0);
   const [feedback, setFeedback] = useState("");
+  const [isValidated, setIsValidated] = useState("");
   const [proof, setProof] = useState("");
   const [userFeedback, setUserFeedback] = useState([]);
   const [workerFeedback, setWorkerFeedback] = useState([]);
@@ -346,6 +347,7 @@ const Reports = () => {
                                   setDownvote(data.downvote);
                                   setFeedback(data.userFeedback);
                                   setProof(data.proof);
+                                  setIsValidated(data.id_validated);
                                 }}
                               >
                                 {data.is_validated ? "REVIEW" : "VALIDATE"}
@@ -443,6 +445,7 @@ const Reports = () => {
                             setDownvote(data.downvote);
                             setFeedback(data.userFeedback);
                             setProof(data.proof);
+                            setIsValidated(data.id_validated);
                           }}
                         >
                           {data.is_validated ? "REVIEW" : "VALIDATE"}
@@ -513,6 +516,7 @@ const Reports = () => {
         downvote={downvote}
         feedback={feedback}
         proof={proof}
+        isValidated={isValidated}
       />
     </>
   );
