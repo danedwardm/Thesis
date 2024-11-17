@@ -93,7 +93,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
                       <div className="text-xs font-extrabold  text-main uppercase truncate">
-                        {data.name}
+                        {user.username}
                       </div>
                     </div>
                   </div>
@@ -103,7 +103,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {data.email_address}
+                        {user.email}
                       </p>
                     </div>
                   </div>
@@ -113,7 +113,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {data.phone_number}
+                        {user.contact_number || "Not Available"}
                       </p>
                     </div>
                   </div>
@@ -123,7 +123,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {data.department}
+                        {user.department_id || "Admin"}
                       </p>
                     </div>
                   </div>
@@ -133,7 +133,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {data.station}
+                        {user.station || "Not Available"}
                       </p>
                     </div>
                   </div>
@@ -143,7 +143,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {data.station_address}
+                        {user.station_address}
                       </p>
                     </div>
                   </div>

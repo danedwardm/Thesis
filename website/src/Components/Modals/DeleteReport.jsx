@@ -1,10 +1,120 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Data from "../../JSON/reasonDeleting.json";
 
-const DeleteReport = ({ isVisible, onClose }) => {
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  deleteDoc,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+} from "firebase/firestore";
+import { app } from "../../Firebase/firebaseConfig";
+import { useAuth } from "../../AuthContext/AuthContext";
+
+const db = getFirestore(app);
+
+const DeleteReport = ({ isVisible, onClose, reportId, reportedType }) => {
+  const { user } = useAuth();
   if (!isVisible) return null;
   const [selectedValue, setSelectedValue] = useState("");
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    setUsername(user.username); // Log user when it's available
+  }, [user]);
+
+  const handleDeleteReport = async () => {
+    try {
+      const reportRef = doc(
+        db,
+        `reports/${reportedType.toLowerCase()}/reports`,
+        reportId
+      );
+
+      // Get the report data before deleting
+      const reportSnap = await getDoc(reportRef);
+      if (!reportSnap.exists()) {
+        console.error("Report does not exist!");
+        return;
+      }
+      const reportData = reportSnap.data();
+
+      // Delete the report from the sub-collections (e.g. validation, votes, reasons, feedback)
+      await deleteCollectionDocuments(reportId, reportedType.toLowerCase());
+
+      // Get the current time in ISO format
+      const localDate = new Date();
+      const localOffset = localDate.getTimezoneOffset() * 60000;
+      const localTimeAdjusted = new Date(localDate.getTime() - localOffset);
+      const localDateISOString = localTimeAdjusted.toISOString().slice(0, -1);
+
+      // Move the report to deletedReports with the correct local time
+      const deletedReportRef = doc(db, "deletedReports", reportId);
+      await setDoc(deletedReportRef, {
+        ...reportData,
+        deleted_at: localDateISOString,
+        deleted_by: username, // assuming `username` is already defined elsewhere
+        reason_deleted: selectedValue,
+      });
+
+      // Delete the main report document
+      await deleteDoc(reportRef);
+
+      alert("Report deleted successfully!");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error deleting report:", error);
+    }
+  };
+
+  // Function to delete all documents in a collection (sub-collections of the report)
+  async function deleteCollectionDocuments(reportId, reportType) {
+    try {
+      // Define the paths to the sub-collections
+      const validationPath = `reports/${reportType.toLowerCase()}/reports/${reportId}/validation`;
+      const votesPath = `reports/${reportType.toLowerCase()}/reports/${reportId}/votes`;
+      const reasonsPath = `reports/${reportType.toLowerCase()}/reports/${reportId}/reported/`;
+      const userFeedbackPath = `reports/${reportType.toLowerCase()}/reports/${reportId}/userFeedback`;
+      const workerFeedbackPath = `reports/${reportType.toLowerCase()}/reports/${reportId}/workerFeedback`;
+
+      // Delete documents in validation, votes, reasons, userFeedback, and workerFeedback collections
+      await Promise.all([
+        deleteSubCollectionDocuments(validationPath),
+        deleteSubCollectionDocuments(votesPath),
+        deleteSubCollectionDocuments(reasonsPath),
+        deleteSubCollectionDocuments(userFeedbackPath),
+        deleteSubCollectionDocuments(workerFeedbackPath),
+      ]);
+    } catch (error) {
+      console.error("Error deleting documents in sub-collections:", error);
+    }
+  }
+
+  // Function to delete all documents in a given collection
+  async function deleteSubCollectionDocuments(collectionPath) {
+    try {
+      const collectionRef = collection(db, collectionPath);
+      const querySnapshot = await getDocs(collectionRef);
+
+      // Use for...of to handle async operations properly
+      for (const docSnapshot of querySnapshot.docs) {
+        await deleteDoc(docSnapshot.ref);
+        console.log(
+          `Document with ID ${docSnapshot.id} deleted from ${collectionPath}`
+        );
+      }
+    } catch (error) {
+      console.error(
+        `Error deleting documents in collection ${collectionPath}:`,
+        error
+      );
+    }
+  }
+
   return (
     <>
       <div className="fixed inset-0 w-full h-screen bg-black/75 flex items-center justify-center z-40">
@@ -65,7 +175,10 @@ const DeleteReport = ({ isVisible, onClose }) => {
               </div>
             </div>
             <div className="w-full flex flex-row gap-4 items-center justify-end mt-4">
-              <button className="py-2 px-3 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
+              <button
+                className="py-2 px-3 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                onClick={handleDeleteReport}
+              >
                 DELETE
               </button>
               <button

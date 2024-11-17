@@ -5,11 +5,13 @@ import { LuUser, LuKey, LuEye, LuEyeOff } from "react-icons/lu";
 import axiosInstance from "../axios-instance"; // Ensure this imports your configured axios instance
 import { useAuth } from "../AuthContext/AuthContext";
 import { useNavigate } from "react-router-dom";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const { onLogin, authenticated } = useAuth();
   const togglePasswordVisibility = () => {
@@ -19,6 +21,8 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     try {
       const res = await onLogin(email, password);
       if (res && res.account_type) {
@@ -32,7 +36,17 @@ const Login = () => {
         }
       }
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
+      setErrorMessage("Login failed. Please try again.");
+    } finally {
+      setIsLoading(false); // Reset loading state after the attempt
+    }
+  };
+
+  // Allow form submission on "Enter" key press
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSubmit(e);
     }
   };
 
@@ -68,7 +82,7 @@ const Login = () => {
         {/* login form */}
         <div className="relative w-full h-auto flex flex-col justify-center items-center p-7 md:mt-0 mt-14 md:mb-0 mb-14">
           <div className="bg-second h-auto w-full lg:w-1/2 md:w-auto p-9 rounded-[10px] border border-accent">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
               <div className="flex flex-col justify-center items-center">
                 <div className="md:text-2xl text-lg font-bold text-main uppercase">
                   Welcome Back
@@ -132,8 +146,34 @@ const Login = () => {
                   </Link>
                 </div>
                 <div className="w-full flex items-end justify-end pt-4">
-                  <button className="text-xs font-semibold text-white bg-main px-6 py-2 rounded-md hover:bg-textSecond ease-in-out duration-700">
-                    Login
+                  <button
+                    type="submit"
+                    className="text-xs font-semibold text-white bg-main px-6 py-2 rounded-md hover:bg-textSecond ease-in-out duration-700 flex items-center justify-center"
+                    disabled={isLoading} // Disable the button while loading
+                  >
+                    {isLoading ? (
+                      <svg
+                        className="animate-spin h-5 w-5 mr-3 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 50 50"
+                        stroke="currentColor"
+                      >
+                        <circle
+                          cx="25"
+                          cy="25"
+                          r="20"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeDasharray="125" // This controls the length of the dash
+                          strokeDashoffset="50" // This controls the offset for the dash, creating the "progress" effect
+                          className="circle" // Apply rotation animation to this circle
+                        />
+                      </svg>
+                    ) : null}
+                    {isLoading ? null : <span>Login</span>}
                   </button>
                 </div>
               </div>

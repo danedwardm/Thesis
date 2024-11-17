@@ -45,6 +45,7 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -106,12 +107,33 @@ const Accounts = () => {
     );
   });
 
-  const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  // Sort the filtered users by date_joined in descending order (most recent first)
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    const dateA = new Date(a.date_joined);
+    const dateB = new Date(b.date_joined);
+    return dateB - dateA; // descending order
+  });
+
+  const currentUsers = sortedUsers.slice(indexOfFirstItem, indexOfLastItem);
   const statuses = [...new Set(Data.map((item) => item.status))];
 
   // Get unique report types and statuses for dropdown options
   // const accountType = [...new Set(Data.map((item) => item.type))];
   // const accountVerified = [...new Set(Data.map((item) => item.verified))];
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString); // Convert to Date object
+    return date
+      .toLocaleString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .replace(",", ""); // Replace comma between date and time (optional)
+  };
 
   return (
     <>
@@ -306,6 +328,9 @@ const Accounts = () => {
                         Status
                       </th>
                       <th scope="col" className="text-center p-3 truncate">
+                        Update Date
+                      </th>
+                      <th scope="col" className="text-center p-3 truncate">
                         Action
                       </th>
                     </tr>
@@ -377,6 +402,11 @@ const Accounts = () => {
                               {data.account_status}
                             </p>
                           )}
+                        </td>
+                        <td className="p-4">
+                          <p className="w-full truncate">
+                            {formatDate(data.date_joined)}
+                          </p>
                         </td>
                         <td className="p-4 text-center">
                           <button
