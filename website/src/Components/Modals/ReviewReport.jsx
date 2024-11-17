@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { RiAttachment2 } from "react-icons/ri";
 import { TiInfoLarge } from "react-icons/ti";
@@ -7,6 +7,12 @@ import { PiImages } from "react-icons/pi";
 import ImageModal from "./ImageModal";
 import Feedback from "./Feedback";
 import DeleteReport from "./DeleteReport";
+
+import { getFirestore, doc, setDoc } from "firebase/firestore"; // Add these imports for Firestore operations
+import { app } from "../../Firebase/firebaseConfig";
+import { useAuth } from "../../AuthContext/AuthContext";
+
+const db = getFirestore(app);
 
 const ReviewReport = ({
   isVisible,
@@ -24,12 +30,21 @@ const ReviewReport = ({
   feedback,
   proof,
   isValidated,
+  reportId,
+  reportedType,
 }) => {
   if (!isVisible) return null;
 
   const [showImageModal, setShowImageModal] = useState(false);
   const [showFeeedback, setShowFeeedback] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    setUsername(user.username); // Log user when it's available
+  }, [user]);
 
   const handleImageClick = () => {
     setShowImageModal(true);
@@ -42,6 +57,38 @@ const ReviewReport = ({
   const handleDeleteModal = () => {
     setShowDeleteModal(true);
   };
+
+  const handleValidateClick = async () => {
+    const localDate = new Date();
+    const localOffset = localDate.getTimezoneOffset() * 60000;
+    const localTimeAdjusted = new Date(localDate.getTime() - localOffset);
+    const localDateISOString = localTimeAdjusted.toISOString().slice(0, -1);
+
+    const reportRef = doc(
+      db,
+      `reports/${reportedType.toLowerCase()}/reports/${reportId}`
+    );
+
+    try {
+      await setDoc(
+        reportRef,
+        {
+          is_validated: true,
+          update_date: localDateISOString,
+          validated_date: localDateISOString,
+          validated_by: username,
+        },
+        { merge: true }
+      );
+      console.log("Report validated and updated successfully!", reportId);
+      alert("Report validated successfully!");
+      onClose(); // Close the modal
+      // window.location.reload();
+    } catch (error) {
+      console.error("Error validating report:", error);
+    }
+  };
+
   return (
     <>
       <div className="fixed top-0 left-0 w-full h-[100svh] items-center justify-center bg-black/50 flex z-30 font-figtree">
@@ -238,11 +285,14 @@ const ReviewReport = ({
                     >
                       FEEDBACK
                     </button> */}
-                    {!isValidated ? (
-                      <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
+                    {!isValidated && (
+                      <button
+                        className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                        onClick={handleValidateClick}
+                      >
                         VALIDATE
                       </button>
-                    ) : null}
+                    )}
 
                     <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
                       ASSIGN
@@ -282,6 +332,8 @@ const ReviewReport = ({
       <DeleteReport
         isVisible={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
+        reportId={reportId}
+        reportedType={reportedType}
       />
     </>
   );

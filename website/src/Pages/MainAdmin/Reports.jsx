@@ -26,6 +26,8 @@ const Reports = () => {
   const [feedback, setFeedback] = useState("");
   const [isValidated, setIsValidated] = useState("");
   const [proof, setProof] = useState("");
+  const [reportId, setReportId] = useState([]);
+  const [reportedType, setReportedType] = useState("");
   const [userFeedback, setUserFeedback] = useState([]);
   const [workerFeedback, setWorkerFeedback] = useState([]);
 
@@ -68,10 +70,6 @@ const Reports = () => {
   // Get unique report types and statuses for dropdown options
   const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
   const statuses = [...new Set(reports.map((item) => item.status))];
-
-  useEffect(() => {
-    console.log("Reports from AuthContext:", reports);
-  }, [reports]);
 
   return (
     <>
@@ -232,10 +230,10 @@ const Reports = () => {
                     {currentData
                       .sort(
                         (a, b) =>
-                          new Date(b.report_date) - new Date(a.report_date)
+                          new Date(b.update_date) - new Date(a.update_date)
                       ) // Sort in descending order
                       .map((data, index) => {
-                        const reportDate = new Date(data.report_date);
+                        const reportDate = new Date(data.update_date);
                         const formattedDate = reportDate.toLocaleDateString(); // e.g., "10/28/2024"
                         const formattedTime = reportDate.toLocaleTimeString(
                           [],
@@ -347,7 +345,9 @@ const Reports = () => {
                                   setDownvote(data.downvote);
                                   setFeedback(data.feedback);
                                   setProof(data.proof);
-                                  setIsValidated(data.id_validated);
+                                  setIsValidated(data.is_validated);
+                                  setReportId(data.id);
+                                  setReportedType(data.type_of_report);
                                 }}
                               >
                                 {data.is_validated ? "REVIEW" : "VALIDATE"}
@@ -363,7 +363,7 @@ const Reports = () => {
               {/* card report  */}
               <div className="block md:hidden px-5 py-5">
                 {currentData.map((data, index) => {
-                  const reportDate = new Date(data.report_date);
+                  const reportDate = new Date(data.update_date);
                   const formattedDate = reportDate.toLocaleDateString(); // e.g., "10/28/2024"
                   const formattedTime = reportDate.toLocaleTimeString([], {
                     hour: "2-digit",
@@ -445,7 +445,9 @@ const Reports = () => {
                             setDownvote(data.downvote);
                             setFeedback(data.feedback);
                             setProof(data.proof);
-                            setIsValidated(data.id_validated);
+                            setIsValidated(data.is_validated);
+                            setReportId(data.id);
+                            setReportedType(data.type_of_report);
                           }}
                         >
                           {data.is_validated ? "REVIEW" : "VALIDATE"}
@@ -517,6 +519,8 @@ const Reports = () => {
         feedback={feedback}
         proof={proof}
         isValidated={isValidated}
+        reportId={reportId}
+        reportedType={reportedType}
       />
     </>
   );

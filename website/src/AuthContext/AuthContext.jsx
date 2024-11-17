@@ -56,8 +56,6 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  console.log("User Info:", user);
-
   const fetchDocuments = async () => {
     const categories = [
       "fires",
@@ -75,7 +73,7 @@ const AuthProvider = ({ children }) => {
           const updateReports = await Promise.all(
             snapshot.docs.map(async (doc) => {
               const data = doc.data();
-              console.log(data); // Log to check if the `id` exists and is unique
+              // console.log(data); // Log to check if the `id` exists and is unique
 
               // Fetch user and worker feedback for each report
               const reportId = doc.id;
@@ -115,7 +113,7 @@ const AuthProvider = ({ children }) => {
             })
           );
 
-          console.log("Updated Reports:", updateReports);
+          // console.log("Updated Reports:", updateReports);
 
           // Combine and filter reports to ensure uniqueness based on 'id'
           setReports((prevReports) => {
@@ -275,6 +273,7 @@ const AuthProvider = ({ children }) => {
         account_type,
         departments,
         department_admin_registration,
+        user,
       }}
     >
       {children}
