@@ -12,6 +12,12 @@ const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState("");
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
 
   const { onLogin, authenticated } = useAuth();
   const togglePasswordVisibility = () => {
@@ -22,6 +28,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
+    // Validate email before proceeding
+    if (!isValidEmail(email)) {
+      setErrors("Please enter a valid email address.");
+      setIsLoading(false);
+      {
+        setTimeout(() => {
+          setErrors("");
+        }, 3000);
+        return;
+      }
+    }
 
     try {
       const res = await onLogin(email, password);
@@ -144,6 +162,14 @@ const Login = () => {
                   >
                     Forgot Password?
                   </Link>
+                </div>
+
+                <div className="flex w-full items-left justify-left flex-col">
+                  {errors ? (
+                    <p className="text-xs text-red-800 font-semibold flex text-left w-full mt-2">
+                      {errors}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="w-full flex items-end justify-end pt-4">
                   <button

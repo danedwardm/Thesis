@@ -33,7 +33,7 @@ const Accounts = () => {
   const [error, setError] = useState("");
 
   const [selectedAccountType, setSelectedAccountType] = useState("");
-  const accountType = ["department_admin", "citizen", "worker", "superadmin"];
+  const accountType = ["department_admin", "citizen", "worker"];
   const { account_type, departments } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Prompt from "./Prompt";
 import { LuEye, LuEyeOff } from "react-icons/lu";
@@ -6,7 +6,7 @@ import { useAuth } from "../../AuthContext/AuthContext";
 
 const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
   if (!isVisible) return null;
-  
+
   const [showPrompt, setShowPrompt] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -18,9 +18,12 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
   const [password, setPassword] = useState("");
   const [password_confirm, setPasswordConfirm] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isPasswordConfirmVisible, setIsPasswordConfirmVisible] = useState(false);
+  const [errors, setErrors] = useState("");
+  const [isPasswordConfirmVisible, setIsPasswordConfirmVisible] =
+    useState(false);
   const [incompleteInput, setIncompleteInput] = useState(false);
-  const { department_admin_registration } = useAuth()
+  const { department_admin_registration, worker_registration, user } =
+    useAuth();
   const togglePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
   };
@@ -37,15 +40,28 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
     onClose(); // Close the AddAccount modal
   };
 
-  // Function to handle form submission
+  const isValidEmail = (email) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
+  useEffect(() => {
+    if (account_type === "department_admin") {
+      setDepartment(user.department_id);
+      setStation(user.station);
+      setStationAddress(user.station_address);
+    }
+    console.log("User department:", department);
+  }, [user, account_type]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
+    // Check if all required fields are filled
     if (
       !username ||
       !email ||
       !phoneNumber ||
-      !department ||
       !station ||
       !stationAddress ||
       !password ||
@@ -57,20 +73,73 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       }, 3000);
       return;
     }
-    
+    if (!isValidEmail(email)) {
+      setErrors("Please enter a valid email address.");
+      setTimeout(() => {
+        setErrors("");
+      }, 3000);
+      return;
+    }
+    if (password !== password_confirm) {
+      setErrors("Passwords do not match.");
+      {
+        setTimeout(() => {
+          setErrors("");
+        }, 3000);
+        return;
+      }
+    }
+
     try {
-      const res = await department_admin_registration(username, email, phoneNumber, department, station, stationAddress, password, password_confirm);
-      if(res){
-        alert("Department Registration Success!")
-        onClose();
+      let res;
+
+      // Check if the user is a superadmin or department admin
+      if (account_type === "superadmin") {
+        // Call department_admin_registration for superadmin
+        res = await department_admin_registration(
+          username,
+          email,
+          phoneNumber,
+          department,
+          station,
+          stationAddress,
+          password,
+          password_confirm
+        );
+      } else if (account_type === "department_admin") {
+        // Call worker_registration for department_admin
+        res = await worker_registration(
+          username,
+          email,
+          phoneNumber,
+          department,
+          station,
+          stationAddress,
+          password,
+          password_confirm,
+          homeAddress
+        );
+      } else {
+        // Handle any other account types if necessary
+        alert("Invalid account type for registration.");
+        return;
+      }
+
+      if (res) {
+        const successMessage =
+          account_type === "superadmin"
+            ? "Department Registration Success!"
+            : "Worker Registration Success!";
+        alert(successMessage);
+        onClose(); // Close the modal or form
         return;
       }
     } catch (error) {
       console.error("Registration error:", error);
-      alert(`Registration failed: ${error.message || 'Unknown error'}`);
+      alert(`Registration failed: ${error.message || "Unknown error"}`);
     }
-    
-    // Optionally reset form after submission
+
+    // Optionally reset form after submission (if needed)
     console.log({
       username,
       email,
@@ -82,7 +151,6 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       password_confirm,
     });
   };
-  
 
   return (
     <>
@@ -114,7 +182,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
               <div className="w-full ">
                 <form onSubmit={handleSubmit}>
                   <div className="w-full flex flex-col mt-4">
-                  <div className="w-full flex flex-col items-center justify-center">
+                    <div className="w-full flex flex-col items-center justify-center">
                       <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
                         <p className="text-xs font-semibold">Username</p>
                         <p className="text-xs font-semibold text-red-700">*</p>
@@ -159,80 +227,94 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                         ></textarea>
                       </div>
                     </div>
-                    <div className="w-full flex flex-col items-center justify-center">
-                      <div className="flex justify-start items-center w-full py-2">
-                        <p className="text-xs font-semibold ">Department</p>
-                        <p className="text-xs font-semibold text-red-700">*</p>
-                      </div>
-                      <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
-                      <select
-                            value={department} 
-                            onChange={(e) => setDepartment(e.target.value)}
-                            className="outline-none bg-white w-full text-xs font-normal "
-                          >
-                            <option value="" disabled>
-                              Select a Department
-                            </option>
-                            {departments.map((dep) => (
-                              <option key={dep.id} value={dep.id}>
-                                {dep.name}
+                    {account_type !== "department_admin" && (
+                      <>
+                        <div className="w-full flex flex-col items-center justify-center">
+                          <div className="flex justify-start items-center w-full py-2">
+                            <p className="text-xs font-semibold ">Department</p>
+                            <p className="text-xs font-semibold text-red-700">
+                              *
+                            </p>
+                          </div>
+                          <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
+                            <select
+                              value={department}
+                              onChange={(e) => setDepartment(e.target.value)}
+                              className="outline-none bg-white w-full text-xs font-normal "
+                              disabled={account_type === "department_admin"}
+                            >
+                              <option value="" disabled>
+                                Select a Department
                               </option>
-                            ))}
-                          </select>
-
-
-                      </div>
-                    </div>
-                    {/* only for new department accounts */}
-                    <div className="w-full flex flex-col items-center justify-center">
-                      <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
-                        <p className="text-xs font-semibold ">Station</p>
-                        <p className="text-xs font-semibold text-red-700">*</p>
-                      </div>
-                      <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
-                        <textarea
-                          value={station}
-                          onChange={(e) => setStation(e.target.value)}
-                          rows={1}
-                          className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
-                          placeholder="Enter Station"
-                        ></textarea>
-                      </div>
-                    </div>
-                    <div className="w-full flex flex-col items-center justify-center">
-                      <div className="flex justify-start items-center w-full py-2">
-                        <p className="text-xs font-semibold ">
-                          Station Address
-                        </p>
-                        <p className="text-xs font-semibold text-red-700">*</p>
-                      </div>
-                      <div className="px-4 py-3 bg-white w-full flex items-center justify-center  border border-main rounded-md">
-                        <textarea
-                          value={stationAddress}
-                          onChange={(e) => setStationAddress(e.target.value)}
-                          rows={1}
-                          className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
-                          placeholder="Enter Station Address"
-                        ></textarea>
-                      </div>
-                    </div>
+                              {departments.map((dep) => (
+                                <option key={dep.id} value={dep.id}>
+                                  {dep.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="w-full flex flex-col items-center justify-center">
+                          <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
+                            <p className="text-xs font-semibold ">Station</p>
+                            <p className="text-xs font-semibold text-red-700">
+                              *
+                            </p>
+                          </div>
+                          <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
+                            <textarea
+                              value={station}
+                              onChange={(e) => setStation(e.target.value)}
+                              rows={1}
+                              className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
+                              placeholder="Enter Station"
+                            ></textarea>
+                          </div>
+                        </div>
+                        <div className="w-full flex flex-col items-center justify-center">
+                          <div className="flex justify-start items-center w-full py-2">
+                            <p className="text-xs font-semibold ">
+                              Station Address
+                            </p>
+                            <p className="text-xs font-semibold text-red-700">
+                              *
+                            </p>
+                          </div>
+                          <div className="px-4 py-3 bg-white w-full flex items-center justify-center  border border-main rounded-md">
+                            <textarea
+                              value={stationAddress}
+                              onChange={(e) =>
+                                setStationAddress(e.target.value)
+                              }
+                              rows={1}
+                              className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
+                              placeholder="Enter Station Address"
+                            ></textarea>
+                          </div>
+                        </div>
+                      </>
+                    )}
                     {/* end of only for new department accounts */}
                     {/* only for new employee accounts */}
-                    {account_type === 'superadmin' ? null : <div className="w-full flex flex-col items-center justify-center">
-                      <div className="flex justify-start items-center w-full py-2">
-                        <p className="text-xs font-semibold ">Home Address</p>
-                        <p className="text-xs font-semibold text-red-700">*</p>
+                    {account_type === "superadmin" ? null : (
+                      <div className="w-full flex flex-col items-center justify-center">
+                        <div className="flex justify-start items-center w-full py-2">
+                          <p className="text-xs font-semibold ">Home Address</p>
+                          <p className="text-xs font-semibold text-red-700">
+                            *
+                          </p>
+                        </div>
+                        <div className="px-4 py-3 bg-white w-full flex items-center justify-center  border border-main rounded-md">
+                          <textarea
+                            value={homeAddress}
+                            onChange={(e) => setHomeAddress(e.target.value)}
+                            rows={1}
+                            className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
+                            placeholder="Enter Home Address"
+                          ></textarea>
+                        </div>
                       </div>
-                      <div className="px-4 py-3 bg-white w-full flex items-center justify-center  border border-main rounded-md">
-                        <textarea
-                          value={homeAddress}
-                          onChange={(e) => setHomeAddress(e.target.value)}
-                          rows={1}
-                          className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
-                          placeholder="Enter Home Address"
-                        ></textarea>
-                      </div>
-                    </div>}
+                    )}
                     {/* end of only for new employee accounts */}
                     <div className="w-full flex flex-col items-center justify-center">
                       <div className="flex justify-start items-center w-full py-2">
@@ -261,7 +343,9 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                     </div>
                     <div className="w-full flex flex-col items-center justify-center">
                       <div className="flex justify-start items-center w-full py-2">
-                        <p className="text-xs font-semibold ">Confirm Password</p>
+                        <p className="text-xs font-semibold ">
+                          Confirm Password
+                        </p>
                         <p className="text-xs font-semibold text-red-700">*</p>
                       </div>
                       <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
@@ -284,10 +368,16 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                         </button>
                       </div>
                     </div>
-                    <div className="flex items-center justify-start mt-2 w-1/2">
+                    <div className="flex items-center justify-start mt-2 flex-col">
                       {incompleteInput === true ? (
-                        <p className="text-xs font-semibold text-red-700 animate-shake line-clamp-1">
+                        <p className="text-xs text-red-800 font-semibold flex text-left w-full mt-2">
                           Fill the Required Fields!
+                        </p>
+                      ) : null}
+
+                      {errors ? (
+                        <p className="text-xs text-red-800 font-semibold flex text-left w-full mt-2">
+                          {errors}
                         </p>
                       ) : null}
                     </div>
