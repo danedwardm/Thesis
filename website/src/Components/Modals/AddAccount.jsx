@@ -47,9 +47,12 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
 
   useEffect(() => {
     if (account_type === "department_admin") {
-      setDepartment(user.department_id);
-      setStation(user.station);
-      setStationAddress(user.station_address);
+      const station = localStorage.getItem('station')
+      const station_address = localStorage.getItem('station_address')
+      const department = localStorage.getItem('department')
+      setDepartment(department);
+      setStation(station);
+      setStationAddress(station_address);
     }
     console.log("User department:", department);
   }, [user, account_type]);
@@ -68,6 +71,13 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       !password_confirm
     ) {
       setIncompleteInput(true);
+      console.log("Fields: ", username,
+        email,
+        phoneNumber,
+        station,
+        stationAddress,
+        password,
+        password_confirm)
       setTimeout(() => {
         setIncompleteInput(false);
       }, 3000);
