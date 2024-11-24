@@ -45,7 +45,7 @@ function App() {
 
         {/* Admin and Department Admin Redirects */}
         <Route
-          path="/admin*"
+          path="/admin/*"
           element={
             authenticated ? (
               account_type === "superadmin" ? (
@@ -60,7 +60,7 @@ function App() {
         />
 
         <Route
-          path="/dept-admin*"
+          path="/dept-admin/*"
           element={
             authenticated ? (
               account_type === "department_admin" ? (

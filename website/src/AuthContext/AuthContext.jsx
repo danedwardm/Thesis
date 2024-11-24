@@ -56,8 +56,6 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  console.log("User Info:", user);
-
   const fetchDocuments = async () => {
     const categories = [
       "fires",
@@ -75,7 +73,7 @@ const AuthProvider = ({ children }) => {
           const updateReports = await Promise.all(
             snapshot.docs.map(async (doc) => {
               const data = doc.data();
-              console.log(data); // Log to check if the `id` exists and is unique
+              // console.log(data); // Log to check if the `id` exists and is unique
 
               // Fetch user and worker feedback for each report
               const reportId = doc.id;
@@ -95,15 +93,17 @@ const AuthProvider = ({ children }) => {
                 (doc) => ({
                   description: doc.data().description,
                   proof: doc.data().proof,
-                  submitted_at: doc.data().submited_at,
+                  submitted_at: doc.data().submited_at, // assuming 'submitted_at' is a Firestore timestamp
                 })
               );
               const workerFeedbackDescriptions =
                 workerFeedbackSnapshot.docs.map((doc) => ({
                   description: doc.data().description,
                   proof: doc.data().proof,
-                  submitted_at: doc.data().submited_at, 
+                  submitted_at: doc.data().submited_at, // assuming 'submitted_at' is a Firestore timestamp
                 }));
+
+              // Return the report along with feedback
               return {
                 ...data,
                 id: doc.id, // Ensure Firestore id is included
@@ -113,7 +113,7 @@ const AuthProvider = ({ children }) => {
             })
           );
 
-          
+          // console.log("Updated Reports:", updateReports);
 
           // Combine and filter reports to ensure uniqueness based on 'id'
           setReports((prevReports) => {
@@ -170,6 +170,52 @@ const AuthProvider = ({ children }) => {
         "api/department_admin/registration/",
         data
       );
+
+      if (!res) {
+        throw new Error("Error in Department Registration");
+      }
+      return res;
+    } catch (error) {
+      if (error.response) {
+        // Server responded with an error status
+        console.log("Error Response:", error.response.data);
+        // alert(`Error: ${error.response.data.detail || "An error occurred"}`); // Customize this depending on your API error response format
+      } else if (error.request) {
+        // Request was made but no response was received
+        // console.log("Error Request:", error.request);
+        alert("No response received from server. Please try again.");
+      } else {
+        // Something else happened in setting up the request
+        // console.log("Error Message:", error.message);
+        alert(`Error: ${error.message}`);
+      }
+    }
+  };
+
+  const worker_registration = async (
+    username,
+    email,
+    phoneNumber,
+    department,
+    station,
+    stationAddress,
+    password,
+    password_confirm,
+    homeAddress
+  ) => {
+    try {
+      const data = {
+        username,
+        email,
+        contact_number: phoneNumber,
+        department,
+        station,
+        station_address: stationAddress,
+        password,
+        password_confirm,
+        address: homeAddress,
+      };
+      const res = await axiosInstance.post("api/worker/registration/", data);
 
       if (!res) {
         throw new Error("Error in Department Registration");
@@ -273,7 +319,8 @@ const AuthProvider = ({ children }) => {
         account_type,
         departments,
         department_admin_registration,
-        reports
+        worker_registration,
+        user,
       }}
     >
       {children}
