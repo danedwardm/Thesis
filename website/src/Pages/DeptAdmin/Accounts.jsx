@@ -37,7 +37,9 @@ const Accounts = () => {
   const { account_type, departments } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
-
+  const [station, setStation] = useState('')
+  const [stationAddress, setStationAddress] = useState('')
+  const [department, setDepartment] = useState('')
   const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
   const accountVerified = ["Verified", "Not Verified"];
 
@@ -48,12 +50,22 @@ const Accounts = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/users/",
+       
+        if(account_type === 'super_admin'){
+          const response = await axios.get(
+            "http://127.0.0.1:8000/api/users/",
           {}
-        );
-        setUsers(response.data);
-        console.log("Data fetched successfully");
+          );
+          setUsers(response.data);
+          console.log("Data fetched successfully");
+        }else if(account_type === 'department_admin'){
+          const response = await axios.get(
+            "http://127.0.0.1:8000/api/worker/"
+          );
+      
+          setUsers(response.data);
+        }
+        
       } catch (err) {
         setError("Failed to fetch users.");
         console.error("Error fetching users:", err); // Log any errors

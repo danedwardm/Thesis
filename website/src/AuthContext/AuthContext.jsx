@@ -240,6 +240,7 @@ const AuthProvider = ({ children }) => {
 
   const department = async () => {
     try {
+      if(account_type !== "super_admin") return;
       const res = await axiosInstance.get("api/departments/");
       setDepartment((prev) => {
         const newDepartments = res.data;
@@ -264,7 +265,7 @@ const AuthProvider = ({ children }) => {
       });
       console.log("Login response:", res.data);
 
-      const { access, refresh, account_type } = res.data;
+      const { access, refresh, account_type, station_address, coordinates, station, department } = res.data;
       if (
         account_type !== "superadmin" &&
         account_type !== "department_admin" &&
@@ -278,6 +279,10 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("accessToken", access);
       localStorage.setItem("refreshToken", refresh);
       localStorage.setItem("accountType", account_type);
+      localStorage.setItem("station_address", station_address);
+      localStorage.setItem("department", department);
+      localStorage.setItem("coordinates", coordinates);
+      localStorage.setItem("station", station);
       axiosInstance.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${access}`;
@@ -305,6 +310,10 @@ const AuthProvider = ({ children }) => {
   const onLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    localStorage.removeItem("station_address");
+    localStorage.removeItem("coordinates");
+    localStorage.removeItem("accountType");
+    localStorage.removeItem("station");
     delete axiosInstance.defaults.headers.common["Authorization"];
     setAuthenticated(false); // Set user as not authenticated
   };
