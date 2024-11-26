@@ -150,12 +150,12 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center md:ml-3 w-full">
               <p className="font-bold lg:text-sm text-xs text-center md:text-start uppercase text-main w-full">
-                Number of Users
+                Number of Workers
               </p>
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                11
+                {localStorage.getItem("workers_count")}
               </div>
             </div>
           </div>

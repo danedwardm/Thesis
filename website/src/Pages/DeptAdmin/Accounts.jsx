@@ -11,6 +11,7 @@ import DenyVerification from "../../Components/Modals/DenyVerification";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { useAuth } from "../../AuthContext/AuthContext";
+import axiosInstance from "../../axios-instance";
 
 const Accounts = () => {
   const [showAddAccount, setShowAddAccount] = useState(false);
@@ -34,7 +35,7 @@ const Accounts = () => {
 
   const [selectedAccountType, setSelectedAccountType] = useState("");
   const accountType = ["department_admin", "citizen", "worker"];
-  const { account_type, departments } = useAuth();
+  const { account_type, departments, authenticated } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
   const [station, setStation] = useState('')
@@ -47,33 +48,7 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-       
-        if(account_type === 'super_admin'){
-          const response = await axios.get(
-            "http://127.0.0.1:8000/api/users/",
-          {}
-          );
-          setUsers(response.data);
-          console.log("Data fetched successfully");
-        }else if(account_type === 'department_admin'){
-          const response = await axios.get(
-            "http://127.0.0.1:8000/api/worker/"
-          );
-      
-          setUsers(response.data);
-        }
-        
-      } catch (err) {
-        setError("Failed to fetch users.");
-        console.error("Error fetching users:", err); // Log any errors
-      }
-    };
 
-    fetchUsers();
-  }, [selectedAccountType, selectedStatus]); // Re-fetch when selectedAccountType changes
 
   const filteredUsers = users.filter((user) => {
     const matchesType =
