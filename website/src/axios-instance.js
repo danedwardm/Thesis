@@ -11,10 +11,11 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   async (config) => {
     try {
-      const token = await localStorage.getItem('accessToken')
+      const token = localStorage.getItem('accessToken')
       if (token && config.headers) {
-        config.headers.set('Authorization', `Bearer ${token}`);
+        config.headers['Authorization'] = `Bearer ${token}`;
       }
+      
     } catch (error) {
       console.error('Error retrieving access token:', error);
     }
