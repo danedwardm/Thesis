@@ -30,7 +30,7 @@ const Accounts = () => {
   const [selfieWId, setSelfieWId] = useState("");
   const [idPicture, setIdPicture] = useState("");
 
-  const {users} = useAuth()
+  const { users } = useAuth();
   const [error, setError] = useState("");
 
   const [selectedAccountType, setSelectedAccountType] = useState("");
@@ -46,7 +46,6 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
-
 
   const filteredUsers = users.filter((user) => {
     const matchesType =

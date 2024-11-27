@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { AuthProvider } from "../../../AuthContext/AuthContext";
 import Profile from "../../../Components/Modals/Profile";
 
-import logo from "../../../assets/thesisLogo.png";
+import logo from "../../../assets/android-icon-square.png";
 import { FaUser } from "react-icons/fa";
 import { MdNotificationsActive } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
