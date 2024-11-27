@@ -30,17 +30,17 @@ const Accounts = () => {
   const [selfieWId, setSelfieWId] = useState("");
   const [idPicture, setIdPicture] = useState("");
 
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
 
   const [selectedAccountType, setSelectedAccountType] = useState("");
   const accountType = ["department_admin", "citizen", "worker"];
-  const { account_type, departments, authenticated } = useAuth();
+  const { account_type, departments, authenticated, users } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
-  const [station, setStation] = useState('')
-  const [stationAddress, setStationAddress] = useState('')
-  const [department, setDepartment] = useState('')
+  const [station, setStation] = useState("");
+  const [stationAddress, setStationAddress] = useState("");
+  const [department, setDepartment] = useState("");
   const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
   const accountVerified = ["Verified", "Not Verified"];
 
@@ -48,7 +48,6 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
-
 
   const filteredUsers = users.filter((user) => {
     const matchesType =

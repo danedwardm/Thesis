@@ -1,11 +1,31 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import Data from "../../JSON/callLogs.json";
 import Navbar from "./Navigation/NavBar";
 import NavText from "./Navigation/NavText";
-
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
+
+// Importing all the maps
+import NFloodSus from "../../assets/Maps/N-FloodSus.jpg";
+import NGroundLiq from "../../assets/Maps/N-GroundLiq.jpg";
+import NGroundSus from "../../assets/Maps/N-GroundSus.jpg";
+import NRainLand from "../../assets/Maps/N-RainLand.jpg";
+import NStorm from "../../assets/Maps/N-Storm.jpg";
+import NTsunami from "../../assets/Maps/N-Tsunami.jpg";
+import NWindSus from "../../assets/Maps/N-WindSus.jpg";
+import SFloodSus from "../../assets/Maps/S-FloodSus.jpg";
+import SGroundLiq from "../../assets/Maps/S-GroundLiq.jpg";
+import SGroundSus from "../../assets/Maps/S-GroundSus.jpg";
+import SRainLand from "../../assets/Maps/S-RainLand.jpg";
+import SStorm from "../../assets/Maps/S-Storm.jpg";
+import STsunami from "../../assets/Maps/S-Tsunami.jpg";
+import SWindSus from "../../assets/Maps/S-WindSus.jpg";
+
+import ImageModal from "../../Components/Modals/ImageModal";
+
+// Weather Map Component
+import WeatherMap from "../../Components/Modals/WeatherMap"; // Assuming WeatherMap component is stored in Components folder
 
 const Notification = () => {
   const [formData, setFormData] = useState({
@@ -15,8 +35,13 @@ const Notification = () => {
     description: "",
   });
 
-  const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-  const mapRef = useRef(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleButtonClick = (image) => {
+    setSelectedImage(image);
+    setShowImageModal(true); // Show the modal
+  };
 
   const [location, setLocation] = useState({
     lat: 14.9767, // Default fallback coordinates (e.g., UCC South Campus)
@@ -45,31 +70,6 @@ const Notification = () => {
     getCurrentLocation();
   }, []);
 
-  useEffect(() => {
-    const loadGoogleMapsScript = () => {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        const map = new google.maps.Map(mapRef.current, {
-          center: location, // Dynamically set map center to user's location
-          zoom: 15, // Adjust zoom level as needed
-        });
-
-        // Create a marker at the user's current location
-        const marker = new google.maps.Marker({
-          position: location,
-          map: map,
-          title: "Your Current Location",
-        });
-      };
-      document.head.appendChild(script);
-    };
-
-    loadGoogleMapsScript();
-  }, [googleMapsApiKey, location]);
-
   return (
     <>
       <div className="relative bg-second h-[100vh] w-full overflow-hidden">
@@ -88,94 +88,191 @@ const Notification = () => {
           <NavText />
           <div className="h-[100vh] grid grid-col md:grid-cols-2 pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[20vh] w-full px-10 gap-8 ">
             <div className="w-full flex flex-col items-center rounded-2xl border-2 border-main mb-[5vh]">
-              <div
-                className="h-full lg:sticky lg:top-0 w-full bg-main rounded-2xl"
-                ref={mapRef}
-              ></div>
+              {/* Weather Map Component */}
+              <WeatherMap lat={location.lat} lon={location.lng} />
             </div>
 
-            <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased w-full overflow-y-auto  mb-[5vh] ">
-              <div className="w-full flex flex-row justify-between bg-main">
-                <form
-                  // onSubmit={handleSubmit}
-                  className="w-full flex flex-col space-y-4 p-6 bg-white"
-                >
-                  <label
-                    htmlFor="name"
-                    className="text-sm font-medium text-gray-700"
+            <div>
+              {/* Form and Risk Map Buttons */}
+              <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased w-full overflow-y-auto mb-[2vh]">
+                <div className="w-full flex flex-row justify-between bg-main">
+                  <form
+                    // onSubmit={handleSubmit}
+                    className="w-full flex flex-col space-y-4 p-6 bg-white"
                   >
-                    Recipient Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    // value={formData.name}
-                    // onChange={handleInputChange}
-                    className="p-2 border border-gray-300 rounded-md"
-                    required
-                  />
+                    <label
+                      htmlFor="name"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Recipient
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      // value={formData.name}
+                      // onChange={handleInputChange}
+                      className="p-2 border border-main rounded-md"
+                      required
+                    />
 
-                  <label
-                    htmlFor="reportType"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Report Type
-                  </label>
-                  <input
-                    type="text"
-                    id="reportType"
-                    name="reportType"
-                    // value={formData.reportType}
-                    // onChange={handleInputChange}
-                    className="p-2 border border-gray-300 rounded-md"
-                    required
-                  />
+                    <label
+                      htmlFor="reportType"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Report Type
+                    </label>
+                    <input
+                      type="text"
+                      id="reportType"
+                      name="reportType"
+                      // value={formData.reportType}
+                      // onChange={handleInputChange}
+                      className="p-2 border border-main rounded-md"
+                      required
+                    />
 
-                  <label
-                    htmlFor="location"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    id="location"
-                    name="location"
-                    // value={formData.location}
-                    // onChange={handleInputChange}
-                    className="p-2 border border-gray-300 rounded-md"
-                    required
-                  />
+                    <label
+                      htmlFor="description"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Description
+                    </label>
+                    <textarea
+                      id="description"
+                      name="description"
+                      // value={formData.description}
+                      // onChange={handleInputChange}
+                      className="p-2 border border-main rounded-md resize-none"
+                      rows="3"
+                      required
+                    ></textarea>
 
-                  <label
-                    htmlFor="description"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    // value={formData.description}
-                    // onChange={handleInputChange}
-                    className="p-2 border border-gray-300 rounded-md"
-                    rows="4"
-                    required
-                  ></textarea>
+                    <button
+                      type="submit"
+                      className="bg-main text-white py-2 px-6 rounded-md hover:bg-main-dark"
+                    >
+                      Send Notification
+                    </button>
+                  </form>
+                </div>
+              </div>
 
-                  <button
-                    type="submit"
-                    className="bg-main text-white py-2 px-6 rounded-md hover:bg-main-dark"
-                  >
-                    Send Notification
-                  </button>
-                </form>
+              <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased w-full mb-[5vh]">
+                <div className="text-xl font-extrabold text-main p-6">
+                  RISK MAPS
+                </div>
+                <div className="text-md font-bold text-main px-6 pb-4">
+                  South Caloocan
+                </div>
+                <div className="w-full overflow-x-auto pb-4">
+                  <div className="inline-flex space-x-6">
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0 ml-6"
+                      onClick={() => handleButtonClick(SWindSus)}
+                    >
+                      Severe Wind
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(SRainLand)}
+                    >
+                      Rain Induced Landslide
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(SFloodSus)}
+                    >
+                      Flood Susceptibility
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(SStorm)}
+                    >
+                      Storm Surge
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(STsunami)}
+                    >
+                      Tsunami
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(SGroundSus)}
+                    >
+                      Ground Shaking
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(SGroundLiq)}
+                    >
+                      Ground Liquefaction
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-md font-bold text-main px-6 pb-4">
+                  North Caloocan
+                </div>
+                <div className="w-full overflow-x-auto pb-4">
+                  <div className="inline-flex space-x-6">
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0 ml-6"
+                      onClick={() => handleButtonClick(NWindSus)}
+                    >
+                      Severe Wind
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(NRainLand)}
+                    >
+                      Rain Induced Landslide
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(NFloodSus)}
+                    >
+                      Flood Susceptibility
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(NStorm)}
+                    >
+                      Storm Surge
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(NTsunami)}
+                    >
+                      Tsunami
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(NGroundSus)}
+                    >
+                      Ground Shaking
+                    </button>
+                    <button
+                      className="bg-white border-2 border-main text-main hover:bg-slate-400 font-bold text-sm rounded-lg p-3 flex-shrink-0"
+                      onClick={() => handleButtonClick(NGroundLiq)}
+                    >
+                      Ground Liquefaction
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Image Modal */}
+      <ImageModal
+        isVisible={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        attachment={selectedImage}
+      />
     </>
   );
 };

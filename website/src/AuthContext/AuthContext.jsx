@@ -241,17 +241,17 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const account_type = localStorage.getItem('accountType')
-        if(account_type === "department_admin"){
+        const account_type = localStorage.getItem("accountType");
+        if (account_type === "department_admin") {
           const response = await axiosInstance.get("api/workers/");
-          localStorage.setItem("workers_count", response.data.length)
-          setUsers(response.data)
-        }else if(account_type === "superadmin"){
+          localStorage.setItem("workers_count", response.data.length);
+          setUsers(response.data);
+        } else if (account_type === "superadmin") {
           const response = await axiosInstance.get("api/users/");
-          localStorage.setItem("users_count", response.data.length)
-          setUsers(response.data)
+          localStorage.setItem("users_count", response.data.length);
+          setUsers(response.data);
         }
-        
+
         console.log("Data fetched successfully");
       } catch (err) {
         setError("Failed to fetch users.");
@@ -264,7 +264,7 @@ const AuthProvider = ({ children }) => {
 
   const department = async () => {
     try {
-      if(account_type !== "super_admin" || account_type !== "superadmin") return;
+      if (account_type == "super_admin" || account_type == "superadmin") return;
       const res = await axiosInstance.get("api/departments/");
       setDepartment((prev) => {
         const newDepartments = res.data;
@@ -289,7 +289,15 @@ const AuthProvider = ({ children }) => {
       });
       console.log("Login response:", res.data);
 
-      const { access, refresh, account_type, station_address, coordinates, station, department } = res.data;
+      const {
+        access,
+        refresh,
+        account_type,
+        station_address,
+        coordinates,
+        station,
+        department,
+      } = res.data;
       if (
         account_type !== "superadmin" &&
         account_type !== "department_admin" &&
@@ -354,7 +362,7 @@ const AuthProvider = ({ children }) => {
         department_admin_registration,
         worker_registration,
         user,
-        users
+        users,
       }}
     >
       {children}

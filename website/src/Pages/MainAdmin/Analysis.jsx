@@ -6,6 +6,7 @@ import NavText from "./Navigation/NavText";
 import PieChart from "../../Chart/PieChart";
 import ReportCategoryChart from "../../Chart/ReportCategoryChart";
 import ReportTrends from "../../Chart/ReportTrends";
+import ReportTimeTrends from "../../Chart/ReportTimeTrends";
 
 const Analysis = () => {
   return (
@@ -18,13 +19,14 @@ const Analysis = () => {
           <div className="absolute h-[30vh] w-[30vh] bg-square rounded-[20px] rotate-45 -top-40 -right-10 z-10"></div>
           <div className="absolute h-[30vh] w-[30vh] bg-square rounded-[20px] rotate-45 top-96 left-2/3 z-10"></div>
         </div>
-        <div className="relative h-[100vh] w-[100vw] flex flex-col items-center z-30 overflow-auto">
+        <div className="relative h-[100vh] w-[100vw] flex flex-col items-center z-30 overflow-auto overflow-x-hidden">
           <Navbar />
           <NavText />
-          <div className="flex flex-row items-center pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[20vh]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 col-span-4 justify-center items-center pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[15vh] mb-[10vh]">
             <PieChart />
             <ReportCategoryChart />
             <ReportTrends />
+            <ReportTimeTrends />
           </div>
         </div>
       </div>

@@ -101,6 +101,7 @@ function App() {
           <Route path="/linechart" element={<ReportTrends />} />
           <Route path="/barchart" element={<ReportCategoryChart />} />
           <Route path="/piechart" element={<PieChart />} />
+          <Route path="/trends" element={<ReportTrends />} />
         </Route>
       </Routes>
     </BrowserRouter>
