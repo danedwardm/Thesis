@@ -202,7 +202,6 @@ const AuthProvider = ({ children }) => {
     stationAddress,
     password,
     password_confirm,
-    homeAddress
   ) => {
     try {
       const data = {
@@ -214,7 +213,6 @@ const AuthProvider = ({ children }) => {
         station_address: stationAddress,
         password,
         password_confirm,
-        address: homeAddress,
       };
       const res = await axiosInstance.post("api/worker/registration/", data);
 
@@ -297,6 +295,7 @@ const AuthProvider = ({ children }) => {
         coordinates,
         station,
         department,
+        user_id
       } = res.data;
       if (
         account_type !== "superadmin" &&
@@ -309,6 +308,7 @@ const AuthProvider = ({ children }) => {
 
       // Set tokens and authentication state
       localStorage.setItem("accessToken", access);
+      localStorage.setItem("user_id", user_id);
       localStorage.setItem("refreshToken", refresh);
       localStorage.setItem("accountType", account_type);
       localStorage.setItem("station_address", station_address);
