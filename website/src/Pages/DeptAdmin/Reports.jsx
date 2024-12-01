@@ -35,13 +35,14 @@ const Reports = () => {
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const [newReports, setNewReports] = useState([]);
-
+  const user_id = localStorage.getItem('user_id')
   // Filter data based on selected filters
   const filteredData = reports.filter((item) => {
     return (
       (selectedReportType === "" ||
         item.type_of_report === selectedReportType) &&
       (selectedStatus === "" || item.status === selectedStatus)
+      && (item.assigned_to_id == user_id)
     );
   });
 

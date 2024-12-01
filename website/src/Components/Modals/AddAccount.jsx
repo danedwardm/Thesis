@@ -130,7 +130,6 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
           stationAddress,
           password,
           password_confirm,
-          homeAddress
         );
       } else {
         // Handle any other account types if necessary
@@ -306,27 +305,6 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                           </div>
                         </div>
                       </>
-                    )}
-                    {/* end of only for new department accounts */}
-                    {/* only for new employee accounts */}
-                    {account_type === "superadmin" ? null : (
-                      <div className="w-full flex flex-col items-center justify-center">
-                        <div className="flex justify-start items-center w-full py-2">
-                          <p className="text-xs font-semibold ">Home Address</p>
-                          <p className="text-xs font-semibold text-red-700">
-                            *
-                          </p>
-                        </div>
-                        <div className="px-4 py-3 bg-white w-full flex items-center justify-center  border border-main rounded-md">
-                          <textarea
-                            value={homeAddress}
-                            onChange={(e) => setHomeAddress(e.target.value)}
-                            rows={1}
-                            className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
-                            placeholder="Enter Home Address"
-                          ></textarea>
-                        </div>
-                      </div>
                     )}
                     {/* end of only for new employee accounts */}
                     <div className="w-full flex flex-col items-center justify-center">
