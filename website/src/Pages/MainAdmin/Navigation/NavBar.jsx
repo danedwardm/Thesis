@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Profile from "../../../Components/Modals/Profile";
 
@@ -6,14 +6,17 @@ import logo from "../../../assets/android-icon-square.png";
 import { FaUser } from "react-icons/fa";
 import { MdNotificationsActive } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-
+import { app } from "../../../Firebase/firebaseConfig";
+const db = getFirestore(app)
 import { useAuth } from "../../../AuthContext/AuthContext"; // Import the Auth context
 import { NavLink } from "react-router-dom";
+import { collection, getFirestore, onSnapshot } from "firebase/firestore";
 
 const NavBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [toggleNotifsOpen, setIsNotifsOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [notification, setNotification] = useState([])
   const navigate = useNavigate(); // Use navigate for redirecting
   const { onLogout } = useAuth(); // Get the logout function from the context
 
@@ -34,6 +37,36 @@ const NavBar = () => {
       navigate("/login", { replace: true }); // Use replace to prevent going back to the dashboard
     }, 100); // 100ms delay (can be adjusted)
   };
+
+  useEffect(() => {
+    const fetchNotification = async () => {
+      console.log("Fetching notifications");
+  
+      const notificationRef = collection(db, 'notifications');
+  
+      // Listen to changes in the entire 'verifyAccount' collection
+      const unsubscribe = onSnapshot(notificationRef, (querySnapshot) => {
+        // Filter the documents that have the 'for_superadmin' field
+        const notifications = querySnapshot.docs
+          .filter((doc) => doc.data() && doc.data().hasOwnProperty('for_superadmin'))
+          .map((doc) => {
+            return { id: doc.id, ...doc.data() };
+          });
+
+          console.log("Fetching...", notifications)
+        // Update the state with filtered notifications
+        setNotification(notifications);
+      }, (error) => {
+        console.error('Error fetching verification info:', error);
+      });
+  
+      return () => unsubscribe();
+    };
+  
+    fetchNotification();
+  }, []);
+  
+  
 
   return (
     <>
@@ -69,28 +102,28 @@ const NavBar = () => {
               <FaUser className="text-main text-lg" />
             </div>
             {toggleNotifsOpen && (
-              <div className="absolute top-full right-12 mt-2 bg-white shadow-lg rounded-lg border  w-80">
+              <div className="absolute top-full right-12 mt-2 bg-white shadow-lg rounded-lg border w-80">
                 <ul className="flex flex-col">
                   <li>
-                    <div
-                      // onClick={handleAddAccount}
-                      className="block px-4 py-2 font-bold text-red-600 "
-                    >
+                    <div className="block px-4 py-2 font-bold text-red-600">
                       Notifications
                     </div>
-                    <hr className="h-px px-2 bg-gray-200 border-0 dark:bg-gray-200"></hr>
+                    <hr className="h-px px-2 bg-gray-200 border-0 dark:bg-gray-200" />
                   </li>
-                  <li>
-                    <div
-                      // onClick={handleLogout} // Change from NavLink to div and handleLogout
-                      className="block px-4 py-2 font-bold text-textSecond hover:text-main cursor-pointer"
-                    >
-                      Notifs here
-                    </div>
-                  </li>
+                  {notification.map((item, index) => (
+                    <li key={index}>
+                      <div
+                        // onClick={handleLogout} // Change from NavLink to div and handleLogout
+                        className="block px-4 py-2 font-bold text-textSecond hover:text-main cursor-pointer"
+                      >
+                       User {item.user_id} {item.title}
+                      </div>
+                    </li>
+                  ))}
                 </ul>
               </div>
             )}
+
             {isDropdownOpen && (
               <div className="absolute top-full right-0 mt-2 bg-white shadow-lg rounded-lg border  w-auto">
                 <ul className="flex flex-col">

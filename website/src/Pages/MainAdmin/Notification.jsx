@@ -48,6 +48,7 @@ const Notification = () => {
     lng: 120.9705,
   });
 
+
   useEffect(() => {
     // Get current location using Geolocation API
     const getCurrentLocation = () => {
@@ -69,6 +70,8 @@ const Notification = () => {
 
     getCurrentLocation();
   }, []);
+
+    
 
   return (
     <>
