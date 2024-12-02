@@ -16,6 +16,7 @@ const db = getFirestore(app);
 
 import ImageModal from "./ImageModal";
 import DenyVerification from "./DenyVerification";
+import axiosInstance from "../../axios-instance";
 
 const ReviewAccount = ({
   isVisible,
@@ -64,6 +65,17 @@ const ReviewAccount = ({
     // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [userId]);
+
+  const handleVerify = async (id) => {
+    try {
+      const res = await axiosInstance.put(`/api/verify-user/${id}/`)
+      if(res){
+        alert("User verified success!")
+      }
+    } catch (error) {
+      console.error("Error verifying user: ", error.message)
+    }
+  }
 
   const getUserInfo = (data, field, defaultValue) => {
     return data ? data[field] || defaultValue : defaultValue;
@@ -348,16 +360,20 @@ const ReviewAccount = ({
                     <button
                       className={
                         verified !== true && verified !== "true"
-                          ? "py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                          ? "py-3 px-4  border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                           : "hidden"
                       }
+                      onClick={ async (e) => { 
+                        e.preventDefault()
+                        handleVerify(userId);
+                      }}
                     >
                       VERIFY
                     </button>
                     <button
                       className={
                         verified !== true && verified !== "true"
-                          ? "py-3 px-4 border border-main bg-textSecond text-black rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                          ? "py-3 px-4 border border-black bg-red-500 text-black rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                           : "hidden"
                       }
                       onClick={handleDenyClick}
