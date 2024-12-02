@@ -5,6 +5,7 @@ import { FaUser } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { IoIosNotifications } from "react-icons/io";
 import { MdReport } from "react-icons/md";
+import { useAuth } from "../../AuthContext/AuthContext";
 
 // Google Maps container style
 const mapContainerStyle = {
@@ -13,6 +14,7 @@ const mapContainerStyle = {
 };
 
 const Dashboard = () => {
+  const { totalNotDoneReportsCount } = useAuth();
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef(null);
 
@@ -117,7 +119,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                11
+                {totalNotDoneReportsCount}
               </div>
             </div>
           </div>
@@ -155,7 +157,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                {localStorage.getItem('users_count')}
+                {localStorage.getItem("users_count")}
               </div>
             </div>
           </div>

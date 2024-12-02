@@ -26,6 +26,8 @@ const AuthProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
   const [error, setError] = useState(null);
+  const [totalNotDoneReportsCount, setTotalNotDoneReportsCount] = useState(0);
+  const [weeklyReportsCount, setWeeklyReportsCount] = useState(0);
 
   // Check authentication on initial load from localStorage
   useEffect(() => {
@@ -66,6 +68,8 @@ const AuthProvider = ({ children }) => {
       "others",
       "road accident",
     ];
+    // Initialize a variable to accumulate the total count of reports that are not "done"
+    let totalCount = 0;
 
     const unsubscribeFunctions = categories.map((category) => {
       return onSnapshot(
@@ -113,8 +117,13 @@ const AuthProvider = ({ children }) => {
               };
             })
           );
-
-          // console.log("Updated Reports:", updateReports);
+          // Filter reports to only include those that are NOT "done"
+          const notDoneReports = updateReports.filter(
+            (report) => report.status !== "done"
+          );
+          totalCount += notDoneReports.length;
+          setTotalNotDoneReportsCount(totalCount);
+          console.log("Total not done reports count:", totalCount);
 
           // Combine and filter reports to ensure uniqueness based on 'id'
           setReports((prevReports) => {
@@ -363,6 +372,7 @@ const AuthProvider = ({ children }) => {
         worker_registration,
         user,
         users,
+        totalNotDoneReportsCount,
       }}
     >
       {children}
