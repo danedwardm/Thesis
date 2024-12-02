@@ -11,7 +11,16 @@ import DenyVerification from "../../Components/Modals/DenyVerification";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { useAuth } from "../../AuthContext/AuthContext";
-import axiosInstance from "../../axios-instance";
+import {
+  collection,
+  onSnapshot,
+  query,
+  where,
+  getFirestore,
+} from "firebase/firestore";
+import { app } from "../../Firebase/firebaseConfig";
+
+const db = getFirestore(app);
 
 const Accounts = () => {
   const [showAddAccount, setShowAddAccount] = useState(false);
@@ -32,15 +41,13 @@ const Accounts = () => {
   const [trustScore, setTrustScore] = useState("");
 
   const { users } = useAuth();
-  const [error, setError] = useState("");
-
   const [selectedAccountType, setSelectedAccountType] = useState("");
   const accountType = ["department_admin", "citizen", "worker"];
   const { account_type, departments } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
 
-  const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
+  const [selectedVerified, setSelectedVerified] = useState("Not Verified"); // Selected verified filter
   const accountVerified = ["Verified", "Not Verified"];
 
   // Pagination state
@@ -288,8 +295,32 @@ const Accounts = () => {
                   </div>
                 </div>
               </div>
+
+              <div className="flex justify-start items-center py-3 px-8">
+                {accountVerified.map((verified, index) => (
+                  <div key={index} className="flex items-center">
+                    <button
+                      onClick={() => {
+                        setSelectedVerified(verified);
+                        // setFilterOpen((prevFilterOpen) => !prevFilterOpen);
+                      }}
+                      className={`block py-1 text-sm uppercase hover:text-main duration-300 ${
+                        selectedVerified === verified
+                          ? "font-extrabold text-main"
+                          : "font-bold text-textSecond"
+                      }`}
+                    >
+                      {verified}
+                    </button>
+                    {index < accountVerified.length - 1 && (
+                      <span className="text-main mx-2">/</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+
               {/* table header*/}
-              <div className="hidden md:block px-5 py-5 h-full">
+              <div className="hidden md:block px-5 pb-5 h-full">
                 <table className="w-full table-fixed">
                   <thead className="text-xs font-bold text-gray-500">
                     <tr className="border-b">
@@ -397,9 +428,7 @@ const Accounts = () => {
                         </td>
 
                         <td className="p-4 text-center">
-                          <p className="w-full truncate">
-                            {data.score}
-                          </p>
+                          <p className="w-full truncate">{data.score}</p>
                         </td>
                         <td className="p-4 text-center">
                           <button
@@ -416,7 +445,7 @@ const Accounts = () => {
                               setAddress(data.address);
                               setEmailAddress(data.email);
                               setUserID(data.id);
-                              setUserScore(data.score)
+                              setUserScore(data.score);
                             }}
                           >
                             {data.is_verified ? "REVIEW" : "VERIFY"}

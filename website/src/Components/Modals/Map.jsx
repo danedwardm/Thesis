@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
+import { useAuth } from "../../AuthContext/AuthContext";
 
-const WeatherMap = ({ lat, lon }) => {
+const Map = ({ lat, lon }) => {
+  const { reports } = useAuth();
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  console.log("reports", reports);
 
   const API_KEY = "b29aa0efcb4db33afa698232bfb7b3a2"; // Replace with your OpenWeatherMap API key
   const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
@@ -36,12 +39,12 @@ const WeatherMap = ({ lat, lon }) => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="h-[400px] md:h-full w-4/5 flex-grow items-center z-10">
+    <div className="w-full h-full flex flex-col items-center z-10">
       <MapContainer
         id="map"
         center={[lat, lon]}
         zoom={10}
-        className="w-full h-full rounded-2xl"
+        className="w-full h-full"
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -66,9 +69,28 @@ const WeatherMap = ({ lat, lon }) => {
             </div>
           </Popup>
         </Marker>
+
+        {/* Loop through reports and add a marker for each */}
+        {reports.map((report) => {
+          const { latitude, longitude, id } = report;
+
+          return (
+            <Marker key={id} position={[latitude, longitude]}>
+              <Popup>
+                <div>
+                  <h4>Report</h4>
+                  <p>
+                    Location: ({latitude}, {longitude})
+                  </p>
+                  {/* You can display other report details here */}
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );
 };
 
-export default WeatherMap;
+export default Map;

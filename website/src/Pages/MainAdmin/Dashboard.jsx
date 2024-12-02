@@ -5,6 +5,8 @@ import { FaUser } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { IoIosNotifications } from "react-icons/io";
 import { MdReport } from "react-icons/md";
+import { useAuth } from "../../AuthContext/AuthContext";
+import Map from "../../Components/Modals/Map";
 
 // Google Maps container style
 const mapContainerStyle = {
@@ -13,6 +15,7 @@ const mapContainerStyle = {
 };
 
 const Dashboard = () => {
+  const { totalNotDoneReportsCount } = useAuth();
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef(null);
 
@@ -117,7 +120,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                11
+                {totalNotDoneReportsCount}
               </div>
             </div>
           </div>
@@ -155,7 +158,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                {localStorage.getItem('users_count')}
+                {localStorage.getItem("users_count")}
               </div>
             </div>
           </div>
@@ -169,15 +172,17 @@ const Dashboard = () => {
             </p>
           </div>
           <div className="flex flex-col justify-center items-end px-3">
-            <button className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase hover:bg-textSecond hover:text-accent ease-in-out duration-500">
+            {/* <button className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase hover:bg-textSecond hover:text-accent ease-in-out duration-500">
               Filter
-            </button>
+            </button> */}
           </div>
         </div>
 
         {/* Map */}
         <div className="w-full flex-grow bg-black md:mt-5 mt-3 border-2 border-t-main">
-          <div ref={mapRef} style={mapContainerStyle}></div>
+          {/* <div ref={mapRef} style={mapContainerStyle}></div> */}
+
+          <Map lat={location.lat} lon={location.lng} />
         </div>
       </div>
     </div>
