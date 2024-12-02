@@ -209,6 +209,7 @@ const Reports = () => {
                       <th scope="col" className="text-start p-3 truncate">
                         Location
                       </th>
+                      
                       <th scope="col" className="text-start p-3 truncate">
                         Assigned To
                       </th>
@@ -219,8 +220,10 @@ const Reports = () => {
                         Status
                       </th>
                       <th scope="col" className="text-center p-3 truncate">
-                        Validated
+                        User's Trust Score
                       </th>
+                     
+                     
                       <th scope="col" className="text-center p-3 truncate">
                         Action
                       </th>
@@ -274,6 +277,7 @@ const Reports = () => {
                             <td className="p-4">
                               <p className="w-full line-clamp-2">{`${data.longitude} , ${data.latitude}`}</p>
                             </td>
+                            
                             <td className="p-4">
                               <p className="w-full font-semibold line-clamp-2">
                                 {data.assigned_to
@@ -309,20 +313,16 @@ const Reports = () => {
                                 </p>
                               )}
                             </td>
+
                             <td className="p-4 text-center">
-                              <p
-                                className={`w-full truncate font-bold ${
-                                  data.is_validated
-                                    ? "text-[#007a3f]"
-                                    : "text-[#a10b00]"
-                                }`}
-                              >
-                                {data.is_validated ? "Yes" : "No"}
+                              <p className="w-full line-clamp-2">
+                                GAGO SIYA
                               </p>
                             </td>
-                            <td className="w-full p-4 text-start">
+                           
+                            <td className="w-full p-4 flex items-center justify-center">
                               <button
-                                className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                                className="bg-main  text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
                                 onClick={() => {
                                   setShowReport(true);
                                   setName(data.username);

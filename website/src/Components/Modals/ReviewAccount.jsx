@@ -27,6 +27,7 @@ const ReviewAccount = ({
   accountStatus,
   type,
   address,
+  score,
   emailAddress,
   userId,
 }) => {
@@ -92,7 +93,7 @@ const ReviewAccount = ({
             </div>
             <div className="relative w-full flex items-center justify-center z-20">
               <p className="text-md text-main uppercase font-extrabold">
-                Report Details
+                Account Details
               </p>
             </div>
 

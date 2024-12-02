@@ -93,7 +93,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
                       <div className="text-xs font-extrabold  text-main uppercase truncate">
-                        {user.username}
+                        {user.full_name }
                       </div>
                     </div>
                   </div>
@@ -123,7 +123,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {user.department_id || "Admin"}
+                        {user.department_id || "Not applicable as admin"}
                       </p>
                     </div>
                   </div>
@@ -133,7 +133,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {user.station || "Not Available"}
+                        {user.station || "Not applicable as admin"}
                       </p>
                     </div>
                   </div>
@@ -143,7 +143,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {user.station_address}
+                        {user.station_address || "Not applicable as admin"}
                       </p>
                     </div>
                   </div>
