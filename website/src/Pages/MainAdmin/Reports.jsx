@@ -10,7 +10,7 @@ import { HiOutlineDocumentReport } from "react-icons/hi";
 import { useAuth } from "../../AuthContext/AuthContext";
 
 const Reports = () => {
-  const { reports } = useAuth();
+  const { reports, users } = useAuth();
   const [showReport, setShowReport] = useState(false);
   const [name, setName] = useState("");
   const [reportType, setReportType] = useState("");
@@ -47,7 +47,6 @@ const Reports = () => {
       (selectedStatus === "" || item.status === selectedStatus)
     );
   });
-
   // Pagination logic
   const totalItems = filteredData.length; // Total items based on filtered data
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -55,7 +54,19 @@ const Reports = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  
+  const updatedData = currentData.map((item) => {
+    // Find the user who corresponds to the current item
+    const user = users.find(user => user.id === item.user_id);
 
+    const score = user ? user.score : 0; 
+
+    return {
+      ...item,  
+      score,    
+    };
+  });
+    
   // Create an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
@@ -230,7 +241,7 @@ const Reports = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentData
+                    {updatedData
                       .sort(
                         (a, b) =>
                           new Date(b.update_date) - new Date(a.update_date)
@@ -314,12 +325,13 @@ const Reports = () => {
                               )}
                             </td>
 
-                            <td className="p-4 text-center">
+
+                              <td className="p-4 text-center">
                               <p className="w-full line-clamp-2">
-                                GAGO SIYA
+                                {data.score}
                               </p>
                             </td>
-                           
+
                             <td className="w-full p-4 flex items-center justify-center">
                               <button
                                 className="bg-main  text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
