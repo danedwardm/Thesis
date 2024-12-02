@@ -6,6 +6,7 @@ import { HiOutlineDocumentReport } from "react-icons/hi";
 import { IoIosNotifications } from "react-icons/io";
 import { MdReport } from "react-icons/md";
 import { useAuth } from "../../AuthContext/AuthContext";
+import Map from "../../Components/Modals/Map";
 
 // Google Maps container style
 const mapContainerStyle = {
@@ -171,15 +172,17 @@ const Dashboard = () => {
             </p>
           </div>
           <div className="flex flex-col justify-center items-end px-3">
-            <button className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase hover:bg-textSecond hover:text-accent ease-in-out duration-500">
+            {/* <button className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase hover:bg-textSecond hover:text-accent ease-in-out duration-500">
               Filter
-            </button>
+            </button> */}
           </div>
         </div>
 
         {/* Map */}
         <div className="w-full flex-grow bg-black md:mt-5 mt-3 border-2 border-t-main">
-          <div ref={mapRef} style={mapContainerStyle}></div>
+          {/* <div ref={mapRef} style={mapContainerStyle}></div> */}
+
+          <Map lat={location.lat} lon={location.lng} />
         </div>
       </div>
     </div>

@@ -54,19 +54,19 @@ const Reports = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-  
+
   const updatedData = currentData.map((item) => {
     // Find the user who corresponds to the current item
-    const user = users.find(user => user.id === item.user_id);
+    const user = users.find((user) => user.id === item.user_id);
 
-    const score = user ? user.score : 0; 
+    const score = user ? user.score : 0;
 
     return {
-      ...item,  
-      score,    
+      ...item,
+      score,
     };
   });
-    
+
   // Create an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
@@ -220,7 +220,7 @@ const Reports = () => {
                       <th scope="col" className="text-start p-3 truncate">
                         Location
                       </th>
-                      
+
                       <th scope="col" className="text-start p-3 truncate">
                         Assigned To
                       </th>
@@ -233,8 +233,7 @@ const Reports = () => {
                       <th scope="col" className="text-center p-3 truncate">
                         User's Trust Score
                       </th>
-                     
-                     
+
                       <th scope="col" className="text-center p-3 truncate">
                         Action
                       </th>
@@ -288,7 +287,7 @@ const Reports = () => {
                             <td className="p-4">
                               <p className="w-full line-clamp-2">{`${data.longitude} , ${data.latitude}`}</p>
                             </td>
-                            
+
                             <td className="p-4">
                               <p className="w-full font-semibold line-clamp-2">
                                 {data.assigned_to
@@ -325,8 +324,7 @@ const Reports = () => {
                               )}
                             </td>
 
-
-                              <td className="p-4 text-center">
+                            <td className="p-4 text-center">
                               <p className="w-full line-clamp-2">
                                 {data.score}
                               </p>

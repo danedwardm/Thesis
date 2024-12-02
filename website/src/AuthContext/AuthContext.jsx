@@ -210,7 +210,7 @@ const AuthProvider = ({ children }) => {
     station,
     stationAddress,
     password,
-    password_confirm,
+    password_confirm
   ) => {
     try {
       const data = {
@@ -304,7 +304,7 @@ const AuthProvider = ({ children }) => {
         coordinates,
         station,
         department,
-        user_id
+        user_id,
       } = res.data;
       if (
         account_type !== "superadmin" &&

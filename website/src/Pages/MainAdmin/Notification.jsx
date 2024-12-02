@@ -48,7 +48,6 @@ const Notification = () => {
     lng: 120.9705,
   });
 
-
   useEffect(() => {
     // Get current location using Geolocation API
     const getCurrentLocation = () => {
@@ -71,8 +70,6 @@ const Notification = () => {
     getCurrentLocation();
   }, []);
 
-    
-
   return (
     <>
       <div className="relative bg-second h-[100vh] w-full overflow-hidden">
@@ -90,7 +87,7 @@ const Notification = () => {
           <Navbar />
           <NavText />
           <div className="h-[100vh] grid grid-col md:grid-cols-2 pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[20vh] w-full px-10 gap-8 ">
-            <div className="w-full flex flex-col items-center rounded-2xl border-2 border-main mb-[5vh]">
+            <div className="w-full flex items-center rounded-2xl border-2 border-main mb-[5vh]">
               {/* Weather Map Component */}
               <WeatherMap lat={location.lat} lon={location.lng} />
             </div>
