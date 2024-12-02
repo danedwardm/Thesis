@@ -29,6 +29,7 @@ const Accounts = () => {
   const [photo, setPhoto] = useState("");
   const [selfieWId, setSelfieWId] = useState("");
   const [idPicture, setIdPicture] = useState("");
+  const [trustScore, setTrustScore] = useState("");
 
   const { users } = useAuth();
   const [error, setError] = useState("");
@@ -314,6 +315,9 @@ const Accounts = () => {
                         Update Date
                       </th>
                       <th scope="col" className="text-center p-3 truncate">
+                        Trust Score
+                      </th>
+                      <th scope="col" className="text-center p-3 truncate">
                         Action
                       </th>
                     </tr>
@@ -386,9 +390,15 @@ const Accounts = () => {
                             </p>
                           )}
                         </td>
-                        <td className="p-4">
+                        <td className="p-4 text-center">
                           <p className="w-full truncate">
                             {formatDate(data.date_joined)}
+                          </p>
+                        </td>
+
+                        <td className="p-4 text-center">
+                          <p className="w-full truncate">
+                            {data.score}
                           </p>
                         </td>
                         <td className="p-4 text-center">
@@ -406,6 +416,7 @@ const Accounts = () => {
                               setAddress(data.address);
                               setEmailAddress(data.email);
                               setUserID(data.id);
+                              setUserScore(data.score)
                             }}
                           >
                             {data.is_verified ? "REVIEW" : "VERIFY"}
