@@ -27,7 +27,9 @@ const Reports = () => {
   const [isValidated, setIsValidated] = useState("");
   const [proof, setProof] = useState("");
   const [reportId, setReportId] = useState([]);
+  const [reportValidated, setReportValidated] = useState(false);
   const [reportedType, setReportedType] = useState("");
+  const [openTime, setOpenTime] = useState("");
   const [userFeedback, setUserFeedback] = useState([]);
   const [workerFeedback, setWorkerFeedback] = useState([]);
 
@@ -81,6 +83,27 @@ const Reports = () => {
   // Get unique report types and statuses for dropdown options
   const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
   const statuses = [...new Set(reports.map((item) => item.status))];
+
+  const timeElapsed = (reportDate) => {
+    const now = new Date();
+    const reportDateTime = new Date(reportDate);
+    const timeDiff = now - reportDateTime;
+
+    const seconds = Math.floor(timeDiff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""}`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""}`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
+    } else {
+      return `${seconds} second${seconds > 1 ? "s" : ""}`;
+    }
+  };
 
   return (
     <>
@@ -358,6 +381,8 @@ const Reports = () => {
                                   setIsValidated(data.is_validated);
                                   setReportId(data.id);
                                   setReportedType(data.type_of_report);
+                                  setReportValidated(data.is_validated);
+                                  setOpenTime(timeElapsed(data.report_date));
                                 }}
                               >
                                 {data.is_validated ? "REVIEW" : "VALIDATE"}
@@ -430,6 +455,11 @@ const Reports = () => {
                                   </span>
                                 )}
                               </p>
+                              <p className="text-xs font-normal text-[#2f2f2f] capitalize">
+                                {`Report has been open for: `}
+                                <br />
+                                <strong>{timeElapsed(data.report_date)}</strong>
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -458,6 +488,8 @@ const Reports = () => {
                             setIsValidated(data.is_validated);
                             setReportId(data.id);
                             setReportedType(data.type_of_report);
+                            setReportValidated(data.is_validated);
+                            setOpenTime(timeElapsed(data.report_date));
                           }}
                         >
                           {data.is_validated ? "REVIEW" : "VALIDATE"}
@@ -531,6 +563,8 @@ const Reports = () => {
         isValidated={isValidated}
         reportId={reportId}
         reportedType={reportedType}
+        reportValidated={reportValidated}
+        openTime={openTime}
       />
     </>
   );
