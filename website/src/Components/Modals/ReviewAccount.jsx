@@ -71,6 +71,7 @@ const ReviewAccount = ({
       const res = await axiosInstance.put(`/api/verify-user/${id}/`)
       if(res){
         alert("User verified success!")
+        location.reload()
       }
     } catch (error) {
       console.error("Error verifying user: ", error.message)
