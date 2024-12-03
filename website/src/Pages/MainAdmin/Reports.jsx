@@ -84,6 +84,15 @@ const Reports = () => {
   const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
   const statuses = [...new Set(reports.map((item) => item.status))];
 
+  const emergencyTypes = [
+    "Fire",
+    "Fires",
+    "Flood",
+    "Floods",
+    "Earthquake",
+    "Earthquakes",
+  ];
+
   const timeElapsed = (reportDate) => {
     const now = new Date();
     const reportDateTime = new Date(reportDate);
@@ -308,7 +317,9 @@ const Reports = () => {
                               </p>
                             </td>
                             <td className="p-4">
-                              <p className="w-full line-clamp-2">{`${data.longitude} , ${data.latitude}`}</p>
+                              <p className="w-full line-clamp-2">
+                                {data.location}
+                              </p>
                             </td>
 
                             <td className="p-4">
@@ -355,13 +366,15 @@ const Reports = () => {
 
                             <td className="w-full p-4 flex items-center justify-center">
                               <button
-                                className="bg-main  text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                                className={`py-2 px-4 font-semibold rounded-md truncate ${
+                                  emergencyTypes.includes(data.type_of_report)
+                                    ? "bg-red-500 text-white hover:bg-red-600"
+                                    : "bg-main text-white hover:bg-textSecond hover:scale-105 ease-in-out duration-500"
+                                }`}
                                 onClick={() => {
                                   setShowReport(true);
                                   setName(data.username);
-                                  setLocation(
-                                    `${data.longitude} , ${data.latitude}`
-                                  );
+                                  setLocation(data.location);
                                   setReportType(
                                     data.custom_type
                                       ? data.type_of_report +
@@ -385,7 +398,9 @@ const Reports = () => {
                                   setOpenTime(timeElapsed(data.report_date));
                                 }}
                               >
-                                {data.is_validated ? "REVIEW" : "VALIDATE"}
+                                {emergencyTypes.includes(data.type_of_report)
+                                  ? "REVIEW"
+                                  : "Validate"}
                               </button>
                             </td>
                           </tr>
@@ -430,7 +445,7 @@ const Reports = () => {
                                   : data.type_of_report}
                               </p>
                               <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
-                                {`${data.longitude} , ${data.latitude}`}
+                                {data.location}
                               </p>
                               <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
                                 {data.assigned_to
@@ -466,11 +481,15 @@ const Reports = () => {
                       </div>
                       <div className="flex justify-center items-center mt-4">
                         <button
-                          className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                          className={`py-2 px-4 font-semibold rounded-md truncate ${
+                            emergencyTypes.includes(data.type_of_report)
+                              ? "bg-red-500 text-white hover:bg-red-600"
+                              : "bg-main text-white hover:bg-textSecond hover:scale-105 ease-in-out duration-500"
+                          }`}
                           onClick={() => {
                             setShowReport(true);
                             setName(data.username);
-                            setLocation(`${data.longitude} , ${data.latitude}`);
+                            setLocation(data.location);
                             setReportType(
                               data.custom_type
                                 ? data.type_of_report + " , " + data.custom_type
@@ -492,7 +511,9 @@ const Reports = () => {
                             setOpenTime(timeElapsed(data.report_date));
                           }}
                         >
-                          {data.is_validated ? "REVIEW" : "VALIDATE"}
+                          {emergencyTypes.includes(data.type_of_report)
+                            ? "Review"
+                            : "Validate"}
                         </button>
                       </div>
                     </div>
