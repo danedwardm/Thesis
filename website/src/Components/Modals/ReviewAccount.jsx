@@ -68,14 +68,15 @@ const ReviewAccount = ({
 
   const handleVerify = async (id) => {
     try {
-      const res = await axiosInstance.put(`/api/verify-user/${id}/`)
-      if(res){
-        alert("User verified success!")
+      const res = await axiosInstance.put(`/api/verify-user/${id}/`);
+      if (res) {
+        alert("User verified success!");
+        window.location.reload();
       }
     } catch (error) {
-      console.error("Error verifying user: ", error.message)
+      console.error("Error verifying user: ", error.message);
     }
-  }
+  };
 
   const getUserInfo = (data, field, defaultValue) => {
     return data ? data[field] || defaultValue : defaultValue;
@@ -363,8 +364,8 @@ const ReviewAccount = ({
                           ? "py-3 px-4  border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                           : "hidden"
                       }
-                      onClick={ async (e) => { 
-                        e.preventDefault()
+                      onClick={async (e) => {
+                        e.preventDefault();
                         handleVerify(userId);
                       }}
                     >

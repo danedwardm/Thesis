@@ -179,7 +179,7 @@ const Dashboard = () => {
         </div>
 
         {/* Map */}
-        <div className="w-full flex-grow bg-black md:mt-5 mt-3 border-2 border-t-main">
+        <div className="w-full flex-grow bg-black md:mt-5 mt-3 border-2 border-t-main z-10">
           {/* <div ref={mapRef} style={mapContainerStyle}></div> */}
 
           <Map lat={location.lat} lon={location.lng} />

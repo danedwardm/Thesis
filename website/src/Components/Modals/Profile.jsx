@@ -93,7 +93,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
                       <div className="text-xs font-extrabold  text-main uppercase truncate">
-                        {user.full_name }
+                        {user.username}
                       </div>
                     </div>
                   </div>
@@ -123,7 +123,18 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {user.department_id || "Not applicable as admin"}
+                        {user.department_id === 1
+                          ? "Fire"
+                          : user.department_id === 2
+                          ? "Medical"
+                          : user.department_id === 3
+                          ? "Police"
+                          : user.department_id === 4
+                          ? "Street Maintenance"
+                          : user.department_id === 5
+                          ? "Pothole Maintenance"
+                          : user.department_id ||
+                            "Not applicable as main admin"}
                       </p>
                     </div>
                   </div>
@@ -133,7 +144,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {user.station || "Not applicable as admin"}
+                        {user.station || "Not applicable as main admin"}
                       </p>
                     </div>
                   </div>
@@ -143,7 +154,7 @@ const Profile = ({ isVisible, onClose }) => {
                     </div>
                     <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
                       <p className="text-xs font-semibold text-gray-500 truncate">
-                        {user.station_address || "Not applicable as admin"}
+                        {user.station_address || "Not applicable as main admin"}
                       </p>
                     </div>
                   </div>

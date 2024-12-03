@@ -13,6 +13,7 @@ const Map = ({ lat, lon }) => {
 
   const API_KEY = "b29aa0efcb4db33afa698232bfb7b3a2"; // Replace with your OpenWeatherMap API key
   const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
+  // const WEATHER_API_URL = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
 
   useEffect(() => {
     // Fetch weather data
@@ -39,7 +40,7 @@ const Map = ({ lat, lon }) => {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="w-full h-full flex flex-col items-center z-10">
+    <div className="w-full h-full flex flex-col items-center">
       <MapContainer
         id="map"
         center={[lat, lon]}
@@ -72,16 +73,26 @@ const Map = ({ lat, lon }) => {
 
         {/* Loop through reports and add a marker for each */}
         {reports.map((report) => {
-          const { latitude, longitude, id } = report;
+          const {
+            latitude,
+            longitude,
+            id,
+            status,
+            location,
+            report_description,
+            username,
+            type_of_report,
+          } = report;
 
           return (
             <Marker key={id} position={[latitude, longitude]}>
               <Popup>
                 <div>
-                  <h4>Report</h4>
-                  <p>
-                    Location: ({latitude}, {longitude})
-                  </p>
+                  <h4>Report: {type_of_report}</h4>
+                  <p>Reported by: {username}</p>
+                  <p>Location: {location}</p>
+                  <p>Description: {report_description}</p>
+                  <p>Status: {status}</p>
                   {/* You can display other report details here */}
                 </div>
               </Popup>

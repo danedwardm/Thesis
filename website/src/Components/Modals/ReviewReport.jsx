@@ -8,7 +8,7 @@ import ImageModal from "./ImageModal";
 import Feedback from "./Feedback";
 import DeleteReport from "./DeleteReport";
 
-import { getFirestore, doc, setDoc } from "firebase/firestore"; // Add these imports for Firestore operations
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore"; // Add these imports for Firestore operations
 import { app } from "../../Firebase/firebaseConfig";
 import { useAuth } from "../../AuthContext/AuthContext";
 
@@ -32,6 +32,8 @@ const ReviewReport = ({
   isValidated,
   reportId,
   reportedType,
+  reportValidated,
+  openTime,
 }) => {
   if (!isVisible) return null;
 
@@ -41,6 +43,7 @@ const ReviewReport = ({
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const account_type = localStorage.getItem("accountType");
 
   useEffect(() => {
     setUsername(user.username); // Log user when it's available
@@ -48,10 +51,6 @@ const ReviewReport = ({
 
   const handleImageClick = () => {
     setShowImageModal(true);
-  };
-
-  const handleFeeedbackClick = () => {
-    setShowFeeedback(true);
   };
 
   const handleDeleteModal = () => {
@@ -66,24 +65,61 @@ const ReviewReport = ({
 
     const reportRef = doc(
       db,
-      `reports/${reportedType.toLowerCase()}/reports/${reportId}`
+      `reports/${reportType.toLowerCase()}/reports/${reportId}`
     );
 
     try {
-      await setDoc(
-        reportRef,
-        {
-          is_validated: true,
-          update_date: localDateISOString,
-          validated_date: localDateISOString,
-          validated_by: username,
-        },
-        { merge: true }
-      );
-      console.log("Report validated and updated successfully!", reportId);
-      alert("Report validated successfully!");
-      onClose(); // Close the modal
-      // window.location.reload();
+      // Fetch the report data to get the report_date
+      const reportSnapshot = await getDoc(reportRef);
+
+      if (reportSnapshot.exists()) {
+        const reportData = reportSnapshot.data();
+
+        // Ensure the report contains the 'report_date' field
+        if (reportData && reportData.report_date) {
+          const createdAt = new Date(reportData.report_date);
+
+          // Calculate the time taken to validate the report
+          const validationTime = new Date(localDateISOString);
+
+          // Ensure that both dates are valid Date objects
+          if (createdAt instanceof Date && validationTime instanceof Date) {
+            const timeDiffInMilliseconds =
+              validationTime.getTime() - createdAt.getTime();
+            const timeDiffInMinutes = timeDiffInMilliseconds / (1000 * 60);
+
+            // Calculate the hours and minutes
+            const hours = Math.floor(timeDiffInMinutes / 60);
+            const minutes = Math.floor(timeDiffInMinutes % 60);
+
+            // Format time as hours:minutes (e.g., "2:51")
+            const formattedTime = `${hours}:${minutes
+              .toString()
+              .padStart(2, "0")}`;
+
+            // Proceed with the validation and updating the report
+            await setDoc(
+              reportRef,
+              {
+                is_validated: true,
+                update_date: localDateISOString,
+                validated_date: localDateISOString,
+                validated_by: username,
+                validation_time: formattedTime, // Add validation time
+              },
+              { merge: true }
+            );
+            alert("Report validated successfully!");
+            onClose(); // Close the modal
+          } else {
+            console.error("Invalid date objects for validation calculation.");
+          }
+        } else {
+          console.error("Missing or invalid 'report_date' in report data.");
+        }
+      } else {
+        console.error("Report document does not exist.");
+      }
     } catch (error) {
       console.error("Error validating report:", error);
     }
@@ -188,12 +224,14 @@ const ReviewReport = ({
                   </div>
                   <div className="w-1/2 flex flex-col items-center justify-center">
                     <div className="flex items-center justify-start w-full py-2 px-1">
-                      <p className="text-xs font-semibold ">Assigned To</p>
+                      <p className="text-xs font-semibold ">
+                        Report has been open for
+                      </p>
                     </div>
                     <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                       <div className="w-full bg-white resize-none outline-none text-xs font-normal">
                         <span className="text-xs font-semibold text-gray-500 truncate">
-                          {assignedTo ? assignedTo : "Not Assigned"}
+                          {openTime}
                         </span>
                       </div>
                     </div>
@@ -285,14 +323,15 @@ const ReviewReport = ({
                     >
                       FEEDBACK
                     </button> */}
-                    {!isValidated && (
-                      <button
-                        className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
-                        onClick={handleValidateClick}
-                      >
-                        VALIDATE
-                      </button>
-                    )}
+                    {!reportValidated &&
+                      account_type !== "department_admin" && (
+                        <button
+                          className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                          onClick={handleValidateClick}
+                        >
+                          VALIDATE
+                        </button>
+                      )}
 
                     <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
                       ASSIGN

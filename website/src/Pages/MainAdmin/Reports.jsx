@@ -27,7 +27,9 @@ const Reports = () => {
   const [isValidated, setIsValidated] = useState("");
   const [proof, setProof] = useState("");
   const [reportId, setReportId] = useState([]);
+  const [reportValidated, setReportValidated] = useState(false);
   const [reportedType, setReportedType] = useState("");
+  const [openTime, setOpenTime] = useState("");
   const [userFeedback, setUserFeedback] = useState([]);
   const [workerFeedback, setWorkerFeedback] = useState([]);
 
@@ -82,8 +84,35 @@ const Reports = () => {
   const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
   const statuses = [...new Set(reports.map((item) => item.status))];
 
-  const emergencyTypes = ["Fire", "Fires", "Flood", "Floods", "Earthquake", "Earthquakes"];
+  const emergencyTypes = [
+    "Fire",
+    "Fires",
+    "Flood",
+    "Floods",
+    "Earthquake",
+    "Earthquakes",
+  ];
 
+  const timeElapsed = (reportDate) => {
+    const now = new Date();
+    const reportDateTime = new Date(reportDate);
+    const timeDiff = now - reportDateTime;
+
+    const seconds = Math.floor(timeDiff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      return `${days} day${days > 1 ? "s" : ""}`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? "s" : ""}`;
+    } else if (minutes > 0) {
+      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
+    } else {
+      return `${seconds} second${seconds > 1 ? "s" : ""}`;
+    }
+  };
 
   return (
     <>
@@ -288,7 +317,9 @@ const Reports = () => {
                               </p>
                             </td>
                             <td className="p-4">
-                              <p className="w-full line-clamp-2">{`${data.longitude} , ${data.latitude}`}</p>
+                              <p className="w-full line-clamp-2">
+                                {data.location}
+                              </p>
                             </td>
 
                             <td className="p-4">
@@ -343,10 +374,12 @@ const Reports = () => {
                                 onClick={() => {
                                   setShowReport(true);
                                   setName(data.username);
-                                  setLocation(`${data.longitude} , ${data.latitude}`);
+                                  setLocation(data.location);
                                   setReportType(
                                     data.custom_type
-                                      ? data.type_of_report + " , " + data.custom_type
+                                      ? data.type_of_report +
+                                          " , " +
+                                          data.custom_type
                                       : data.type_of_report
                                   );
                                   setDescription(data.report_description);
@@ -361,6 +394,8 @@ const Reports = () => {
                                   setIsValidated(data.is_validated);
                                   setReportId(data.id);
                                   setReportedType(data.type_of_report);
+                                  setReportValidated(data.is_validated);
+                                  setOpenTime(timeElapsed(data.report_date));
                                 }}
                               >
                                 {emergencyTypes.includes(data.type_of_report)
@@ -410,7 +445,7 @@ const Reports = () => {
                                   : data.type_of_report}
                               </p>
                               <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
-                                {`${data.longitude} , ${data.latitude}`}
+                                {data.location}
                               </p>
                               <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
                                 {data.assigned_to
@@ -435,6 +470,11 @@ const Reports = () => {
                                   </span>
                                 )}
                               </p>
+                              <p className="text-xs font-normal text-[#2f2f2f] capitalize">
+                                {`Report has been open for: `}
+                                <br />
+                                <strong>{timeElapsed(data.report_date)}</strong>
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -449,7 +489,7 @@ const Reports = () => {
                           onClick={() => {
                             setShowReport(true);
                             setName(data.username);
-                            setLocation(`${data.longitude} , ${data.latitude}`);
+                            setLocation(data.location);
                             setReportType(
                               data.custom_type
                                 ? data.type_of_report + " , " + data.custom_type
@@ -467,11 +507,13 @@ const Reports = () => {
                             setIsValidated(data.is_validated);
                             setReportId(data.id);
                             setReportedType(data.type_of_report);
+                            setReportValidated(data.is_validated);
+                            setOpenTime(timeElapsed(data.report_date));
                           }}
                         >
                           {emergencyTypes.includes(data.type_of_report)
-                                  ? "Review"
-                                  : "Validate"}
+                            ? "Review"
+                            : "Validate"}
                         </button>
                       </div>
                     </div>
@@ -542,6 +584,8 @@ const Reports = () => {
         isValidated={isValidated}
         reportId={reportId}
         reportedType={reportedType}
+        reportValidated={reportValidated}
+        openTime={openTime}
       />
     </>
   );
