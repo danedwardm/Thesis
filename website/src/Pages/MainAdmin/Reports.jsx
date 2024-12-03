@@ -82,6 +82,9 @@ const Reports = () => {
   const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
   const statuses = [...new Set(reports.map((item) => item.status))];
 
+  const emergencyTypes = ["Fire", "Fires", "Flood", "Floods", "Earthquake", "Earthquakes"];
+
+
   return (
     <>
       <div className="relative bg-second h-[100vh] w-[100vw] overflow-hidden">
@@ -332,18 +335,18 @@ const Reports = () => {
 
                             <td className="w-full p-4 flex items-center justify-center">
                               <button
-                                className="bg-main  text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                                className={`py-2 px-4 font-semibold rounded-md truncate ${
+                                  emergencyTypes.includes(data.type_of_report)
+                                    ? "bg-red-500 text-white hover:bg-red-600"
+                                    : "bg-main text-white hover:bg-textSecond hover:scale-105 ease-in-out duration-500"
+                                }`}
                                 onClick={() => {
                                   setShowReport(true);
                                   setName(data.username);
-                                  setLocation(
-                                    `${data.longitude} , ${data.latitude}`
-                                  );
+                                  setLocation(`${data.longitude} , ${data.latitude}`);
                                   setReportType(
                                     data.custom_type
-                                      ? data.type_of_report +
-                                          " , " +
-                                          data.custom_type
+                                      ? data.type_of_report + " , " + data.custom_type
                                       : data.type_of_report
                                   );
                                   setDescription(data.report_description);
@@ -360,7 +363,9 @@ const Reports = () => {
                                   setReportedType(data.type_of_report);
                                 }}
                               >
-                                {data.is_validated ? "REVIEW" : "VALIDATE"}
+                                {emergencyTypes.includes(data.type_of_report)
+                                  ? "REVIEW"
+                                  : "Validate"}
                               </button>
                             </td>
                           </tr>
@@ -436,7 +441,11 @@ const Reports = () => {
                       </div>
                       <div className="flex justify-center items-center mt-4">
                         <button
-                          className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                          className={`py-2 px-4 font-semibold rounded-md truncate ${
+                            emergencyTypes.includes(data.type_of_report)
+                              ? "bg-red-500 text-white hover:bg-red-600"
+                              : "bg-main text-white hover:bg-textSecond hover:scale-105 ease-in-out duration-500"
+                          }`}
                           onClick={() => {
                             setShowReport(true);
                             setName(data.username);
@@ -460,7 +469,9 @@ const Reports = () => {
                             setReportedType(data.type_of_report);
                           }}
                         >
-                          {data.is_validated ? "REVIEW" : "VALIDATE"}
+                          {emergencyTypes.includes(data.type_of_report)
+                                  ? "Review"
+                                  : "Validate"}
                         </button>
                       </div>
                     </div>
