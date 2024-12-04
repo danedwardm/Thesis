@@ -21,11 +21,13 @@ import SRainLand from "../../assets/Maps/S-RainLand.jpg";
 import SStorm from "../../assets/Maps/S-Storm.jpg";
 import STsunami from "../../assets/Maps/S-Tsunami.jpg";
 import SWindSus from "../../assets/Maps/S-WindSus.jpg";
-
+import { app } from "../../Firebase/firebaseConfig";
+const db = getFirestore(app)
 import ImageModal from "../../Components/Modals/ImageModal";
 
 // Weather Map Component
 import WeatherMap from "../../Components/Modals/WeatherMap"; // Assuming WeatherMap component is stored in Components folder
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 
 const Notification = () => {
   const [formData, setFormData] = useState({
@@ -70,6 +72,25 @@ const Notification = () => {
     getCurrentLocation();
   }, []);
 
+  const sendNotificationToUsers = async (e) => {
+      try { 
+        e.preventDefault()
+        const notifRef = await addDoc(collection(db, 'globalNotification'), {
+          title: formData.reportType,
+          description: formData.description,
+          createdAt: new Date()
+        })
+
+        if(!notifRef){
+          console.error("Notification sending failed!")
+          return;
+        }
+        alert("Notification sent!");
+      } catch (error) {
+          console.error("Send notification to user: ", error)
+      }
+  }
+
   return (
     <>
       <div className="relative bg-second h-[100vh] w-full overflow-hidden">
@@ -97,7 +118,6 @@ const Notification = () => {
               <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased w-full overflow-y-auto mb-[2vh]">
                 <div className="w-full flex flex-row justify-between bg-main">
                   <form
-                    // onSubmit={handleSubmit}
                     className="w-full flex flex-col space-y-4 p-6 bg-white"
                   >
                     <label
@@ -113,7 +133,7 @@ const Notification = () => {
                       // value={formData.name}
                       // onChange={handleInputChange}
                       className="p-2 border border-main rounded-md"
-                      required
+                    
                     />
 
                     <label
@@ -149,7 +169,9 @@ const Notification = () => {
                     ></textarea>
 
                     <button
-                      type="submit"
+                      onClick={(e) => {
+                        sendNotificationToUsers(e)
+                      }}
                       className="bg-main text-white py-2 px-6 rounded-md hover:bg-main-dark"
                     >
                       Send Notification

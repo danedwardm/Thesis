@@ -124,7 +124,17 @@ const AuthProvider = ({ children }) => {
           totalCount += notDoneReports.length;
           setTotalNotDoneReportsCount(totalCount);
           console.log("Total not done reports count:", totalCount);
+          const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          let weeklyCount = 0
+          const weeklyReports = updateReports.filter((data) => {
+            const reportDate = new Date(data.report_date);
+            return reportDate >= oneWeekAgo;
+          });
 
+          weeklyCount += weeklyReports.length;
+          localStorage.setItem("weeklyReportCount", weeklyCount);
+          setWeeklyReportsCount(weeklyCount)
           // Combine and filter reports to ensure uniqueness based on 'id'
           setReports((prevReports) => {
             const combinedReports = [...prevReports, ...updateReports];
