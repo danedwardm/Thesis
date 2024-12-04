@@ -50,6 +50,7 @@ const WeatherMap = ({ lat, lon }) => {
         <TileLayer
           url={`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${API_KEY}`}
           attribution="&copy; <a href='https://openweathermap.org'>OpenWeatherMap</a>"
+          opacity={0.7}
         />
         {/* Add a marker for the weather location */}
         <Marker position={[lat, lon]}>

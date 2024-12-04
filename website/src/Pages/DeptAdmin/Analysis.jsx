@@ -22,9 +22,9 @@ const Analysis = () => {
           <Navbar />
           <NavText />
           <div className="flex flex-row items-center pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[20vh]">
-            <PieChart />
+            {/* <PieChart />
             <ReportCategoryChart />
-            <ReportTrends />
+            <ReportTrends /> */}
           </div>
         </div>
       </div>
