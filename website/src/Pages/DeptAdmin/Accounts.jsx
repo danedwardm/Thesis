@@ -100,7 +100,9 @@ const Accounts = () => {
 
   const currentUsers = sortedUsers.slice(indexOfFirstItem, indexOfLastItem);
   const statuses = [...new Set(Data.map((item) => item.status))];
-
+  useEffect(() => {
+    console.log("User: ", currentUsers)
+  },[])
   // Get unique report types and statuses for dropdown options
   // const accountType = [...new Set(Data.map((item) => item.type))];
   // const accountVerified = [...new Set(Data.map((item) => item.verified))];
@@ -303,18 +305,6 @@ const Accounts = () => {
                         Verified
                       </th>
                       <th scope="col" className="text-center p-3 truncate">
-                        Violation
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Type
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Status
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Update Date
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
                         Action
                       </th>
                     </tr>
@@ -346,52 +336,7 @@ const Accounts = () => {
                               Not Verified
                             </p>
                           )}
-                        </td>
-                        <td className="p-4 text-center font-semibold uppercase">
-                          <p className="w-full truncate">{data.violation}</p>
-                        </td>
-                        <td className="p-4 text-center font-semibold uppercase">
-                          {data.role === "superadmin" ? (
-                            <p className="w-full font-bold truncate text-[#363636]">
-                              {data.role}
-                            </p>
-                          ) : data.role === "citizen" ? (
-                            <p className="w-full truncate font-bold text-[#363636]">
-                              {data.role}
-                            </p>
-                          ) : (
-                            <p className="w-full truncate font-bold text-[#363636]">
-                              {data.role}
-                            </p>
-                          )}
-                        </td>
-                        <td className="p-4 text-center font-semibold uppercase">
-                          {data.account_status == "Active" ||
-                          data.account_status == "active" ? (
-                            <p className="w-full font-bold truncate text-[#007a3f]">
-                              {data.account_status}
-                            </p>
-                          ) : data.account_status == "suspended" ||
-                            data.account_status == "Suspended" ? (
-                            <p className="w-full truncate font-bold text-[#a10b00]">
-                              {data.account_status}
-                            </p>
-                          ) : data.account_status == "blocked" ||
-                            data.account_status == "Blocked" ? (
-                            <p className="w-full truncate font-bold text-[#363636]">
-                              {data.account_status}
-                            </p>
-                          ) : (
-                            <p className="w-full truncate font-bold text-[#363636]">
-                              {data.account_status}
-                            </p>
-                          )}
-                        </td>
-                        <td className="p-4">
-                          <p className="w-full truncate">
-                            {formatDate(data.date_joined)}
-                          </p>
-                        </td>
+                        </td>                   
                         <td className="p-4 text-center">
                           <button
                             className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond ease-in-out duration-500 truncate"
