@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Prompt from "./Prompt";
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { useAuth } from "../../AuthContext/AuthContext";
+import MapPicker from "./MapPicker";
 
 const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
   if (!isVisible) return null;
@@ -19,6 +20,8 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
   const [password_confirm, setPasswordConfirm] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [errors, setErrors] = useState("");
+  const [showMapPicker, setShowMapPicker] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [isPasswordConfirmVisible, setIsPasswordConfirmVisible] =
     useState(false);
   const [incompleteInput, setIncompleteInput] = useState(false);
@@ -163,6 +166,12 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       password_confirm,
     });
   };
+  const handleStationAddressChange = (newLocation) => {
+    setStationAddress(`${newLocation.lat}, ${newLocation.lng}`);
+    setSelectedLocation(newLocation);
+    setShowMapPicker(false);
+  };
+
 
   return (
     <>
@@ -285,24 +294,32 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                         </div>
                         <div className="w-full flex flex-col items-center justify-center">
                           <div className="flex justify-start items-center w-full py-2">
-                            <p className="text-xs font-semibold ">
-                              Station Address
-                            </p>
-                            <p className="text-xs font-semibold text-red-700">
-                              *
-                            </p>
+                            <p className="text-xs font-semibold">Station Address</p>
+                            <p className="text-xs font-semibold text-red-700">*</p>
                           </div>
-                          <div className="px-4 py-3 bg-white w-full flex items-center justify-center  border border-main rounded-md">
+                          <div className="relative px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
                             <textarea
                               value={stationAddress}
-                              onChange={(e) =>
-                                setStationAddress(e.target.value)
-                              }
+                              onChange={(e) => setStationAddress(e.target.value)}
                               rows={1}
-                              className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
+                              className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden pr-10"
                               placeholder="Enter Station Address"
-                            ></textarea>
+                            />
+                            <div
+                              onClick={() => setShowMapPicker(true)} // Opens the map picker when clicked
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 2.57 1.58 5.26 3.69 7.88L12 22l3.31-5.12C17.42 14.26 19 11.57 19 9c0-3.87-3.13-7-7-7zm0 10c-1.39 0-2.5-1.11-2.5-2.5S10.61 7 12 7s2.5 1.11 2.5 2.5S13.39 12 12 12z" />
+                              </svg>
+                            </div>
                           </div>
+                          {/* Show Map Picker if active */}
+                          <MapPicker
+                            isVisible={showMapPicker}
+                            onClose={() => setShowMapPicker(false)}
+                            onSelectLocation={handleStationAddressChange}
+                          />
                         </div>
                       </>
                     )}
