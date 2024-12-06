@@ -9,6 +9,8 @@ import {
   query,
   where,
   getFirestore,
+  doc,
+  setDoc,
 } from "firebase/firestore";
 import { app } from "../../Firebase/firebaseConfig";
 
@@ -50,7 +52,7 @@ const ReviewAccount = ({
     setShowDenyModal(true);
   };
 
-  useEffect(() => {
+useEffect(() => {
     const verifyRef = collection(db, "verifyAccount");
     const q = query(verifyRef, where("user", "==", userId));
 
@@ -70,6 +72,14 @@ const ReviewAccount = ({
     try {
       const res = await axiosInstance.put(`/api/verify-user/${id}/`)
       if(res){
+        const notifRef = doc(db, "notifications");
+        await setDoc(notifRef, {
+          title: "Your account has been verified!",
+          description: "You can now user our report platform!",
+          userId: id,
+          screen: "/(tabs)/camera",
+          createdAt: new Date()
+        })
         alert("User verified success!")
         location.reload()
       }

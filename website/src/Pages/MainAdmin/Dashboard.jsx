@@ -15,10 +15,9 @@ const mapContainerStyle = {
 };
 
 const Dashboard = () => {
-  const { totalNotDoneReportsCount, weeklyReportsCount } = useAuth();
+  const { totalNotDoneReportsCount } = useAuth();
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef(null);
-  const [cachedWeeklyReportCount, setCachedWeeklyReportCount] = useState(parseInt(localStorage.getItem('weeklyReportCount')) || 0)
   const [location, setLocation] = useState({
     lat: 14.9767, // Default fallback coordinates (e.g., UCC South Campus)
     lng: 120.9705,
@@ -140,7 +139,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                {weeklyReportsCount || cachedWeeklyReportCount}
+                0 
               </div>
             </div>
           </div>

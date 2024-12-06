@@ -266,6 +266,7 @@ const AuthProvider = ({ children }) => {
         } else if (account_type === "superadmin") {
           const response = await axiosInstance.get("api/users/");
           localStorage.setItem("users_count", response.data.length);
+          console.log("User data: ", response.data)
           setUsers(response.data);
         }
 
@@ -365,6 +366,7 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("coordinates");
     localStorage.removeItem("accountType");
     localStorage.removeItem("station");
+    localStorage.removeItem("weeklyReportCount");
     delete axiosInstance.defaults.headers.common["Authorization"];
     setAuthenticated(false); // Set user as not authenticated
   };

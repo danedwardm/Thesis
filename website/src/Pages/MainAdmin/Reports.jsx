@@ -16,9 +16,17 @@ import { GiHole } from "react-icons/gi";
 import { FaTrafficLight } from "react-icons/fa6";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { useAuth } from "../../AuthContext/AuthContext";
+import { app } from "../../Firebase/firebaseConfig";
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  getDocs,
+} from "firebase/firestore";
+const db = getFirestore(app)
 
 const Reports = () => {
-  const { reports, users } = useAuth();
+  const { users } = useAuth();
   const [showReport, setShowReport] = useState(false);
   const [name, setName] = useState("");
   const [reportType, setReportType] = useState("");
@@ -48,8 +56,49 @@ const Reports = () => {
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const [newReports, setNewReports] = useState([]);
+  const [reports, setReports] = useState([])
 
-  // Filter data based on selected filters
+  const fetchDocuments = async () => {
+    const categories = [
+      "fires",
+      "street lights",
+      "potholes",
+      "floods",
+      "others",
+      "road accident",
+    ];
+  
+    const unsubscribeFunctions = categories.map((category) => 
+      onSnapshot(collection(db, `reports/${category}/reports`), async (snapshot) => {
+        const updateReports = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return { ...data, id: doc.id };
+        });
+  
+        // Avoid duplicate reports using Map for uniqueness
+        setReports((prevReports) => {
+          const newReportsMap = new Map([...prevReports, ...updateReports].map((report) => [report.id, report]));
+          return Array.from(newReportsMap.values());
+        });
+      })
+    );
+  
+    return () => {
+      unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+    };
+  };
+  
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const unsubscribe = await fetchDocuments();
+      return unsubscribe;
+    };
+    fetchData().catch((error) => {
+      console.error("Error in fetching documents:", error);
+    });
+  }, []);
+
   const filteredData = reports.filter((item) => {
     return (
       (selectedReportType === "" ||
@@ -359,8 +408,8 @@ const Reports = () => {
                                   : "NOT VALIDATED"}
                               </p>
                               <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
-                                {data.assigned_to
-                                  ? data.assigned_to
+                                {data.assigned_to_id
+                                  ? 'Assigned'
                                   : "Not Assigned"}
                               </p>
                               <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">

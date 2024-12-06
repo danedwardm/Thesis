@@ -65,6 +65,7 @@ const Accounts = () => {
       (selectedVerified === "Verified" ? user.is_verified : !user.is_verified);
     return matchesType && matchesStatus && matchesVerified; // Only include users that match both filters
   });
+  useEffect(() => console.log(users), [users])
 
   const handleAddAccount = () => {
     setShowAddAccount(true);
