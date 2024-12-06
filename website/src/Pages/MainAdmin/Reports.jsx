@@ -5,7 +5,15 @@ import Navbar from "./Navigation/NavBar";
 import NavText from "./Navigation/NavText";
 import ReviewReport from "../../Components/Modals/ReviewReport";
 
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import {
+  FaAngleLeft,
+  FaAngleRight,
+  FaFire,
+  FaWater,
+  FaCar,
+} from "react-icons/fa";
+import { GiHole } from "react-icons/gi";
+import { FaTrafficLight } from "react-icons/fa6";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { useAuth } from "../../AuthContext/AuthContext";
 
@@ -35,7 +43,7 @@ const Reports = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Number of items per page
+  const itemsPerPage = 9; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
@@ -103,16 +111,82 @@ const Reports = () => {
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
+    // Calculate remaining time after extracting full days
+    const remainingHours = hours % 24;
+    const remainingMinutes = minutes % 60;
+    const remainingSeconds = seconds % 60;
+
+    let result = "";
+
+    // Show days if any
     if (days > 0) {
-      return `${days} day${days > 1 ? "s" : ""}`;
-    } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? "s" : ""}`;
-    } else if (minutes > 0) {
-      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
-    } else {
-      return `${seconds} second${seconds > 1 ? "s" : ""}`;
+      result += `${days} day${days > 1 ? "s" : ""}`;
+    }
+
+    // Show hours if any
+    if (remainingHours > 0) {
+      if (result) result += ", "; // Add a separator if we already have days
+      result += `${remainingHours} hour${remainingHours > 1 ? "s" : ""}`;
+    }
+
+    // Show minutes if any
+    if (remainingMinutes > 0) {
+      if (result) result += ", "; // Add a separator if we already have days or hours
+      result += `${remainingMinutes} minute${remainingMinutes > 1 ? "s" : ""}`;
+    }
+
+    return result;
+  };
+
+  const getIcon = (type) => {
+    switch (type) {
+      case "fires":
+        return <FaFire className="text-[#2f2f2f] text-xl" />;
+      case "floods":
+        return <FaWater className="text-[#2f2f2f] text-xl" />;
+      case "road accident ":
+        return <FaCar className="text-[#2f2f2f] text-xl" />;
+      case "street lights":
+        return <FaTrafficLight className="text-[#2f2f2f] text-xl" />;
+      case "potholes":
+        return <GiHole className="text-[#2f2f2f] text-xl" />;
+      default:
+        return <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />;
     }
   };
+
+  function convertToDaysHoursMinutes(time) {
+    // Split time into hours and minutes
+    const [hours, minutes] = time.split(":").map(Number);
+
+    // Convert total time into minutes
+    const totalMinutes = hours * 60 + minutes;
+
+    // Calculate days, hours, and minutes
+    const days = Math.floor(totalMinutes / 1440); // 1440 minutes in a day
+    const remainingMinutes = totalMinutes % 1440;
+    const hoursLeft = Math.floor(remainingMinutes / 60);
+    const minutesLeft = remainingMinutes % 60;
+
+    // Build the result string with conditional formatting
+    let result = "";
+
+    if (days > 0) {
+      result += `${days} day${days > 1 ? "s" : ""}`;
+    }
+
+    if (hoursLeft > 0) {
+      if (result) result += ", "; // Add separator if days were already added
+      result += `${hoursLeft} hour${hoursLeft > 1 ? "s" : ""}`;
+    }
+
+    if (minutesLeft > 0 || (days === 0 && hoursLeft === 0)) {
+      if (result) result += ", "; // Add separator if days or hours were already added
+      result += `${minutesLeft} minute${minutesLeft > 1 ? "s" : ""}`;
+    }
+
+    return result;
+  }
 
   return (
     <>
@@ -131,7 +205,7 @@ const Reports = () => {
           <Navbar />
           <NavText />
           <div className="flex pt-5 mb-[5vh] mt-[30vh] md:mt-[30vh] lg:mt-[20vh] ">
-            <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased min-h-[70vh] w-full mx-10">
+            <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased min-h-[70vh] w-[90vw] mx-10">
               {/* header and filter button */}
               <div className="flex flex-row justify-between bg-main">
                 <div className="flex justify-center items-center py-3 px-8">
@@ -235,183 +309,9 @@ const Reports = () => {
                   )}
                 </div>
               </div>
-              {/* table header*/}
-              <div className="hidden md:block px-5 py-5 h-full">
-                <table className="w-full table-fixed">
-                  <thead className="text-xs font-bold text-gray-500">
-                    <tr className="border-b">
-                      <th scope="col" className="text-start p-3 truncate">
-                        User
-                      </th>
-                      <th scope="col" className="text-start p-3 truncate">
-                        Report Type
-                      </th>
-                      <th scope="col" className="text-start p-3 truncate">
-                        Description
-                      </th>
-                      <th scope="col" className="text-start p-3 truncate">
-                        Location
-                      </th>
-
-                      <th scope="col" className="text-start p-3 truncate">
-                        Assigned To
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Update Date
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Status
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        User's Trust Score
-                      </th>
-
-                      <th scope="col" className="text-center p-3 truncate">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {updatedData
-                      .sort(
-                        (a, b) =>
-                          new Date(b.update_date) - new Date(a.update_date)
-                      ) // Sort in descending order
-                      .map((data, index) => {
-                        const reportDate = new Date(data.update_date);
-                        const formattedDate = reportDate.toLocaleDateString(); // e.g., "10/28/2024"
-                        const formattedTime = reportDate.toLocaleTimeString(
-                          [],
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }
-                        );
-
-                        return (
-                          <tr
-                            className="text-xs font-normal even:bg-square hover:bg-[#f6edff] ease-in-out duration-500 cursor-pointer border-b"
-                            key={index.id}
-                          >
-                            <th
-                              scope="row"
-                              className="text-[#24693c] text-start p-4"
-                            >
-                              <p className="w-full truncate">{data.username}</p>
-                            </th>
-                            <td
-                              className="p-4 font-semibold uppercase"
-                              scope="row"
-                            >
-                              <p className="w-full line-clamp-2">
-                                {data.custom_type
-                                  ? data.type_of_report +
-                                    " , " +
-                                    data.custom_type
-                                  : data.type_of_report}
-                              </p>
-                            </td>
-                            <td className="p-4">
-                              <p className="w-full line-clamp-2">
-                                {data.report_description}
-                              </p>
-                            </td>
-                            <td className="p-4">
-                              <p className="w-full line-clamp-2">
-                                {data.location}
-                              </p>
-                            </td>
-
-                            <td className="p-4">
-                              <p className="w-full font-semibold line-clamp-2">
-                                {data.assigned_to
-                                  ? data.assigned_to
-                                  : "Not Assigned"}
-                              </p>
-                            </td>
-                            <td className="p-4 text-center">
-                              <p className="w-full truncate">
-                                {`${formattedDate} ${formattedTime}`}
-                              </p>
-                            </td>
-                            <td className="p-4 text-center font-semibold uppercase">
-                              {data.status === "Pending" ? (
-                                <p className=" w-full font-bold truncate text-[#a10b00]">
-                                  {data.status}
-                                </p>
-                              ) : data.status === "done" ? (
-                                <p className=" w-full truncate font-bold text-[#007a3f]">
-                                  {data.status}
-                                </p>
-                              ) : data.status === "reviewing" ? (
-                                <p className="w-full truncate font-bold text-[#6e4615]">
-                                  {data.status}
-                                </p>
-                              ) : data.status === "ongoing" ? (
-                                <p className="w-full truncate font-bold text-[#FFA500]">
-                                  {data.status}
-                                </p>
-                              ) : (
-                                <p className="w-full truncate font-bold text-[#363636]">
-                                  {data.status}
-                                </p>
-                              )}
-                            </td>
-
-                            <td className="p-4 text-center">
-                              <p className="w-full line-clamp-2">
-                                {data.score}
-                              </p>
-                            </td>
-
-                            <td className="w-full p-4 flex items-center justify-center">
-                              <button
-                                className={`py-2 px-4 font-semibold rounded-md truncate ${
-                                  emergencyTypes.includes(data.type_of_report)
-                                    ? "bg-red-500 text-white hover:bg-red-600"
-                                    : "bg-main text-white hover:bg-textSecond hover:scale-105 ease-in-out duration-500"
-                                }`}
-                                onClick={() => {
-                                  setShowReport(true);
-                                  setName(data.username);
-                                  setLocation(data.location);
-                                  setReportType(
-                                    data.custom_type
-                                      ? data.type_of_report +
-                                          " , " +
-                                          data.custom_type
-                                      : data.type_of_report
-                                  );
-                                  setDescription(data.report_description);
-                                  setDate(`${formattedDate} ${formattedTime}`);
-                                  setStatus(data.status);
-                                  setAssignedTo(data.assigned_to);
-                                  setAttachment(data.image_path);
-                                  setUpvote(data.upvote);
-                                  setDownvote(data.downvote);
-                                  setFeedback(data.feedback);
-                                  setProof(data.proof);
-                                  setIsValidated(data.is_validated);
-                                  setReportId(data.id);
-                                  setReportedType(data.type_of_report);
-                                  setReportValidated(data.is_validated);
-                                  setOpenTime(timeElapsed(data.report_date));
-                                }}
-                              >
-                                {emergencyTypes.includes(data.type_of_report)
-                                  ? "REVIEW"
-                                  : "Validate"}
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                  </tbody>
-                </table>
-              </div>
 
               {/* card report  */}
-              <div className="block md:hidden px-5 py-5">
+              <div className="w-full px-5 py-5 flex flex-wrap gap-8 md:justify-start justify-center">
                 {currentData.map((data, index) => {
                   const reportDate = new Date(data.update_date);
                   const formattedDate = reportDate.toLocaleDateString(); // e.g., "10/28/2024"
@@ -423,29 +323,40 @@ const Reports = () => {
                   return (
                     <div
                       key={index}
-                      className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
+                      className="bg-[#FAF5FF] min-w-[370px] max-w-[370px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
                     >
                       <div className="flex flex-col flex-1">
                         <div className="flex gap-4">
                           <div className="flex items-center justify-center rounded-md">
                             <div className="bg-square p-4 rounded-lg">
-                              <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />
+                              {getIcon(data.type_of_report.toLowerCase())}
                             </div>
                           </div>
                           <div className="flex flex-col justify-between py-1 w-full">
                             <div className="grid gap-1 text-start">
-                              <p className="text-xs font-bold text-[#113e21] truncate">
-                                {data.username}
-                              </p>
-                              <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                              <p className="text-xs font-bold text-[#2f2f2f] text-center uppercase truncate">
                                 {data.custom_type
                                   ? data.type_of_report +
                                     " , " +
                                     data.custom_type
                                   : data.type_of_report}
                               </p>
-                              <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                              <p className="text-xs font-bold text-[#113e21] truncate">
+                                {data.username}
+                              </p>
+                              <p className="text-xs font-normal text-[#2f2f2f] capitalize overflow-hidden text-ellipsis line-clamp-2 ">
                                 {data.location}
+                              </p>
+                              <p
+                                className={`text-xs font-bold capitalize truncate ${
+                                  data.is_validated
+                                    ? "text-[#007a3f]"
+                                    : "text-[#a10b00]"
+                                }`}
+                              >
+                                {data.is_validated
+                                  ? "VALIDATED"
+                                  : "NOT VALIDATED"}
                               </p>
                               <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
                                 {data.assigned_to
@@ -455,35 +366,80 @@ const Reports = () => {
                               <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
                                 {`${formattedDate} ${formattedTime}`}
                               </p>
-                              <p className="text-xs font-bold capitalize truncate">
-                                {data.status === "assigned" ? (
-                                  <span className="text-[#a10b00]">
-                                    {data.status}
+                              <p className="text-xs capitalize">
+                                Status:{" "}
+                                {data.status === "Pending" ? (
+                                  <span className="text-[#a10b00] font-bold">
+                                    {data.status.toUpperCase()}
+                                  </span>
+                                ) : data.status === "done" ? (
+                                  <span className="text-[#007a3f] font-bold">
+                                    {data.status.toUpperCase()}
+                                  </span>
+                                ) : data.status === "reviewing" ? (
+                                  <span className="text-[#6e4615] font-bold">
+                                    {data.status.toUpperCase()}
                                   </span>
                                 ) : data.status === "ongoing" ? (
-                                  <span className="text-[#007a3f]">
-                                    {data.status}
+                                  <span className="text-[#FFA500] font-bold">
+                                    {data.status.toUpperCase()}
                                   </span>
                                 ) : (
-                                  <span className="text-[#363636]">
-                                    {data.status}
+                                  <span className="text-[#363636] font-bold">
+                                    {data.status.toUpperCase()}
                                   </span>
                                 )}
                               </p>
-                              <p className="text-xs font-normal text-[#2f2f2f] capitalize">
-                                {`Report has been open for: `}
-                                <br />
-                                <strong>{timeElapsed(data.report_date)}</strong>
-                              </p>
+                              {data.validation_time && (
+                                <p className="text-xs font-normal text-[#2f2f2f] truncate">
+                                  {`Validation Time: `}
+                                  <strong>
+                                    {convertToDaysHoursMinutes(
+                                      data.validation_time
+                                    )}
+                                  </strong>
+                                </p>
+                              )}
+                              {data.review_elapsed_time && (
+                                <p className="text-xs font-normal text-[#2f2f2f] truncate">
+                                  {`Responding Time: `}
+                                  <strong>
+                                    {convertToDaysHoursMinutes(
+                                      data.review_elapsed_time
+                                    )}
+                                  </strong>
+                                </p>
+                              )}
+                              {data.report_closed_time && (
+                                <p className="text-xs font-normal text-[#2f2f2f] truncate">
+                                  {`Report Close Time: `}
+                                  <strong>
+                                    {convertToDaysHoursMinutes(
+                                      data.report_closed_time
+                                    )}
+                                  </strong>
+                                </p>
+                              )}
+                              {data.status !== "done" && (
+                                <p className="text-xs font-normal text-[#2f2f2f]">
+                                  {`Report Open For: `}
+                                  <strong>
+                                    {timeElapsed(data.report_date)}
+                                  </strong>
+                                </p>
+                              )}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="flex justify-center items-center mt-4">
                         <button
-                          className={`py-2 px-4 font-semibold rounded-md truncate ${
-                            emergencyTypes.includes(data.type_of_report)
-                              ? "bg-red-500 text-white hover:bg-red-600"
+                          className={`w-full py-2 px-4 font-semibold rounded-md truncate ${
+                            emergencyTypes.includes(data.type_of_report) &&
+                            !data.is_validated
+                              ? "bg-orange-600 text-white hover:bg-orange-500"
+                              : emergencyTypes.includes(data.type_of_report)
+                              ? "bg-red-600 text-white hover:bg-red-500"
                               : "bg-main text-white hover:bg-textSecond hover:scale-105 ease-in-out duration-500"
                           }`}
                           onClick={() => {
@@ -511,9 +467,7 @@ const Reports = () => {
                             setOpenTime(timeElapsed(data.report_date));
                           }}
                         >
-                          {emergencyTypes.includes(data.type_of_report)
-                            ? "Review"
-                            : "Validate"}
+                          {data.is_validated ? "REVIEW" : "VALIDATE"}
                         </button>
                       </div>
                     </div>

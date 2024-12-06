@@ -94,15 +94,31 @@ const Reports = () => {
     const hours = Math.floor(minutes / 60);
     const days = Math.floor(hours / 24);
 
+    // Calculate remaining time after extracting full days
+    const remainingHours = hours % 24;
+    const remainingMinutes = minutes % 60;
+    const remainingSeconds = seconds % 60;
+
+    let result = "";
+
+    // Show days if any
     if (days > 0) {
-      return `${days} day${days > 1 ? "s" : ""}`;
-    } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? "s" : ""}`;
-    } else if (minutes > 0) {
-      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
-    } else {
-      return `${seconds} second${seconds > 1 ? "s" : ""}`;
+      result += `${days} day${days > 1 ? "s" : ""}`;
     }
+
+    // Show hours if any
+    if (remainingHours > 0) {
+      if (result) result += ", "; // Add a separator if we already have days
+      result += `${remainingHours} hour${remainingHours > 1 ? "s" : ""}`;
+    }
+
+    // Show minutes if any
+    if (remainingMinutes > 0) {
+      if (result) result += ", "; // Add a separator if we already have days or hours
+      result += `${remainingMinutes} minute${remainingMinutes > 1 ? "s" : ""}`;
+    }
+
+    return result;
   };
 
   const getIcon = (type) => {
@@ -121,6 +137,39 @@ const Reports = () => {
         return <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />;
     }
   };
+
+  function convertToDaysHoursMinutes(time) {
+    // Split time into hours and minutes
+    const [hours, minutes] = time.split(":").map(Number);
+
+    // Convert total time into minutes
+    const totalMinutes = hours * 60 + minutes;
+
+    // Calculate days, hours, and minutes
+    const days = Math.floor(totalMinutes / 1440); // 1440 minutes in a day
+    const remainingMinutes = totalMinutes % 1440;
+    const hoursLeft = Math.floor(remainingMinutes / 60);
+    const minutesLeft = remainingMinutes % 60;
+
+    // Build the result string with conditional formatting
+    let result = "";
+
+    if (days > 0) {
+      result += `${days} day${days > 1 ? "s" : ""}`;
+    }
+
+    if (hoursLeft > 0) {
+      if (result) result += ", "; // Add separator if days were already added
+      result += `${hoursLeft} hour${hoursLeft > 1 ? "s" : ""}`;
+    }
+
+    if (minutesLeft > 0 || (days === 0 && hoursLeft === 0)) {
+      if (result) result += ", "; // Add separator if days or hours were already added
+      result += `${minutesLeft} minute${minutesLeft > 1 ? "s" : ""}`;
+    }
+
+    return result;
+  }
 
   return (
     <>
@@ -220,7 +269,7 @@ const Reports = () => {
                     return (
                       <div
                         key={index}
-                        className="bg-[#FAF5FF] w-[350px] max-w-[400px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
+                        className="bg-[#FAF5FF] min-w-[370px] max-w-[370px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
                       >
                         <div className="flex flex-col flex-1">
                           <div className="flex gap-4">
@@ -231,15 +280,15 @@ const Reports = () => {
                             </div>
                             <div className="flex flex-col justify-between py-1 w-full">
                               <div className="grid gap-1 text-start">
-                                <p className="text-xs font-bold text-[#113e21] truncate">
-                                  {data.username}
-                                </p>
-                                <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                                <p className="text-xs font-bold text-[#2f2f2f] text-center uppercase truncate">
                                   {data.custom_type
                                     ? data.type_of_report +
                                       " , " +
                                       data.custom_type
                                     : data.type_of_report}
+                                </p>
+                                <p className="text-xs font-bold text-[#113e21] truncate">
+                                  {data.username}
                                 </p>
                                 <p className="text-xs font-normal text-[#2f2f2f] capitalize overflow-hidden text-ellipsis line-clamp-2 ">
                                   {data.location}
@@ -252,57 +301,74 @@ const Reports = () => {
                                   }`}
                                 >
                                   {data.is_validated
-                                    ? "Validated"
-                                    : "Not Validated"}
+                                    ? "VALIDATED"
+                                    : "NOT VALIDATED"}
+                                </p>
+                                <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                                  {data.assigned_to
+                                    ? data.assigned_to
+                                    : "Not Assigned"}
                                 </p>
                                 <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
                                   {`${formattedDate} ${formattedTime}`}
                                 </p>
-                                <p className="text-xs font-bold capitalize truncate">
+                                <p className="text-xs capitalize">
+                                  Status:{" "}
                                   {data.status === "Pending" ? (
-                                    <span className="text-[#a10b00]">
-                                      {data.status}
+                                    <span className="text-[#a10b00] font-bold">
+                                      {data.status.toUpperCase()}
                                     </span>
                                   ) : data.status === "done" ? (
-                                    <span className="text-[#007a3f]">
-                                      {data.status}
+                                    <span className="text-[#007a3f] font-bold">
+                                      {data.status.toUpperCase()}
                                     </span>
                                   ) : data.status === "reviewing" ? (
-                                    <span className="text-[#6e4615]">
-                                      {data.status}
+                                    <span className="text-[#6e4615] font-bold">
+                                      {data.status.toUpperCase()}
                                     </span>
                                   ) : data.status === "ongoing" ? (
-                                    <span className="text-[#FFA500]">
-                                      {data.status}
+                                    <span className="text-[#FFA500] font-bold">
+                                      {data.status.toUpperCase()}
                                     </span>
                                   ) : (
-                                    <span className="text-[#363636]">
-                                      {data.status}
+                                    <span className="text-[#363636] font-bold">
+                                      {data.status.toUpperCase()}
                                     </span>
                                   )}
                                 </p>
                                 {data.validation_time && (
-                                  <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                                  <p className="text-xs font-normal text-[#2f2f2f] truncate">
                                     {`Validation Time: `}
-                                    <strong>{data.validation_time}</strong>
+                                    <strong>
+                                      {convertToDaysHoursMinutes(
+                                        data.validation_time
+                                      )}
+                                    </strong>
                                   </p>
                                 )}
                                 {data.review_elapsed_time && (
-                                  <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                                  <p className="text-xs font-normal text-[#2f2f2f] truncate">
                                     {`Responding Time: `}
-                                    <strong>{data.review_elapsed_time}</strong>
+                                    <strong>
+                                      {convertToDaysHoursMinutes(
+                                        data.review_elapsed_time
+                                      )}
+                                    </strong>
                                   </p>
                                 )}
                                 {data.report_closed_time && (
-                                  <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                                  <p className="text-xs font-normal text-[#2f2f2f] truncate">
                                     {`Report Close Time: `}
-                                    <strong>{data.report_closed_time}</strong>
+                                    <strong>
+                                      {convertToDaysHoursMinutes(
+                                        data.report_closed_time
+                                      )}
+                                    </strong>
                                   </p>
                                 )}
                                 {data.status !== "done" && (
-                                  <p className="text-xs font-normal text-[#2f2f2f] capitalize">
-                                    {`Report has been open for: `}
-                                    <br />
+                                  <p className="text-xs font-normal text-[#2f2f2f]">
+                                    {`Report Open For: `}
                                     <strong>
                                       {timeElapsed(data.report_date)}
                                     </strong>
