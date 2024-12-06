@@ -194,6 +194,12 @@ const AuthProvider = ({ children }) => {
       if (!res) {
         throw new Error("Error in Department Registration");
       }
+
+      // Send verification email
+      await axiosInstance.post("api/send-admin-verification-email/", {
+        email: email,
+      });
+
       return res;
     } catch (error) {
       if (error.response) {
