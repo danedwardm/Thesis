@@ -125,7 +125,7 @@ const AuthProvider = ({ children }) => {
           setTotalNotDoneReportsCount(totalCount);
           console.log("Total not done reports count:", totalCount);
           const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
           let weeklyCount = 0
           const weeklyReports = updateReports.filter((data) => {
             const reportDate = new Date(data.report_date);
