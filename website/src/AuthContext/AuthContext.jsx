@@ -34,10 +34,12 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken"); // Example token check
     const account_type = localStorage.getItem("accountType"); // Example token check
+    const is_email_verified = localStorage.getItem("isEmailVerified") === 'true'; // Check email verification status
     if (token) {
       department();
       setAccountType(account_type);
       setAuthenticated(true);
+      setEmailVerified(is_email_verified); // Set email verification status
       fetchUserInfo(token);
     } else {
       setAccountType("");
@@ -338,11 +340,13 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("department", department);
       localStorage.setItem("coordinates", coordinates);
       localStorage.setItem("station", station);
+      localStorage.setItem("isEmailVerified", is_email_verified); // Store email verification status
   
       axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${access}`;
   
       setAccountType(account_type);
       setAuthenticated(true);
+      setEmailVerified(is_email_verified); // Set email verification status
       fetchUserInfo(access);
   
       return { ...res.data, is_email_verified }; // Adding the is_email_verified here
@@ -369,6 +373,7 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("coordinates");
     localStorage.removeItem("accountType");
     localStorage.removeItem("station");
+    localStorage.removeItem("isEmailVerified"); // Remove email verification status
     delete axiosInstance.defaults.headers.common["Authorization"];
     setAuthenticated(false); // Set user as not authenticated
   };
@@ -387,6 +392,7 @@ const AuthProvider = ({ children }) => {
         user,
         users,
         totalNotDoneReportsCount,
+        emailVerified, // Provide email verification status
       }}
     >
       {children}
