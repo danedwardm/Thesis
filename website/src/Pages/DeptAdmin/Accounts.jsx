@@ -345,7 +345,7 @@ const Accounts = () => {
                               setUserID(data.id);
                             }}
                           >
-                            {data.is_verified ? "REVIEW" : "VERIFY"}
+                            REVIEW
                           </button>
                         </td>
                       </tr>
@@ -442,7 +442,7 @@ const Accounts = () => {
                           setIdPicture(data.id_picture);
                         }}
                       >
-                        {data.is_verified ? "REVIEW" : "VERIFY"}
+                        REVIEW
                       </button>
                     </div>
                   </div>

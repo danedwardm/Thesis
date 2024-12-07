@@ -28,6 +28,7 @@ const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [totalNotDoneReportsCount, setTotalNotDoneReportsCount] = useState(0);
   const [weeklyReportsCount, setWeeklyReportsCount] = useState(0);
+  const [emailVerified, setEmailVerified] = useState(false);
 
   // Check authentication on initial load from localStorage
   useEffect(() => {
@@ -195,11 +196,6 @@ const AuthProvider = ({ children }) => {
         throw new Error("Error in Department Registration");
       }
 
-      // Send verification email
-      await axiosInstance.post("api/send-admin-verification-email/", {
-        email: email,
-      });
-
       return res;
     } catch (error) {
       if (error.response) {
@@ -312,6 +308,7 @@ const AuthProvider = ({ children }) => {
         username: email,
         password,
       });
+
       console.log("Login response:", res.data);
 
       const {
@@ -323,7 +320,9 @@ const AuthProvider = ({ children }) => {
         station,
         department,
         user_id,
+        is_email_verified,
       } = res.data;
+
       if (
         account_type !== "superadmin" &&
         account_type !== "department_admin" &&
@@ -333,7 +332,6 @@ const AuthProvider = ({ children }) => {
         return null;
       }
 
-      // Set tokens and authentication state
       localStorage.setItem("accessToken", access);
       localStorage.setItem("user_id", user_id);
       localStorage.setItem("refreshToken", refresh);
@@ -342,16 +340,18 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("department", department);
       localStorage.setItem("coordinates", coordinates);
       localStorage.setItem("station", station);
+
       axiosInstance.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${access}`;
+
       setAccountType(account_type);
-      setAuthenticated(true); // Set user as authenticated
+      setAuthenticated(true);
       fetchUserInfo(access);
-      return res;
+
+      return { ...res.data, is_email_verified }; // Adding the is_email_verified here
     } catch (error) {
       if (error.response && error.response.data) {
-        // Check if the error is due to invalid credentials (401 Unauthorized)
         if (error.response.status === 401) {
           alert("Invalid username or password. Please try again.");
         } else {

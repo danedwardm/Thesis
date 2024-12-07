@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import Landing from "./Pages/Landing";
 import Login from "./Pages/Login";
 import Dashboard from "./Pages/MainAdmin/Dashboard";
@@ -11,34 +12,45 @@ import DeptAnalysis from "./Pages/DeptAdmin/Analysis";
 import DeptAccounts from "./Pages/DeptAdmin/Accounts";
 import { useAuth } from "./AuthContext/AuthContext"; // Import the AuthContext
 import ProtectedRoutes from "./Components/ProtectedRoutes"; // Import the new component
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ReportTrends from "./Chart/ReportTrends";
 import ReportCategoryChart from "./Chart/ReportCategoryChart";
 import PieChart from "./Chart/PieChart";
+import OtpModal from "./Components/Modals/OtpModal"; // Import the OTP modal
 
 function App() {
-  const { account_type, authenticated } = useAuth(); // Access authentication status
+  const { account_type, authenticated, emailVerified } = useAuth(); // Access authentication status and email verification status
+  const [showOtpModal, setShowOtpModal] = useState(false); // State for OTP Modal visibility
+
+  const handleOtpModalClose = () => setShowOtpModal(false);
 
   return (
     <BrowserRouter>
       <Routes>
         <Route index element={<Landing />} />
+        
         {/* Login Route */}
         <Route
           path="/login"
           element={
             authenticated ? (
-              // Redirect based on account_type if already authenticated
               account_type === "superadmin" ? (
-                <Navigate to="/admin/dashboard" replace />
+                emailVerified ? (
+                  <Navigate to="/admin/dashboard" replace />
+                ) : (
+                  <Login showOtpModal={true} setShowOtpModal={setShowOtpModal} />
+                )
               ) : account_type === "department_admin" ? (
-                <Navigate to="/dept-admin/dashboard" replace />
+                emailVerified ? (
+                  <Navigate to="/dept-admin/dashboard" replace />
+                ) : (
+                  <Login showOtpModal={true} setShowOtpModal={setShowOtpModal} />
+                )
               ) : (
-                <Navigate to="/login" /> // This is more explicit in case something went wrong
+                <Navigate to="/login" />
               )
             ) : (
-              <Login /> // Show Login component if not authenticated
+              <Login showOtpModal={false} />
             )
           }
         />
@@ -104,6 +116,16 @@ function App() {
           <Route path="/trends" element={<ReportTrends />} />
         </Route>
       </Routes>
+
+      {/* OTP Modal, conditionally shown when the user is not verified */}
+      {showOtpModal && (
+        <OtpModal
+          isVisible={showOtpModal}
+          onClose={handleOtpModalClose}
+          onSubmit={() => {}}
+          onResend={() => {}}
+        />
+      )}
     </BrowserRouter>
   );
 }
