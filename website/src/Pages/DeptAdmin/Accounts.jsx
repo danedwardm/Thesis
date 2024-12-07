@@ -354,7 +354,7 @@ const Accounts = () => {
                               setUserID(data.id);
                             }}
                           >
-                            {data.is_verified ? "REVIEW" : "VERIFY"}
+                            {data.is_verified ? "REVIEW" : "VIEW"}
                           </button>
                         </td>
                       </tr>
