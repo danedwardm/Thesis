@@ -46,6 +46,7 @@ const Accounts = () => {
   const { account_type, departments } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
+  const [userVerificationStatus, setUserVerificationStatus] = useState({});
 
   const [selectedVerified, setSelectedVerified] = useState("Not Verified"); // Selected verified filter
   const accountVerified = ["Verified", "Not Verified"];
@@ -125,6 +126,33 @@ const Accounts = () => {
       })
       .replace(",", ""); // Replace comma between date and time (optional)
   };
+
+  useEffect(() => {
+    if (!currentUsers || currentUsers.length === 0) return;
+
+    // Loop through each user and check the verification status
+    currentUsers.forEach((user) => {
+      // If the verification status is already fetched, skip the request
+      if (userVerificationStatus[user.id] !== undefined) return;
+
+      const verifyRef = collection(db, "verifyAccount");
+      const q = query(verifyRef, where("user", "==", user.id));
+
+      // Set initial status for the user to loading
+      setUserVerificationStatus((prevStatus) => ({
+        ...prevStatus,
+        [user.id]: null, // Ensure it's set to null initially to indicate loading
+      }));
+
+      // Listen for verification status
+      onSnapshot(q, (snapshot) => {
+        setUserVerificationStatus((prevStatus) => ({
+          ...prevStatus,
+          [user.id]: snapshot.empty ? false : true, // Set verification status
+        }));
+      });
+    });
+  }, [currentUsers]);
 
   return (
     <>
@@ -426,9 +454,12 @@ const Accounts = () => {
                             {formatDate(data.date_joined)}
                           </p>
                         </td>
-
                         <td className="p-4 text-center">
-                          <p className="w-full truncate">{data.score}</p>
+                          <p className="w-full truncate">
+                            {data.score === null
+                              ? "Not Applicable"
+                              : data.score}
+                          </p>
                         </td>
                         <td className="p-4 text-center">
                           <button
@@ -448,7 +479,13 @@ const Accounts = () => {
                               setUserScore(data.score);
                             }}
                           >
-                            {data.is_verified ? "REVIEW" : "VERIFY"}
+                            {data.is_verified
+                              ? "REVIEW"
+                              : userVerificationStatus[data.id] === null
+                              ? "Loading..."
+                              : userVerificationStatus[data.id]
+                              ? "VERIFY"
+                              : "REVIEW"}
                           </button>
                         </td>
                       </tr>
@@ -545,7 +582,13 @@ const Accounts = () => {
                           setIdPicture(data.id_picture);
                         }}
                       >
-                        {data.is_verified ? "REVIEW" : "VERIFY"}
+                        {data.is_verified
+                          ? "REVIEW"
+                          : userVerificationStatus[data.id] === null
+                          ? "Loading..."
+                          : userVerificationStatus[data.id]
+                          ? "VERIFY"
+                          : "REVIEW"}
                       </button>
                     </div>
                   </div>
