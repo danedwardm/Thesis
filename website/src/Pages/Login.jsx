@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "../assets/android-icon-square.png";
 import { Link } from "react-router-dom";
 import { LuUser, LuKey, LuEye, LuEyeOff } from "react-icons/lu";
 import axiosInstance from "../axios-instance"; // Ensure this imports your configured axios instance
 import { useAuth } from "../AuthContext/AuthContext";
 import { useNavigate } from "react-router-dom";
+import OtpModal from "../Components/Modals/OtpModal";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +14,8 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState("");
+  const [showOtpModal, setShowOtpModal] = useState(false); // State to control OTP modal visibility
+  const [otpEmail, setOtpEmail] = useState(""); // State to store email for OTP verification
 
   const isValidEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -33,33 +36,74 @@ const Login = () => {
     if (!isValidEmail(email)) {
       setErrors("Please enter a valid email address.");
       setIsLoading(false);
-      {
-        setTimeout(() => {
-          setErrors("");
-        }, 3000);
-        return;
-      }
+      setTimeout(() => {
+        setErrors("");
+      }, 3000);
+      return;
     }
 
     try {
       const res = await onLogin(email, password);
       if (res && res.account_type) {
-        console.log("Account Type:", res.account_type);
         if (res.account_type === "superadmin") {
-          navigate("/admin/dashboard");
+          if (res.is_email_verified) {
+            navigate("/admin/dashboard");
+          } else {
+            setOtpEmail(email);
+            setShowOtpModal(true); // Show OTP modal for unverified email
+          }
         } else if (res.account_type === "department_admin") {
-          navigate("/dept-admin/dashboard");
+          if (res.is_email_verified) {
+            navigate("/dept-admin/dashboard");
+          } else {
+            setOtpEmail(email);
+            setShowOtpModal(true);
+          }
         } else {
-          // navigate("/dept-admin/dashboard");
+          setErrorMessage("Invalid account type. Please try again.");
         }
       }
     } catch (error) {
-      // console.log(error.message);
       setErrorMessage("Login failed. Please try again.");
     } finally {
-      setIsLoading(false); // Reset loading state after the attempt
+      setIsLoading(false);
     }
   };
+
+  const handleOtpSubmit = async (otp) => {
+    try {
+      const res = await axiosInstance.post('/api/resend-otp/verify/', { email: otpEmail });
+      if (res.status === 200) {
+        navigate('/dept-admin/dashboard'); // Redirect to department admin dashboard
+      } else {
+        setErrorMessage("Invalid OTP. Please try again.");
+      }
+    } catch (error) {
+      setErrorMessage("OTP verification failed. Please try again.");
+    } finally {
+      setShowOtpModal(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      const res = await axiosInstance.post('/api/resend-otp-department/', { email: otpEmail });
+      if (res.status === 200) {
+        alert("OTP resent successfully.");
+      } else {
+        setErrorMessage("Failed to resend OTP. Please try again.");
+      }
+    } catch (error) {
+      setErrorMessage("Failed to resend OTP. Please try again.");
+    }
+  };
+
+  // Automatically send OTP when the modal is shown
+  useEffect(() => {
+    if (showOtpModal) {
+      handleResendOtp();
+    }
+  }, [showOtpModal]);
 
   // Allow form submission on "Enter" key press
   const handleKeyDown = (e) => {
@@ -207,6 +251,13 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <OtpModal
+        isVisible={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        onSubmit={handleOtpSubmit}
+        onResend={handleResendOtp} // Pass the resend OTP handler
+        otpEmail={otpEmail} // Pass the email for OTP verification
+      />
     </div>
   );
 };
