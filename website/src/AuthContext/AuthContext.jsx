@@ -28,15 +28,19 @@ const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [totalNotDoneReportsCount, setTotalNotDoneReportsCount] = useState(0);
   const [weeklyReportsCount, setWeeklyReportsCount] = useState(0);
+  const [emailVerified, setEmailVerified] = useState(false);
 
   // Check authentication on initial load from localStorage
   useEffect(() => {
     const token = localStorage.getItem("accessToken"); // Example token check
     const account_type = localStorage.getItem("accountType"); // Example token check
+    const is_email_verified =
+      localStorage.getItem("isEmailVerified") === "true"; // Check email verification status
     if (token) {
       department();
       setAccountType(account_type);
       setAuthenticated(true);
+      setEmailVerified(is_email_verified); // Set email verification status
       fetchUserInfo(token);
     } else {
       setAccountType("");
@@ -125,8 +129,8 @@ const AuthProvider = ({ children }) => {
           setTotalNotDoneReportsCount(totalCount);
           console.log("Total not done reports count:", totalCount);
           const oneWeekAgo = new Date();
-           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-          let weeklyCount = 0
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          let weeklyCount = 0;
           const weeklyReports = updateReports.filter((data) => {
             const reportDate = new Date(data.report_date);
             return reportDate >= oneWeekAgo;
@@ -134,7 +138,7 @@ const AuthProvider = ({ children }) => {
 
           weeklyCount += weeklyReports.length;
           localStorage.setItem("weeklyReportCount", weeklyCount);
-          setWeeklyReportsCount(weeklyCount)
+          setWeeklyReportsCount(weeklyCount);
           // Combine and filter reports to ensure uniqueness based on 'id'
           setReports((prevReports) => {
             const combinedReports = [...prevReports, ...updateReports];
@@ -194,6 +198,7 @@ const AuthProvider = ({ children }) => {
       if (!res) {
         throw new Error("Error in Department Registration");
       }
+
       return res;
     } catch (error) {
       if (error.response) {
@@ -260,14 +265,15 @@ const AuthProvider = ({ children }) => {
       try {
         const account_type = localStorage.getItem("accountType");
         if (account_type === "department_admin") {
-          const response = await axiosInstance.get("api/workers/");
+          const response = await axiosInstance.get("api/users/");
           localStorage.setItem("workers_count", response.data.length);
           setUsers(response.data);
+          // console.log("Users:", response.data);
         } else if (account_type === "superadmin") {
           const response = await axiosInstance.get("api/users/");
           localStorage.setItem("users_count", response.data.length);
-          console.log("User data: ", response.data)
           setUsers(response.data);
+          console.log("Users:", response.data);
         }
 
         console.log("Data fetched successfully");
@@ -305,6 +311,7 @@ const AuthProvider = ({ children }) => {
         username: email,
         password,
       });
+
       console.log("Login response:", res.data);
 
       const {
@@ -316,7 +323,9 @@ const AuthProvider = ({ children }) => {
         station,
         department,
         user_id,
+        is_email_verified,
       } = res.data;
+
       if (
         account_type !== "superadmin" &&
         account_type !== "department_admin" &&
@@ -326,7 +335,6 @@ const AuthProvider = ({ children }) => {
         return null;
       }
 
-      // Set tokens and authentication state
       localStorage.setItem("accessToken", access);
       localStorage.setItem("user_id", user_id);
       localStorage.setItem("refreshToken", refresh);
@@ -335,16 +343,28 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("department", department);
       localStorage.setItem("coordinates", coordinates);
       localStorage.setItem("station", station);
+      localStorage.setItem("isEmailVerified", is_email_verified); // Store email verification status
+
       axiosInstance.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${access}`;
       setAccountType(account_type);
-      setAuthenticated(true); // Set user as authenticated
+      setAuthenticated(true);
+      setEmailVerified(is_email_verified); // Set email verification status
       fetchUserInfo(access);
-      return res;
+      // Fetch department details and store them in local storage
+      if (account_type == "superadmin") {
+        const departmentRes = await axiosInstance.get("api/departments/");
+        const departmentData = departmentRes.data.find(
+          (dep) => dep.id === department
+        );
+        if (departmentData) {
+          localStorage.setItem("departmentName", departmentData.name);
+        }
+      }
+      return { ...res.data, is_email_verified }; // Adding the is_email_verified here
     } catch (error) {
       if (error.response && error.response.data) {
-        // Check if the error is due to invalid credentials (401 Unauthorized)
         if (error.response.status === 401) {
           alert("Invalid username or password. Please try again.");
         } else {
@@ -366,7 +386,8 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("coordinates");
     localStorage.removeItem("accountType");
     localStorage.removeItem("station");
-    localStorage.removeItem("weeklyReportCount");
+    localStorage.removeItem("isEmailVerified"); // Remove email verification status
+    localStorage.removeItem("departmentName"); // Remove department name
     delete axiosInstance.defaults.headers.common["Authorization"];
     setAuthenticated(false); // Set user as not authenticated
   };
@@ -385,6 +406,7 @@ const AuthProvider = ({ children }) => {
         user,
         users,
         totalNotDoneReportsCount,
+        emailVerified, // Provide email verification status
       }}
     >
       {children}
