@@ -112,6 +112,8 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       // Check if the user is a superadmin or department admin
       if (account_type === "superadmin") {
         // Call department_admin_registration for superadmin
+        const department = localStorage.getItem("department");
+        setDepartment(department);
         res = await department_admin_registration(
           username,
           email,
@@ -144,7 +146,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
         const successMessage =
           account_type === "superadmin"
             ? "Department Registration Success!"
-            : "Worker Registration Success!";
+            : "Verification link has been sent to the email address";
         alert(successMessage);
         onClose(); // Close the modal or form
         return;

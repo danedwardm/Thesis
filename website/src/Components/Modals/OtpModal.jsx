@@ -15,6 +15,8 @@ const OtpModal = ({ isVisible, onClose, onSubmit, otpEmail }) => {
       const res = await axiosInstance.post('/api/otp/verify/', { email: otpEmail, otp });
       if (res.status === 200) {
         onSubmit(); // Call the onSubmit prop to handle successful OTP verification
+        localStorage.setItem("isEmailVerified", true); // Update localStorage
+        //window.location.reload(); // Refresh the page
         navigate('/dept-admin/dashboard'); // Redirect to department admin dashboard
       } else {
         setErrorMessage('Invalid OTP. Please try again.');
