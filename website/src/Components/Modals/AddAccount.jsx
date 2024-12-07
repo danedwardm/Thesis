@@ -143,8 +143,8 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       if (res) {
         const successMessage =
           account_type === "superadmin"
-            ? "Department Registration Success! Please Check your Email for Verification."
-            : "Worker Registration Success! Please Check your Email for Verification.";
+            ? "Department Registration Success!"
+            : "Worker Registration Success!";
         alert(successMessage);
         onClose(); // Close the modal or form
         return;
