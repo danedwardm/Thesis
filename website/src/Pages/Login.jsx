@@ -89,7 +89,7 @@ const Login = () => {
     try {
       const res = await axiosInstance.post('/api/resend-otp-department/', { email: otpEmail });
       if (res.status === 200) {
-        alert("OTP resent successfully.");
+        alert("OTP Sent successfully.");
       } else {
         setErrorMessage("Failed to resend OTP. Please try again.");
       }
