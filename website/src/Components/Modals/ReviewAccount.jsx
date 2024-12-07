@@ -38,6 +38,7 @@ const ReviewAccount = ({
   const [selectedImage, setSelectedImage] = useState(null);
   const [showDenyModal, setShowDenyModal] = useState(false);
   const [userInfo, setUserInfo] = useState([]);
+  const account_type = localStorage.getItem("accountType");
 
   // console.log("ReviewAccount", verified);
 
@@ -68,15 +69,15 @@ const ReviewAccount = ({
 
   const handleVerify = async (id) => {
     try {
-      const res = await axiosInstance.put(`/api/verify-user/${id}/`)
-      if(res){
-        alert("User verified success!")
-        location.reload()
+      const res = await axiosInstance.put(`/api/verify-user/${id}/`);
+      if (res) {
+        alert("User verified success!");
+        location.reload();
       }
     } catch (error) {
-      console.error("Error verifying user: ", error.message)
+      console.error("Error verifying user: ", error.message);
     }
-  }
+  };
 
   const getUserInfo = (data, field, defaultValue) => {
     return data ? data[field] || defaultValue : defaultValue;
@@ -358,28 +359,47 @@ const ReviewAccount = ({
                     <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
                       DELETE
                     </button>
+                    {/* for  superadmin */}
+                    {account_type !== "department_admin" && (
+                      <>
+                        <button
+                          className={
+                            verified !== true && verified !== "true"
+                              ? "py-3 px-4  border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                              : "hidden"
+                          }
+                          onClick={async (e) => {
+                            e.preventDefault();
+                            handleVerify(userId);
+                          }}
+                        >
+                          VERIFY
+                        </button>
+                        <button
+                          className={
+                            verified !== true && verified !== "true"
+                              ? "py-3 px-4 border border-black bg-red-500 text-black rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                              : "hidden"
+                          }
+                          onClick={handleDenyClick}
+                        >
+                          DENY
+                        </button>
+                      </>
+                    )}
+
                     <button
                       className={
-                        verified !== true && verified !== "true"
+                        verified !== false && verified !== "false"
                           ? "py-3 px-4  border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                           : "hidden"
                       }
-                      onClick={ async (e) => { 
-                        e.preventDefault()
-                        handleVerify(userId);
-                      }}
+                      // onClick={async (e) => {
+                      //   e.preventDefault();
+                      //   handleVerify(userId);
+                      // }}
                     >
-                      VERIFY
-                    </button>
-                    <button
-                      className={
-                        verified !== true && verified !== "true"
-                          ? "py-3 px-4 border border-black bg-red-500 text-black rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
-                          : "hidden"
-                      }
-                      onClick={handleDenyClick}
-                    >
-                      DENY
+                      SUSPEND
                     </button>
                     <button
                       className="py-3 px-4 border border-main bg-white text-main rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"

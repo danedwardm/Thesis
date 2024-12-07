@@ -125,8 +125,8 @@ const AuthProvider = ({ children }) => {
           setTotalNotDoneReportsCount(totalCount);
           console.log("Total not done reports count:", totalCount);
           const oneWeekAgo = new Date();
-           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-          let weeklyCount = 0
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          let weeklyCount = 0;
           const weeklyReports = updateReports.filter((data) => {
             const reportDate = new Date(data.report_date);
             return reportDate >= oneWeekAgo;
@@ -134,7 +134,7 @@ const AuthProvider = ({ children }) => {
 
           weeklyCount += weeklyReports.length;
           localStorage.setItem("weeklyReportCount", weeklyCount);
-          setWeeklyReportsCount(weeklyCount)
+          setWeeklyReportsCount(weeklyCount);
           // Combine and filter reports to ensure uniqueness based on 'id'
           setReports((prevReports) => {
             const combinedReports = [...prevReports, ...updateReports];
@@ -266,13 +266,15 @@ const AuthProvider = ({ children }) => {
       try {
         const account_type = localStorage.getItem("accountType");
         if (account_type === "department_admin") {
-          const response = await axiosInstance.get("api/workers/");
+          const response = await axiosInstance.get("api/users/");
           localStorage.setItem("workers_count", response.data.length);
           setUsers(response.data);
+          // console.log("Users:", response.data);
         } else if (account_type === "superadmin") {
           const response = await axiosInstance.get("api/users/");
           localStorage.setItem("users_count", response.data.length);
           setUsers(response.data);
+          console.log("Users:", response.data);
         }
 
         console.log("Data fetched successfully");

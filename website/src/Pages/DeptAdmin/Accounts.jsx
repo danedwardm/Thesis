@@ -57,9 +57,9 @@ const Accounts = () => {
     const matchesVerified =
       selectedVerified === "" ||
       (selectedVerified === "Verified" ? user.is_verified : !user.is_verified);
-    return matchesType && matchesStatus && matchesVerified; // Only include users that match both filters
+    const matchesUserId = user.supervisor_id;
+    return matchesType && matchesStatus && matchesVerified && matchesUserId; // Only include users that match both filters
   });
-
   const handleAddAccount = () => {
     setShowAddAccount(true);
   };
@@ -83,15 +83,6 @@ const Accounts = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  // Filter data based on selected filters
-  const filteredData = Data.filter((item) => {
-    return (
-      (selectedAccountType === "" || item.type === selectedAccountType) &&
-      (selectedStatus === "" || item.status === selectedStatus) &&
-      (selectedVerified === "" || item.verified === selectedVerified)
-    );
-  });
-
   const sortedUsers = [...filteredUsers].sort((a, b) => {
     const dateA = new Date(a.date_joined);
     const dateB = new Date(b.date_joined);
@@ -101,8 +92,8 @@ const Accounts = () => {
   const currentUsers = sortedUsers.slice(indexOfFirstItem, indexOfLastItem);
   const statuses = [...new Set(Data.map((item) => item.status))];
   useEffect(() => {
-    console.log("User: ", currentUsers)
-  },[])
+    console.log("User: ", currentUsers);
+  }, []);
   // Get unique report types and statuses for dropdown options
   // const accountType = [...new Set(Data.map((item) => item.type))];
   // const accountVerified = [...new Set(Data.map((item) => item.verified))];
@@ -336,7 +327,7 @@ const Accounts = () => {
                               Not Verified
                             </p>
                           )}
-                        </td>                   
+                        </td>
                         <td className="p-4 text-center">
                           <button
                             className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond ease-in-out duration-500 truncate"
