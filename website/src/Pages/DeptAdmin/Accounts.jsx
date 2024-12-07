@@ -351,7 +351,10 @@ const Accounts = () => {
                               setType(data.role);
                               setAddress(data.address);
                               setEmailAddress(data.email);
-                              setUserID(data.id);
+                              setIdNumber(data.id_number);
+                              setPhoto(data.photo);
+                              setSelfieWId(data.selfie_w_id);
+                              setIdPicture(data.id_picture);
                             }}
                           >
                             {data.is_verified ? "REVIEW" : "VIEW"}
