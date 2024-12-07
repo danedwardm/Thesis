@@ -455,7 +455,11 @@ const Accounts = () => {
                           </p>
                         </td>
                         <td className="p-4 text-center">
-                          <p className="w-full truncate">{data.score}</p>
+                          <p className="w-full truncate">
+                            {data.score === null
+                              ? "Not Applicable"
+                              : data.score}
+                          </p>
                         </td>
                         <td className="p-4 text-center">
                           <button

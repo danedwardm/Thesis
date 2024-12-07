@@ -340,6 +340,7 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("department", department);
       localStorage.setItem("coordinates", coordinates);
       localStorage.setItem("station", station);
+      localStorage.setItem("isEmailVerified", is_email_verified);
 
       axiosInstance.defaults.headers.common[
         "Authorization"
