@@ -348,6 +348,15 @@ const AuthProvider = ({ children }) => {
       setAuthenticated(true);
       setEmailVerified(is_email_verified); // Set email verification status
       fetchUserInfo(access);
+
+      // Fetch department details and store them in local storage
+      if (account_type == "superadmin") {
+        const departmentRes = await axiosInstance.get("api/departments/");
+        const departmentData = departmentRes.data.find(dep => dep.id === department);
+        if (departmentData) {
+          localStorage.setItem("departmentName", departmentData.name);
+        }
+      }
   
       return { ...res.data, is_email_verified }; // Adding the is_email_verified here
     } catch (error) {
@@ -374,6 +383,7 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("accountType");
     localStorage.removeItem("station");
     localStorage.removeItem("isEmailVerified"); // Remove email verification status
+    localStorage.removeItem("departmentName"); // Remove department name
     delete axiosInstance.defaults.headers.common["Authorization"];
     setAuthenticated(false); // Set user as not authenticated
   };
