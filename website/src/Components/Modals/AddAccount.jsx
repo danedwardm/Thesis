@@ -8,6 +8,8 @@ import MapPicker from "./MapPicker";
 const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
   if (!isVisible) return null;
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [showPrompt, setShowPrompt] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -62,7 +64,8 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
+  
     // Check if all required fields are filled
     if (
       !username ||
@@ -74,6 +77,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       !password_confirm
     ) {
       setIncompleteInput(true);
+      setIsLoading(false); // Stop loading spinner for incomplete fields
       console.log(
         "Fields: ",
         username,
@@ -89,29 +93,32 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       }, 3000);
       return;
     }
+  
+    // Validate email
     if (!isValidEmail(email)) {
       setErrors("Please enter a valid email address.");
+      setIsLoading(false); // Stop loading spinner for invalid email
       setTimeout(() => {
         setErrors("");
       }, 3000);
       return;
     }
+  
+    // Check if passwords match
     if (password !== password_confirm) {
       setErrors("Passwords do not match.");
-      {
-        setTimeout(() => {
-          setErrors("");
-        }, 3000);
-        return;
-      }
+      setIsLoading(false); // Stop loading spinner for password mismatch
+      setTimeout(() => {
+        setErrors("");
+      }, 3000);
+      return;
     }
-
+  
     try {
       let res;
-
-      // Check if the user is a superadmin or department admin
+  
+      // Handle account creation based on account type
       if (account_type === "superadmin") {
-        // Call department_admin_registration for superadmin
         const department = localStorage.getItem("department");
         setDepartment(department);
         res = await department_admin_registration(
@@ -125,7 +132,6 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
           password_confirm
         );
       } else if (account_type === "department_admin") {
-        // Call worker_registration for department_admin
         res = await worker_registration(
           username,
           email,
@@ -134,14 +140,14 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
           station,
           stationAddress,
           password,
-          password_confirm,
+          password_confirm
         );
       } else {
-        // Handle any other account types if necessary
         alert("Invalid account type for registration.");
+        setIsLoading(false); // Stop loading spinner for invalid account type
         return;
       }
-
+  
       if (res) {
         const successMessage =
           account_type === "superadmin"
@@ -149,14 +155,17 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
             : "Verification link has been sent to the email address";
         alert(successMessage);
         onClose(); // Close the modal or form
+        setIsLoading(false); // Stop loading spinner after success
         return;
       }
     } catch (error) {
       console.error("Registration error:", error);
       alert(`Registration failed: ${error.message || "Unknown error"}`);
+    } finally {
+      setIsLoading(false); // Ensure loading state is reset
     }
-
-    // Optionally reset form after submission (if needed)
+  
+    // Optionally reset form after submission
     console.log({
       username,
       email,
@@ -392,9 +401,34 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                       ) : null}
                     </div>
                     <div className="w-full flex flex-row gap-4 items-center justify-end mt-5">
-                      <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
-                        CREATE
-                      </button>
+                    <button
+                          type="submit"
+                          className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 flex items-center justify-center"
+                          
+                        >
+                          {isLoading ? (
+                            <svg
+                              className="animate-spin h-5 w-5 mr-3 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 50 50"
+                              stroke="currentColor"
+                            >
+                              <circle
+                                cx="25"
+                                cy="25"
+                                r="20"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                                fill="none"
+                                strokeLinecap="round"
+                                strokeDasharray="125"
+                                strokeDashoffset="50"
+                              />
+                            </svg>
+                          ) : null}
+                          {isLoading ? null : <span>CREATE</span>}
+                        </button>
                       <button
                         className="py-3 px-4 border border-main bg-white text-main rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                         onClick={handlePromtClick}
