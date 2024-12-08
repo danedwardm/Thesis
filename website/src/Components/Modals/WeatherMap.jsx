@@ -18,7 +18,7 @@ const WeatherMap = ({ lat, lon }) => {
         setLoading(true);
         setError(null);
         const response = await axios.get(WEATHER_API_URL);
-        console.log(response.data); // Log the response to see the structure of the data
+        // console.log(response.data); // Log the response to see the structure of the data
         setWeatherData(response.data);
         setLoading(false);
       } catch (err) {

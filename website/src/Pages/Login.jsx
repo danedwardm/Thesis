@@ -72,9 +72,11 @@ const Login = () => {
 
   const handleOtpSubmit = async (otp) => {
     try {
-      const res = await axiosInstance.post('/api/resend-otp/verify/', { email: otpEmail });
+      const res = await axiosInstance.post("/api/resend-otp/verify/", {
+        email: otpEmail,
+      });
       if (res.status === 200) {
-        navigate('/dept-admin/dashboard'); // Redirect to department admin dashboard
+        navigate("/dept-admin/dashboard"); // Redirect to department admin dashboard
       } else {
         setErrorMessage("Invalid OTP. Please try again.");
       }
@@ -87,7 +89,9 @@ const Login = () => {
 
   const handleResendOtp = async () => {
     try {
-      const res = await axiosInstance.post('/api/resend-otp-department/', { email: otpEmail });
+      const res = await axiosInstance.post("/api/resend-otp-department/", {
+        email: otpEmail,
+      });
       if (res.status === 200) {
         alert("OTP Sent successfully.");
       } else {

@@ -18,7 +18,9 @@ const Dashboard = () => {
   const { totalNotDoneReportsCount, weeklyReportsCount } = useAuth();
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef(null);
-  const [cachedWeeklyReportCount, setCachedWeeklyReportCount] = useState(parseInt(localStorage.getItem('weeklyReportCount')) || 0)
+  const [cachedWeeklyReportCount, setCachedWeeklyReportCount] = useState(
+    parseInt(localStorage.getItem("weeklyReportCount")) || 0
+  );
   const [location, setLocation] = useState({
     lat: 14.9767, // Default fallback coordinates (e.g., UCC South Campus)
     lng: 120.9705,
@@ -31,10 +33,11 @@ const Dashboard = () => {
           (position) => {
             const { latitude, longitude } = position.coords;
             setLocation({ lat: latitude, lng: longitude });
+            console.log("Latitude:", latitude, ",", longitude);
           },
           (error) => {
             console.error("Error getting location:", error);
-            // You can use default location here if geolocation fails
+            // In case of error, you can either fallback to a default location or handle it differently
           }
         );
       } else {
@@ -44,8 +47,6 @@ const Dashboard = () => {
 
     getCurrentLocation();
   }, []);
-
-
 
   useEffect(() => {
     const loadGoogleMapsScript = () => {
