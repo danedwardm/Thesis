@@ -5,7 +5,8 @@ import Navbar from "./Navigation/NavBar";
 import NavText from "./Navigation/NavText";
 import PieChart from "../../Chart/PieChart";
 import ReportCategoryChart from "../../Chart/ReportCategoryChart";
-import ReportTrends from "../../Chart/ReportTrends";
+import ReportTrends from "../../Chart/ReportTrendsDept";
+import ReportTimeTrends from "../../Chart/ReportTimeTrendsDept";
 
 const Analysis = () => {
   return (
@@ -21,10 +22,9 @@ const Analysis = () => {
         <div className="relative h-[100vh] w-[100vw] flex flex-col items-center z-30 overflow-auto">
           <Navbar />
           <NavText />
-          <div className="flex flex-row items-center pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[20vh]">
-            {/* <PieChart />
-            <ReportCategoryChart />
-            <ReportTrends /> */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 col-span-4 justify-center items-center pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[15vh] mb-[10vh]">
+            <ReportTrends />
+            <ReportTimeTrends />
           </div>
         </div>
       </div>

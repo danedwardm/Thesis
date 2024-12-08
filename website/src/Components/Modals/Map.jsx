@@ -9,7 +9,7 @@ const Map = ({ lat, lon }) => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log("reports", reports);
+  // console.log("reports", reports);
 
   const API_KEY = "b29aa0efcb4db33afa698232bfb7b3a2"; // Replace with your OpenWeatherMap API key
   const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
@@ -22,7 +22,7 @@ const Map = ({ lat, lon }) => {
         setLoading(true);
         setError(null);
         const response = await axios.get(WEATHER_API_URL);
-        console.log(response.data); // Log the response to see the structure of the data
+        // console.log(response.data); // Log the response to see the structure of the data
         setWeatherData(response.data);
         setLoading(false);
       } catch (err) {

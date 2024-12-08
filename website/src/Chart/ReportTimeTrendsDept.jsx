@@ -16,7 +16,7 @@ import {
 
 const db = getFirestore(app);
 
-// Register necessary components from Chart.js
+// Register the necessary components from Chart.js
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -32,8 +32,11 @@ const ReportTimeTrends = () => {
   const [reports, setReports] = useState([]);
   const [chartData, setChartData] = useState({
     labels: [], // Hour labels (e.g., "0:00", "1:00", ..., "23:00")
-    datasets: [], // Datasets for the number of reports created at each hour
+    datasets: [], // Dataset for the number of reports created at each hour
   });
+
+  const userId = localStorage.getItem("user_id"); // Get the current user ID from localStorage
+  console.log("userId", userId);
 
   // Fetch reports from Firestore
   const fetchDocuments = async () => {
@@ -49,11 +52,12 @@ const ReportTimeTrends = () => {
       return onSnapshot(
         collection(db, `reports/${category}/reports`),
         (snapshot) => {
-          const updateReports = snapshot.docs.map((doc) => ({
-            ...doc.data(),
-            category,
-            id: doc.id, // Track unique document ID
-          }));
+          const updateReports = snapshot.docs
+            .map((doc) => ({
+              ...doc.data(),
+              id: doc.id, // Track unique document ID
+            }))
+            .filter((report) => report.assigned_to_id == userId); // Filter reports by assigned_to_id
 
           setReports((prevReports) => {
             // Avoid duplicate reports by using the document ID
@@ -78,52 +82,40 @@ const ReportTimeTrends = () => {
 
   useEffect(() => {
     if (reports.length > 0) {
-      const reportCounts = {
-        fires: Array(24).fill(0),
-        "street lights": Array(24).fill(0),
-        potholes: Array(24).fill(0),
-        floods: Array(24).fill(0),
-        others: Array(24).fill(0),
-        "road accident": Array(24).fill(0),
-      };
+      const reportCounts = Array(24).fill(0); // Initialize an array with 24 slots (for each hour)
 
-      // Count the number of reports for each hour of the day, by category
+      // Count the number of reports for each hour of the day
       reports.forEach((report) => {
-        const timestamp = new Date(report.report_date); // Assuming report_date is a Firebase Timestamp
-        const hour = timestamp.getHours(); // Extract the hour from the report's timestamp
-        const category = report.category; // Get the report category
+        // Assuming report_date is an ISO string, parse it correctly
+        const timestamp = new Date(report.report_date); // The timestamp from Firestore
+        const hour = timestamp.getUTCHours(); // Use getUTCHours() to avoid time zone discrepancies
 
-        if (reportCounts[category]) {
-          reportCounts[category][hour] += 1; // Increment the count for the hour in that category
-        }
+        reportCounts[hour] += 1; // Increment the count for that hour
       });
 
       // Prepare data for the chart
       const labels = Array.from({ length: 24 }, (_, index) => `${index}:00`); // ["0:00", "1:00", ..., "23:00"]
 
-      const datasets = Object.keys(reportCounts).map((category) => {
-        const color = categoryColors[category] || "rgba(75, 192, 192, 0.4)"; // Default color if no custom color
-        return {
-          label: category,
-          data: reportCounts[category],
-          fill: false,
-          backgroundColor: color.backgroundColor,
-          borderColor: color.borderColor,
-          tension: 0.1, // Smooth lines
-        };
-      });
-
       setChartData({
         labels: labels, // Hour labels for x-axis
-        datasets: datasets, // Datasets for each category
+        datasets: [
+          {
+            label: "Number of Reports",
+            data: reportCounts, // Number of reports for each hour
+            fill: false,
+            backgroundColor: "rgba(75, 192, 192, 0.4)", // Light green color
+            borderColor: "rgba(75, 192, 192, 1)", // Dark green color
+            tension: 0.1, // Smooth lines
+          },
+        ],
       });
     }
   }, [reports]);
 
   return (
-    <div className="w-4/5 flex-grow h-[400px] mt-8 ml-8">
+    <div className="w-[650px] flex-grow h-[400px] mt-8">
       <div className="font-bold text-md text-main">
-        Report Trends Based on Time of the Day (By Category)
+        Report Trends Based on Time of the Day
       </div>
       <Line
         data={chartData}
@@ -171,31 +163,3 @@ const ReportTimeTrends = () => {
 };
 
 export default ReportTimeTrends;
-
-// Define category colors for the chart
-const categoryColors = {
-  fires: {
-    backgroundColor: "rgba(255, 99, 132, 0.4)", // Pink
-    borderColor: "rgba(255, 99, 132, 1)",
-  },
-  "street lights": {
-    backgroundColor: "rgba(54, 162, 235, 0.4)", // Blue
-    borderColor: "rgba(54, 162, 235, 1)",
-  },
-  potholes: {
-    backgroundColor: "rgba(255, 206, 86, 0.4)", // Yellow
-    borderColor: "rgba(255, 206, 86, 1)",
-  },
-  floods: {
-    backgroundColor: "rgba(75, 192, 192, 0.4)", // Green
-    borderColor: "rgba(75, 192, 192, 1)",
-  },
-  others: {
-    backgroundColor: "rgba(153, 102, 255, 0.4)", // Purple
-    borderColor: "rgba(153, 102, 255, 1)",
-  },
-  "road accident": {
-    backgroundColor: "rgba(255, 159, 64, 0.4)", // Orange
-    borderColor: "rgba(255, 159, 64, 1)",
-  },
-};
