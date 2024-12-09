@@ -48,31 +48,6 @@ const Dashboard = () => {
     getCurrentLocation();
   }, []);
 
-  useEffect(() => {
-    const loadGoogleMapsScript = () => {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        const map = new google.maps.Map(mapRef.current, {
-          center: location, // Dynamically set map center to user's location
-          zoom: 15, // Adjust zoom level as needed
-        });
-
-        // Create a marker at the user's current location
-        const marker = new google.maps.Marker({
-          position: location,
-          map: map,
-          title: "Your Current Location",
-        });
-      };
-      document.head.appendChild(script);
-    };
-
-    loadGoogleMapsScript();
-  }, [googleMapsApiKey, location]); // Re-run whenever location changes
-
   return (
     <div className="relative bg-second h-screen w-screen overflow-hidden flex flex-col">
       {/* Background squares */}

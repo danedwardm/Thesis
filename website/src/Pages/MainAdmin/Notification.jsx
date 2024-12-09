@@ -22,7 +22,7 @@ import SStorm from "../../assets/Maps/S-Storm.jpg";
 import STsunami from "../../assets/Maps/S-Tsunami.jpg";
 import SWindSus from "../../assets/Maps/S-WindSus.jpg";
 import { app } from "../../Firebase/firebaseConfig";
-const db = getFirestore(app)
+const db = getFirestore(app);
 import ImageModal from "../../Components/Modals/ImageModal";
 
 // Weather Map Component
@@ -33,7 +33,6 @@ const Notification = () => {
   const [formData, setFormData] = useState({
     name: "",
     reportType: "",
-    location: "",
     description: "",
   });
 
@@ -72,24 +71,37 @@ const Notification = () => {
     getCurrentLocation();
   }, []);
 
-  const sendNotificationToUsers = async (e) => {
-      try { 
-        e.preventDefault()
-        const notifRef = await addDoc(collection(db, 'globalNotification'), {
-          title: formData.reportType,
-          description: formData.description,
-          createdAt: new Date()
-        })
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
-        if(!notifRef){
-          console.error("Notification sending failed!")
-          return;
-        }
-        alert("Notification sent!");
-      } catch (error) {
-          console.error("Send notification to user: ", error)
+  const sendNotificationToUsers = async (e) => {
+    try {
+      e.preventDefault();
+      const notifRef = await addDoc(collection(db, "globalNotification"), {
+        title: formData.reportType,
+        description: formData.description,
+        createdAt: new Date(),
+      });
+
+      if (!notifRef) {
+        console.error("Notification sending failed!");
+        return;
       }
-  }
+      alert("Notification sent!");
+      setFormData({
+        name: "",
+        reportType: "",
+        description: "",
+      });
+    } catch (error) {
+      console.error("Send notification to user: ", error);
+    }
+  };
 
   return (
     <>
@@ -117,13 +129,8 @@ const Notification = () => {
               {/* Form and Risk Map Buttons */}
               <div className="bg-white border-2 border-main flex flex-col rounded-lg antialiased w-full overflow-y-auto mb-[2vh]">
                 <div className="w-full flex flex-row justify-between bg-main">
-                  <form
-                    className="w-full flex flex-col space-y-4 p-6 bg-white"
-                  >
-                    <label
-                      htmlFor="name"
-                      className="text-sm font-medium text-gray-700"
-                    >
+                  <form className="w-full flex flex-col space-y-4 p-6 bg-white">
+                    {/* <label className="text-sm font-medium text-gray-700">
                       Recipient
                     </label>
                     <input
@@ -132,25 +139,37 @@ const Notification = () => {
                       name="name"
                       // value={formData.name}
                       // onChange={handleInputChange}
-                      className="p-2 border border-main rounded-md"
-                    
-                    />
+                      className="p-2 text-sm border border-main rounded-md"
+                    /> */}
 
-                    <label
-                      htmlFor="reportType"
-                      className="text-sm font-medium text-gray-700"
-                    >
+                    <label className="text-sm font-medium text-gray-700">
                       Report Type
                     </label>
-                    <input
-                      type="text"
+                    <select
                       id="reportType"
                       name="reportType"
-                      // value={formData.reportType}
-                      // onChange={handleInputChange}
-                      className="p-2 border border-main rounded-md"
+                      value={formData.reportType}
+                      onChange={handleInputChange}
+                      class="p-2 text-sm border border-main rounded-md"
                       required
-                    />
+                    >
+                      <option value="" disabled selected>
+                        Select a Report Type
+                      </option>
+                      <option value="Announcement">Announcement</option>
+                      <option value="Updates">Updates</option>
+                      <option value="Safety Alert">Safety Alert</option>
+                      <option value="Critical Safety Alert">
+                        Critical Safety Alert
+                      </option>
+                      <option value="Safety Precautions">
+                        Safety Precautions
+                      </option>
+                      <option value="Safety Tips">Safety Tips</option>
+                      <option value="Public Health Notices">
+                        Public Health Notices
+                      </option>
+                    </select>
 
                     <label
                       htmlFor="description"
@@ -161,16 +180,16 @@ const Notification = () => {
                     <textarea
                       id="description"
                       name="description"
-                      // value={formData.description}
-                      // onChange={handleInputChange}
-                      className="p-2 border border-main rounded-md resize-none"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      className="p-2 text-sm border border-main rounded-md resize-none"
                       rows="3"
                       required
                     ></textarea>
 
                     <button
                       onClick={(e) => {
-                        sendNotificationToUsers(e)
+                        sendNotificationToUsers(e);
                       }}
                       className="bg-main text-white py-2 px-6 rounded-md hover:bg-main-dark"
                     >
