@@ -268,7 +268,7 @@ const AuthProvider = ({ children }) => {
           const response = await axiosInstance.get("api/users/");
           localStorage.setItem("workers_count", response.data.length);
           setUsers(response.data);
-          // console.log("Users:", response.data);
+          console.log("Users:", response.data);
         } else if (account_type === "superadmin") {
           const response = await axiosInstance.get("api/users/");
           localStorage.setItem("users_count", response.data.length);
