@@ -43,6 +43,7 @@ const Accounts = () => {
   const [department, setDepartment] = useState("");
   const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
   const accountVerified = ["Verified", "Not Verified"];
+  const user_id = localStorage.getItem("user_id");
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,7 +58,7 @@ const Accounts = () => {
     const matchesVerified =
       selectedVerified === "" ||
       (selectedVerified === "Verified" ? user.is_verified : !user.is_verified);
-    const matchesUserId = user.supervisor_id;
+    const matchesUserId = user.supervisor_id == user_id;
     return matchesType && matchesStatus && matchesVerified && matchesUserId; // Only include users that match both filters
   });
   const handleAddAccount = () => {

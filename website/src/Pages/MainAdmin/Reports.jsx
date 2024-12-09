@@ -6,7 +6,6 @@ import NavText from "./Navigation/NavText";
 import ReviewReport from "../../Components/Modals/ReviewReport";
 import axios from "axios"; // Ensure axios is imported
 
-
 import {
   FaAngleLeft,
   FaAngleRight,
@@ -43,15 +42,15 @@ const Reports = ({ assigned_to_id }) => {
   const [userFeedback, setUserFeedback] = useState([]);
   const [workerFeedback, setWorkerFeedback] = useState([]);
 
-  const [isLoading, setIsLoading] = useState(true);  // Loading state
-  const [error, setError] = useState(null);  // To store any errors
-  const [departmentNames, setDepartmentNames] = useState('');
-
-
+  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // To store any errors
+  const [departmentNames, setDepartmentNames] = useState("");
 
   const fetchDepartmentDetails = async (assigned_to_id) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/get-department-details/${assigned_to_id}/`);
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/get-department-details/${assigned_to_id}/`
+      );
       if (response.data.department_name) {
         setDepartmentNames((prevState) => ({
           ...prevState,
@@ -59,10 +58,10 @@ const Reports = ({ assigned_to_id }) => {
         }));
       }
     } catch (error) {
-      console.error('Error fetching department details:', error);
+      console.error("Error fetching department details:", error);
       setDepartmentNames((prevState) => ({
         ...prevState,
-        [assigned_to_id]: 'Department not found',
+        [assigned_to_id]: "Department not found",
       }));
     }
   };
@@ -72,7 +71,8 @@ const Reports = ({ assigned_to_id }) => {
     const fetchDepartments = () => {
       reports.forEach((report) => {
         const assigned_to_id = report.assigned_to_id;
-        if (!departmentNames[assigned_to_id]) {  // Avoid redundant fetches
+        if (!departmentNames[assigned_to_id]) {
+          // Avoid redundant fetches
           fetchDepartmentDetails(assigned_to_id);
         }
       });
@@ -81,7 +81,7 @@ const Reports = ({ assigned_to_id }) => {
     fetchDepartments();
     setIsLoading(false);
   }, [reports, departmentNames]); // Trigger effect when reports change
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9; // Number of items per page
@@ -118,15 +118,12 @@ const Reports = ({ assigned_to_id }) => {
     };
   });
 
-
   useEffect(() => {
     // Log each report's assigned_to_id to the console
-    reports.forEach(report => {
-      console.log('Assigned to ID:', report.assigned_to_id); // This will show the assigned_to_id of each report
+    reports.forEach((report) => {
+      console.log("Assigned to ID:", report.assigned_to_id); // This will show the assigned_to_id of each report
     });
   }, [reports]);
-
-  
 
   // Create an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -152,20 +149,14 @@ const Reports = ({ assigned_to_id }) => {
     "Earthquakes",
   ];
 
-  const departmentMapping = { // 
+  const departmentMapping = {
+    //
     1: "Fire Department",
     2: "Medical Department",
     3: "Police Department",
-    4: "Street Maintenance", 
-    5: "Pothole Repair"
-
+    4: "Street Maintenance",
+    5: "Pothole Repair",
   };
-
-  
-
-
-
-  
 
   const timeElapsed = (reportDate) => {
     const now = new Date();
@@ -253,15 +244,6 @@ const Reports = ({ assigned_to_id }) => {
 
     return result;
   }
-
-
- 
- 
-
-  
-  
-
-
 
   return (
     <>
@@ -387,60 +369,64 @@ const Reports = ({ assigned_to_id }) => {
 
               {/* card report  */}
               <div className="w-full px-5 py-5 flex flex-wrap gap-8 md:justify-start justify-center">
-      {currentData
-        .sort((a, b) => new Date(b.update_date) - new Date(a.update_date))
-        .map((data, index) => {
-          const reportDate = new Date(data.update_date);
-          const formattedDate = reportDate.toLocaleDateString(); // Format date
-          const formattedTime = reportDate.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          });
+                {currentData
+                  .sort(
+                    (a, b) => new Date(b.update_date) - new Date(a.update_date)
+                  )
+                  .map((data, index) => {
+                    const reportDate = new Date(data.update_date);
+                    const formattedDate = reportDate.toLocaleDateString(); // Format date
+                    const formattedTime = reportDate.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
 
-          const departmentName =
-            departmentNames[data.assigned_to_id] || (isLoading ? "Loading..." : "No department found");
+                    const departmentName =
+                      departmentNames[data.assigned_to_id] ||
+                      (isLoading ? "Loading..." : "No department found");
 
-          return (
-            <div
-              key={index}
-              className="bg-[#FAF5FF] min-w-[370px] max-w-[370px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
-            >
-              <div className="flex flex-col flex-1">
-                <div className="flex gap-4">
-                  <div className="flex items-center justify-center rounded-md">
-                    <div className="bg-square p-4 rounded-lg">
-                      {getIcon(data.type_of_report.toLowerCase())}
-                    </div>
-                  </div>
-                  <div className="flex flex-col justify-between py-1 w-full">
-                    <div className="grid gap-1 text-start">
-                      <p className="text-xs font-bold text-[#2f2f2f] text-center uppercase truncate">
-                        {data.custom_type
-                          ? `${data.type_of_report} , ${data.custom_type}`
-                          : data.type_of_report}
-                      </p>
-                      <p className="text-xs font-bold text-[#113e21] truncate">
-                        {data.username}
-                      </p>
-                      <p className="text-xs font-normal text-[#2f2f2f] capitalize overflow-hidden text-ellipsis line-clamp-2">
-                        {data.location}
-                      </p>
-                      <p
-                        className={`text-xs font-bold capitalize truncate ${
-                          data.is_validated ? "text-[#007a3f]" : "text-[#a10b00]"
-                        }`}
+                    return (
+                      <div
+                        key={index}
+                        className="bg-[#FAF5FF] min-w-[370px] max-w-[370px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
                       >
-                        {data.is_validated ? "VALIDATED" : "NOT VALIDATED"}
-                      </p>
-                      <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
-                        {departmentName}
-                      </p>
-                      {/* Date and Time */}
-                      <p className="text-xs font-normal text-[#2f2f2f]">
-                        {formattedDate} at {formattedTime}
-                      </p>
-                                <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
-                                  {`${formattedDate} ${formattedTime}`}
+                        <div className="flex flex-col flex-1">
+                          <div className="flex gap-4">
+                            <div className="flex items-center justify-center rounded-md">
+                              <div className="bg-square p-4 rounded-lg">
+                                {getIcon(data.type_of_report.toLowerCase())}
+                              </div>
+                            </div>
+                            <div className="flex flex-col justify-between py-1 w-full">
+                              <div className="grid gap-1 text-start">
+                                <p className="text-xs font-bold text-[#2f2f2f] text-center uppercase truncate">
+                                  {data.custom_type
+                                    ? `${data.type_of_report} , ${data.custom_type}`
+                                    : data.type_of_report}
+                                </p>
+                                <p className="text-xs font-bold text-[#113e21] truncate">
+                                  {data.username}
+                                </p>
+                                <p className="text-xs font-normal text-[#2f2f2f] capitalize overflow-hidden text-ellipsis line-clamp-2">
+                                  {data.location}
+                                </p>
+                                <p
+                                  className={`text-xs font-bold capitalize truncate ${
+                                    data.is_validated
+                                      ? "text-[#007a3f]"
+                                      : "text-[#a10b00]"
+                                  }`}
+                                >
+                                  {data.is_validated
+                                    ? "VALIDATED"
+                                    : "NOT VALIDATED"}
+                                </p>
+                                <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                                  {departmentName}
+                                </p>
+                                {/* Date and Time */}
+                                <p className="text-xs font-normal text-[#2f2f2f]">
+                                  {formattedDate} at {formattedTime}
                                 </p>
                                 <p className="text-xs capitalize">
                                   Status:{" "}

@@ -9,6 +9,8 @@ const Map = ({ lat, lon }) => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const user_id = localStorage.getItem("user_id");
+  const accountType = localStorage.getItem("accountType");
   // console.log("reports", reports);
 
   const API_KEY = "b29aa0efcb4db33afa698232bfb7b3a2"; // Replace with your OpenWeatherMap API key
@@ -38,6 +40,13 @@ const Map = ({ lat, lon }) => {
   // Handle loading and error states
   if (loading) return <div>Loading weather data...</div>;
   if (error) return <div>{error}</div>;
+
+  const filteredReports =
+    accountType == "department_admin"
+      ? reports.filter((report) => report.assigned_to_id == user_id) // Only show reports assigned to this user
+      : reports;
+
+  // console.log("filteredReports", filteredReports);
 
   return (
     <div className="w-full h-full flex flex-col items-center">
@@ -72,7 +81,7 @@ const Map = ({ lat, lon }) => {
         </Marker>
 
         {/* Loop through reports and add a marker for each */}
-        {reports.map((report) => {
+        {filteredReports.map((report) => {
           const {
             latitude,
             longitude,

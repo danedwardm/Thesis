@@ -36,7 +36,7 @@ const ReportTimeTrends = () => {
   });
 
   const userId = localStorage.getItem("user_id"); // Get the current user ID from localStorage
-  console.log("userId", userId);
+  // console.log("userId", userId);
 
   // Fetch reports from Firestore
   const fetchDocuments = async () => {
