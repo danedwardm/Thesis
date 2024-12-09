@@ -40,7 +40,7 @@ const WeatherMap = ({ lat, lon }) => {
       <MapContainer
         id="map"
         center={[lat, lon]}
-        zoom={10}
+        zoom={15}
         className="w-full h-full rounded-2xl"
       >
         <TileLayer

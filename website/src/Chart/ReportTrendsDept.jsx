@@ -118,6 +118,11 @@ const ReportTrends = () => {
           },
         ],
       });
+    } else {
+      setChartData({
+        labels: [],
+        datasets: [],
+      });
     }
   }, [reports]);
 
@@ -126,52 +131,56 @@ const ReportTrends = () => {
       <div className="font-bold text-md text-main">
         Report Trends Based on Date
       </div>
-      <Line
-        data={chartData}
-        options={{
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: true,
-              position: "top",
-            },
-            tooltip: {
-              callbacks: {
-                label: function (context) {
-                  return `${context.dataset.label}: ${context.raw} reports`;
+      {chartData.labels.length > 0 ? (
+        <Line
+          data={chartData}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: "top",
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return `${context.dataset.label}: ${context.raw} reports`;
+                  },
                 },
               },
             },
-          },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: "Date",
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "Date",
+                },
+                grid: {
+                  display: true,
+                },
+                ticks: {
+                  maxRotation: 45,
+                  minRotation: 45,
+                  autoSkip: true, // Auto skip labels to prevent overlap
+                },
               },
-              grid: {
-                display: true,
-              },
-              ticks: {
-                maxRotation: 45,
-                minRotation: 45,
-                autoSkip: true, // Auto skip labels to prevent overlap
+              y: {
+                title: {
+                  display: true,
+                  text: "Number of Reports",
+                },
+                grid: {
+                  display: true,
+                },
+                beginAtZero: true,
               },
             },
-            y: {
-              title: {
-                display: true,
-                text: "Number of Reports",
-              },
-              grid: {
-                display: true,
-              },
-              beginAtZero: true,
-            },
-          },
-        }}
-      />
+          }}
+        />
+      ) : (
+        <div className="text-center text-gray-500 mt-8">No data available</div>
+      )}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import Prompt from "./Prompt";
-import { LuEye, LuEyeOff } from "react-icons/lu";
+import { LuEye, LuEyeOff, LuMapPin } from "react-icons/lu";
 import { useAuth } from "../../AuthContext/AuthContext";
 import MapPicker from "./MapPicker";
 
@@ -65,7 +65,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-  
+
     // Check if all required fields are filled
     if (
       !username ||
@@ -93,7 +93,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       }, 3000);
       return;
     }
-  
+
     // Validate email
     if (!isValidEmail(email)) {
       setErrors("Please enter a valid email address.");
@@ -103,7 +103,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       }, 3000);
       return;
     }
-  
+
     // Check if passwords match
     if (password !== password_confirm) {
       setErrors("Passwords do not match.");
@@ -113,10 +113,10 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       }, 3000);
       return;
     }
-  
+
     try {
       let res;
-  
+
       // Handle account creation based on account type
       if (account_type === "superadmin") {
         const department = localStorage.getItem("department");
@@ -147,7 +147,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
         setIsLoading(false); // Stop loading spinner for invalid account type
         return;
       }
-  
+
       if (res) {
         const successMessage =
           account_type === "superadmin"
@@ -164,7 +164,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
     } finally {
       setIsLoading(false); // Ensure loading state is reset
     }
-  
+
     // Optionally reset form after submission
     console.log({
       username,
@@ -182,7 +182,6 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
     setSelectedLocation(newLocation);
     setShowMapPicker(false);
   };
-
 
   return (
     <>
@@ -305,13 +304,19 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                         </div>
                         <div className="w-full flex flex-col items-center justify-center">
                           <div className="flex justify-start items-center w-full py-2">
-                            <p className="text-xs font-semibold">Station Address</p>
-                            <p className="text-xs font-semibold text-red-700">*</p>
+                            <p className="text-xs font-semibold">
+                              Station Address
+                            </p>
+                            <p className="text-xs font-semibold text-red-700">
+                              *
+                            </p>
                           </div>
                           <div className="relative px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
                             <textarea
                               value={stationAddress}
-                              onChange={(e) => setStationAddress(e.target.value)}
+                              onChange={(e) =>
+                                setStationAddress(e.target.value)
+                              }
                               rows={1}
                               className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden pr-10"
                               placeholder="Enter Station Address"
@@ -320,9 +325,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                               onClick={() => setShowMapPicker(true)} // Opens the map picker when clicked
                               className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 2.57 1.58 5.26 3.69 7.88L12 22l3.31-5.12C17.42 14.26 19 11.57 19 9c0-3.87-3.13-7-7-7zm0 10c-1.39 0-2.5-1.11-2.5-2.5S10.61 7 12 7s2.5 1.11 2.5 2.5S13.39 12 12 12z" />
-                              </svg>
+                              <LuMapPin className="text-md text-main mr-2" />
                             </div>
                           </div>
                           {/* Show Map Picker if active */}
@@ -369,7 +372,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                       </div>
                       <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
                         <input
-                          type={isPasswordVisible ? "text" : "password"}
+                          type={isPasswordConfirmVisible ? "text" : "password"}
                           value={password_confirm}
                           onChange={(e) => setPasswordConfirm(e.target.value)}
                           className="outline-none bg-white w-full resize-none text-xs font-normal overflow-hidden"
@@ -401,34 +404,33 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                       ) : null}
                     </div>
                     <div className="w-full flex flex-row gap-4 items-center justify-end mt-5">
-                    <button
-                          type="submit"
-                          className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 flex items-center justify-center"
-                          
-                        >
-                          {isLoading ? (
-                            <svg
-                              className="animate-spin h-5 w-5 mr-3 text-white"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 50 50"
+                      <button
+                        type="submit"
+                        className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 flex items-center justify-center"
+                      >
+                        {isLoading ? (
+                          <svg
+                            className="animate-spin h-5 w-5 mr-3 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 50 50"
+                            stroke="currentColor"
+                          >
+                            <circle
+                              cx="25"
+                              cy="25"
+                              r="20"
                               stroke="currentColor"
-                            >
-                              <circle
-                                cx="25"
-                                cy="25"
-                                r="20"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                                fill="none"
-                                strokeLinecap="round"
-                                strokeDasharray="125"
-                                strokeDashoffset="50"
-                              />
-                            </svg>
-                          ) : null}
-                          {isLoading ? null : <span>CREATE</span>}
-                        </button>
+                              strokeWidth="4"
+                              fill="none"
+                              strokeLinecap="round"
+                              strokeDasharray="125"
+                              strokeDashoffset="50"
+                            />
+                          </svg>
+                        ) : null}
+                        {isLoading ? null : <span>CREATE</span>}
+                      </button>
                       <button
                         className="py-3 px-4 border border-main bg-white text-main rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                         onClick={handlePromtClick}
