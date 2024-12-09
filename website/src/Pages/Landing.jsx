@@ -4,6 +4,8 @@ import map from "../assets/map.png";
 import sos from "../assets/sos.png";
 import time from "../assets/time.png";
 import { Link } from "react-router-dom";
+import pic1 from "../assets/pic1.jpg";
+import pic2 from "../assets/pic2.jpg";
 
 const Landing = () => {
   return (
@@ -105,16 +107,16 @@ const Landing = () => {
           </div>
 
           {/* Images Section */}
-          <div className="flex justify-center items-center gap-6 px-4 mb-10">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-6 px-4 mb-10">
             <img
-              src="https://via.placeholder.com/400x300" // Replace with real images
+              src={pic1} // Replace with real images
               alt="Map Preview"
-              className="w-80 h-60 object-cover rounded-lg shadow-lg"
+              className="w-100 h-60 object-cover rounded-lg shadow-lg border border-main"
             />
             <img
-              src="https://via.placeholder.com/400x300" // Replace with real images
+              src={pic2} // Replace with real images
               alt="App Interface"
-              className="w-80 h-60 object-cover rounded-lg shadow-lg"
+              className="w-100 h-60 object-cover rounded-lg shadow-lg border border-main"
             />
           </div>
 
