@@ -32,12 +32,21 @@ const NavBar = () => {
     navigate("/login", { replace: true }); // Use replace to prevent going back to the dashboard
   };
 
+  const handleLogoClick = () => {
+    navigate("/", { replace: true });
+  };
+
   return (
     <>
       <div className="fixed w-full px-8 font-dm z-30">
         <div className="py-4 px-6 bg-main flex justify-between items-center rounded-b-lg">
           <div className="flex justify-center items-center gap-2">
-            <img src={logo} alt="/" className="w-[30px]" />
+            <img
+              src={logo}
+              alt="/"
+              className="w-[30px] cursor-pointer"
+              onClick={handleLogoClick}
+            />
             <p className="hidden md:block font-semibold text-sm uppercase text-second">
               Community Reporting Interface for Safety and Prevention
             </p>
