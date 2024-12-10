@@ -17,6 +17,7 @@ import { GiHole } from "react-icons/gi";
 import { FaTrafficLight } from "react-icons/fa6";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { useAuth } from "../../AuthContext/AuthContext";
+import axiosInstance from "../../axios-instance";
 
 const Reports = ({ assigned_to_id }) => {
   const { reports, users } = useAuth();
@@ -48,8 +49,8 @@ const Reports = ({ assigned_to_id }) => {
 
   const fetchDepartmentDetails = async (assigned_to_id) => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/get-department-details/${assigned_to_id}/`
+      const response = await axiosInstance.get(
+        `api/get-department-details/${assigned_to_id}/`
       );
       if (response.data.department_name) {
         setDepartmentNames((prevState) => ({

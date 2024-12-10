@@ -112,7 +112,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                11
+                {localStorage.getItem("weeklyAssignedReport") || 0}
               </div>
             </div>
           </div>
