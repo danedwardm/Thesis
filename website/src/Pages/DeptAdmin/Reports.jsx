@@ -263,9 +263,15 @@ const Reports = () => {
                         new Date(b.update_date) - new Date(a.update_date)
                     )
                     .map((data, index) => {
-                      const reportDate = new Date(data.update_date);
-                      const formattedDate = reportDate.toLocaleDateString(); // e.g., "10/28/2024"
+                      const reportDate = new Date(data.report_date);
+                      const formattedDate = reportDate.toLocaleDateString(); // Format date
                       const formattedTime = reportDate.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
+                      const updateDate = new Date(data.update_date);
+                      const formattedDate1 = updateDate.toLocaleDateString(); // Format date
+                      const formattedTime1 = updateDate.toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
                       });
@@ -313,8 +319,15 @@ const Reports = () => {
                                       ? data.assigned_to
                                       : "Not Assigned"}
                                   </p>
-                                  <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
-                                    {`${formattedDate} ${formattedTime}`}
+                                  {/* Date and Time */}
+                                  <p className="text-xs font-normal text-[#2f2f2f]">
+                                    Report Date: {formattedDate} at{" "}
+                                    {formattedTime}
+                                  </p>
+                                  {/* Date and Time */}
+                                  <p className="text-xs font-normal text-[#2f2f2f]">
+                                    Last Update: {formattedDate1} at{" "}
+                                    {formattedTime1}
                                   </p>
                                   <p className="text-xs capitalize">
                                     Status:{" "}

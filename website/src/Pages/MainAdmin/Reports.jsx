@@ -375,9 +375,15 @@ const Reports = ({ assigned_to_id }) => {
                     (a, b) => new Date(b.update_date) - new Date(a.update_date)
                   )
                   .map((data, index) => {
-                    const reportDate = new Date(data.update_date);
+                    const reportDate = new Date(data.report_date);
                     const formattedDate = reportDate.toLocaleDateString(); // Format date
                     const formattedTime = reportDate.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                    const updateDate = new Date(data.update_date);
+                    const formattedDate1 = updateDate.toLocaleDateString(); // Format date
+                    const formattedTime1 = updateDate.toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     });
@@ -427,7 +433,13 @@ const Reports = ({ assigned_to_id }) => {
                                 </p>
                                 {/* Date and Time */}
                                 <p className="text-xs font-normal text-[#2f2f2f]">
-                                  {formattedDate} at {formattedTime}
+                                  Report Date: {formattedDate} at{" "}
+                                  {formattedTime}
+                                </p>
+                                {/* Date and Time */}
+                                <p className="text-xs font-normal text-[#2f2f2f]">
+                                  Last Update: {formattedDate1} at{" "}
+                                  {formattedTime1}
                                 </p>
                                 <p className="text-xs capitalize">
                                   Status:{" "}

@@ -98,11 +98,11 @@ const Landing = () => {
                 categorizes and validates reported incidents based on uploaded
                 images to ensure that the reports are accurate and actionable.
               </li>
-              <li>
+              {/* <li>
                 Launch a predictive analytics module that uses historical data
                 to forecast potential safety issues, helping authorities and
                 residents proactively address future safety risks.
-              </li>
+              </li> */}
             </ul>
           </div>
 

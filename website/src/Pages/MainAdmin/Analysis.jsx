@@ -22,7 +22,7 @@ const Analysis = () => {
         <div className="relative h-[100vh] w-[100vw] flex flex-col items-center z-30 overflow-auto overflow-x-hidden">
           <Navbar />
           <NavText />
-          <div className="grid grid-cols-1 lg:grid-cols-2 col-span-4 justify-center items-center pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[15vh] mb-[10vh]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 col-span-4 gap-16 justify-center items-center pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[15vh] mb-[15vh]">
             <PieChart />
             <ReportCategoryChart />
             <ReportTrends />
