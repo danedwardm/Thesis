@@ -35,7 +35,7 @@ const Accounts = () => {
 
   const [selectedAccountType, setSelectedAccountType] = useState("");
   const accountType = ["department_admin", "citizen", "worker"];
-  const { account_type, departments, authenticated, users } = useAuth();
+  const { account_type, departments, authenticated, users} = useAuth();
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
   const [station, setStation] = useState("");
@@ -44,11 +44,11 @@ const Accounts = () => {
   const [selectedVerified, setSelectedVerified] = useState(""); // Selected verified filter
   const accountVerified = ["Verified", "Not Verified"];
   const user_id = localStorage.getItem("user_id");
-
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
+
 
   const filteredUsers = users.filter((user) => {
     const matchesType =
@@ -58,7 +58,7 @@ const Accounts = () => {
     const matchesVerified =
       selectedVerified === "" ||
       (selectedVerified === "Verified" ? user.is_verified : !user.is_verified);
-    const matchesUserId = user.supervisor_id == user_id;
+    const matchesUserId = user.supervisor == user_id;
     return matchesType && matchesStatus && matchesVerified && matchesUserId; // Only include users that match both filters
   });
   const handleAddAccount = () => {
