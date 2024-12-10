@@ -7,6 +7,7 @@ import { IoIosNotifications } from "react-icons/io";
 import { MdReport } from "react-icons/md";
 import { useAuth } from "../../AuthContext/AuthContext";
 import Map from "../../Components/Modals/Map";
+import axiosInstance from "../../axios-instance";
 
 // Google Maps container style
 const mapContainerStyle = {
@@ -25,6 +26,26 @@ const Dashboard = () => {
     lat: 14.9767, // Default fallback coordinates (e.g., UCC South Campus)
     lng: 120.9705,
   });
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const account_type = localStorage.getItem("accountType");
+   if (!account_type === "superadmin") {
+    console.error("cannot fetch users count you are not a superadmin ");
+     return;
+  }
+  const response = await axiosInstance.get("api/users/");
+  localStorage.setItem("users_count", response.data.length);
+
+        // console.log("Data fetched successfully");
+      } catch (err) {
+        setError("Failed to fetch users.");
+        console.error("Error fetching users:", err); // Log any errors
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   useEffect(() => {
     const getCurrentLocation = () => {
@@ -78,7 +99,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                11
+                {localStorage.getItem("new_notif_counts") || 0}
               </div>
             </div>
           </div>
@@ -135,7 +156,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                {localStorage.getItem("users_count")}
+                {localStorage.getItem('users_count') || 0}
               </div>
             </div>
           </div>
