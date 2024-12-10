@@ -127,7 +127,7 @@ const AuthProvider = ({ children }) => {
           );
           totalCount += notDoneReports.length;
           setTotalNotDoneReportsCount(totalCount);
-          console.log("Total not done reports count:", totalCount);
+          // console.log("Total not done reports count:", totalCount);
           const oneWeekAgo = new Date();
           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
           let weeklyCount = 0;
@@ -265,18 +265,18 @@ const AuthProvider = ({ children }) => {
       try {
         const account_type = localStorage.getItem("accountType");
         if (account_type === "department_admin") {
-          // const response = await axiosInstance.get("api/users/");
-          // localStorage.setItem("workers_count", response.data.length);
-          // setUsers(response.data);
-          // console.log("Users:", response.data);
+          const response = await axiosInstance.get("api/users/");
+          localStorage.setItem("workers_count", response.data.length);
+          setUsers(response.data);
+          console.log("Users:", response.data);
         } else if (account_type === "superadmin") {
           const response = await axiosInstance.get("api/users/");
           localStorage.setItem("users_count", response.data.length);
           setUsers(response.data);
-          console.log("Users:", response.data);
+          // console.log("Users:", response.data);
         }
 
-        console.log("Data fetched successfully");
+        // console.log("Data fetched successfully");
       } catch (err) {
         setError("Failed to fetch users.");
         console.error("Error fetching users:", err); // Log any errors
@@ -288,7 +288,12 @@ const AuthProvider = ({ children }) => {
 
   const department = async () => {
     try {
-      if (account_type == "super_admin" || account_type == "superadmin") return;
+      if (
+        account_type == "super_admin" ||
+        account_type == "superadmin" ||
+        account_type == "department_admin"
+      )
+        return;
       const res = await axiosInstance.get("api/departments/");
       setDepartment((prev) => {
         const newDepartments = res.data;
@@ -312,7 +317,7 @@ const AuthProvider = ({ children }) => {
         password,
       });
 
-      console.log("Login response:", res.data);
+      // console.log("Login response:", res.data);
 
       const {
         access,

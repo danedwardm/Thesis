@@ -350,250 +350,262 @@ const Accounts = () => {
 
               {/* table header*/}
               <div className="hidden md:block px-5 pb-5 h-full">
-                <table className="w-full table-fixed">
-                  <thead className="text-xs font-bold text-gray-500">
-                    <tr className="border-b">
-                      <th scope="col" className="text-start p-3 truncate">
-                        Name
-                      </th>
-                      <th scope="col" className="text-start p-3 truncate">
-                        Phone Number
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Verified
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Violation
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Type
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Status
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Update Date
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Trust Score
-                      </th>
-                      <th scope="col" className="text-center p-3 truncate">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentUsers.map((data) => (
-                      <tr
-                        className="text-xs font-normal even:bg-square hover:bg-[#f6edff] ease-in-out duration-500 cursor-pointer border-b"
-                        key={data.id} // Use the unique id from the user data
-                      >
-                        <th
-                          scope="row"
-                          className="text-[#24693c] text-start p-4"
-                        >
-                          <p className="w-full truncate">{data.username}</p>
+                {currentUsers.length === 0 ? (
+                  <p className="text-center text-gray-500 w-[90vw]">
+                    No users found
+                  </p>
+                ) : (
+                  <table className="w-full table-fixed">
+                    <thead className="text-xs font-bold text-gray-500">
+                      <tr className="border-b">
+                        <th scope="col" className="text-start p-3 truncate">
+                          Name
                         </th>
-                        <td className="p-4">
-                          <p className="w-full truncate">
-                            {data.contact_number}
-                          </p>
-                        </td>
-                        <td className="p-4 text-center font-semibold uppercase">
-                          {data.is_verified ? (
-                            <p className="w-full font-bold truncate text-[#007a3f]">
-                              Verified
-                            </p>
-                          ) : (
-                            <p className="w-full truncate font-bold text-[#a10b00]">
-                              Not Verified
-                            </p>
-                          )}
-                        </td>
-                        <td className="p-4 text-center font-semibold uppercase">
-                          <p className="w-full truncate">{data.violation}</p>
-                        </td>
-                        <td className="p-4 text-center font-semibold uppercase">
-                          {data.role === "superadmin" ? (
-                            <p className="w-full font-bold truncate text-[#363636]">
-                              {data.role}
-                            </p>
-                          ) : data.role === "citizen" ? (
-                            <p className="w-full truncate font-bold text-[#363636]">
-                              {data.role}
-                            </p>
-                          ) : (
-                            <p className="w-full truncate font-bold text-[#363636]">
-                              {data.role}
-                            </p>
-                          )}
-                        </td>
-                        <td className="p-4 text-center font-semibold uppercase">
-                          {data.account_status == "Active" ||
-                          data.account_status == "active" ? (
-                            <p className="w-full font-bold truncate text-[#007a3f]">
-                              {data.account_status}
-                            </p>
-                          ) : data.account_status == "suspended" ||
-                            data.account_status == "Suspended" ? (
-                            <p className="w-full truncate font-bold text-[#a10b00]">
-                              {data.account_status}
-                            </p>
-                          ) : data.account_status == "blocked" ||
-                            data.account_status == "Blocked" ? (
-                            <p className="w-full truncate font-bold text-[#363636]">
-                              {data.account_status}
-                            </p>
-                          ) : (
-                            <p className="w-full truncate font-bold text-[#363636]">
-                              {data.account_status}
-                            </p>
-                          )}
-                        </td>
-                        <td className="p-4 text-center">
-                          <p className="w-full truncate">
-                            {formatDate(data.date_joined)}
-                          </p>
-                        </td>
-                        <td className="p-4 text-center">
-                          <p className="w-full truncate">
-                            {data.score === null
-                              ? "Not Applicable"
-                              : data.score}
-                          </p>
-                        </td>
-                        <td className="p-4 text-center">
-                          <button
-                            className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond ease-in-out duration-500 truncate"
-                            onClick={() => {
-                              // Handle the review button click
-                              setShowAccount(true);
-                              setName(data.username);
-                              setPhoneNumber(data.contact_number);
-                              setVerified(data.is_verified);
-                              setViolation(data.violation);
-                              setStatus(data.account_status);
-                              setType(data.role);
-                              setAddress(data.address);
-                              setEmailAddress(data.email);
-                              setUserID(data.id);
-                              setUserScore(data.score);
-                            }}
-                          >
-                            {data.is_verified
-                              ? "REVIEW"
-                              : userVerificationStatus[data.id] === null
-                              ? "Loading..."
-                              : userVerificationStatus[data.id]
-                              ? "VERIFY"
-                              : "REVIEW"}
-                          </button>
-                        </td>
+                        <th scope="col" className="text-start p-3 truncate">
+                          Phone Number
+                        </th>
+                        <th scope="col" className="text-center p-3 truncate">
+                          Verified
+                        </th>
+                        <th scope="col" className="text-center p-3 truncate">
+                          Violation
+                        </th>
+                        <th scope="col" className="text-center p-3 truncate">
+                          Type
+                        </th>
+                        <th scope="col" className="text-center p-3 truncate">
+                          Status
+                        </th>
+                        <th scope="col" className="text-center p-3 truncate">
+                          Update Date
+                        </th>
+                        <th scope="col" className="text-center p-3 truncate">
+                          Trust Score
+                        </th>
+                        <th scope="col" className="text-center p-3 truncate">
+                          Action
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {currentUsers.map((data) => (
+                        <tr
+                          className="text-xs font-normal even:bg-square hover:bg-[#f6edff] ease-in-out duration-500 cursor-pointer border-b"
+                          key={data.id} // Use the unique id from the user data
+                        >
+                          <th
+                            scope="row"
+                            className="text-[#24693c] text-start p-4"
+                          >
+                            <p className="w-full truncate">{data.username}</p>
+                          </th>
+                          <td className="p-4">
+                            <p className="w-full truncate">
+                              {data.contact_number}
+                            </p>
+                          </td>
+                          <td className="p-4 text-center font-semibold uppercase">
+                            {data.is_verified ? (
+                              <p className="w-full font-bold truncate text-[#007a3f]">
+                                Verified
+                              </p>
+                            ) : (
+                              <p className="w-full truncate font-bold text-[#a10b00]">
+                                Not Verified
+                              </p>
+                            )}
+                          </td>
+                          <td className="p-4 text-center font-semibold uppercase">
+                            <p className="w-full truncate">{data.violation}</p>
+                          </td>
+                          <td className="p-4 text-center font-semibold uppercase">
+                            {data.role === "superadmin" ? (
+                              <p className="w-full font-bold truncate text-[#363636]">
+                                {data.role}
+                              </p>
+                            ) : data.role === "citizen" ? (
+                              <p className="w-full truncate font-bold text-[#363636]">
+                                {data.role}
+                              </p>
+                            ) : (
+                              <p className="w-full truncate font-bold text-[#363636]">
+                                {data.role}
+                              </p>
+                            )}
+                          </td>
+                          <td className="p-4 text-center font-semibold uppercase">
+                            {data.account_status == "Active" ||
+                            data.account_status == "active" ? (
+                              <p className="w-full font-bold truncate text-[#007a3f]">
+                                {data.account_status}
+                              </p>
+                            ) : data.account_status == "suspended" ||
+                              data.account_status == "Suspended" ? (
+                              <p className="w-full truncate font-bold text-[#a10b00]">
+                                {data.account_status}
+                              </p>
+                            ) : data.account_status == "blocked" ||
+                              data.account_status == "Blocked" ? (
+                              <p className="w-full truncate font-bold text-[#363636]">
+                                {data.account_status}
+                              </p>
+                            ) : (
+                              <p className="w-full truncate font-bold text-[#363636]">
+                                {data.account_status}
+                              </p>
+                            )}
+                          </td>
+                          <td className="p-4 text-center">
+                            <p className="w-full truncate">
+                              {formatDate(data.date_joined)}
+                            </p>
+                          </td>
+                          <td className="p-4 text-center">
+                            <p className="w-full truncate">
+                              {data.score === null
+                                ? "Not Applicable"
+                                : data.score}
+                            </p>
+                          </td>
+                          <td className="p-4 text-center">
+                            <button
+                              className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond ease-in-out duration-500 truncate"
+                              onClick={() => {
+                                // Handle the review button click
+                                setShowAccount(true);
+                                setName(data.username);
+                                setPhoneNumber(data.contact_number);
+                                setVerified(data.is_verified);
+                                setViolation(data.violation);
+                                setStatus(data.account_status);
+                                setType(data.role);
+                                setAddress(data.address);
+                                setEmailAddress(data.email);
+                                setUserID(data.id);
+                                setUserScore(data.score);
+                              }}
+                            >
+                              {data.is_verified
+                                ? "REVIEW"
+                                : userVerificationStatus[data.id] === null
+                                ? "Loading..."
+                                : userVerificationStatus[data.id]
+                                ? "VERIFY"
+                                : "REVIEW"}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
 
               {/* small screen  */}
               <div className="block md:hidden px-5 py-5">
-                {currentUsers.map((data, index) => (
-                  <div
-                    key={data.id}
-                    className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
-                  >
-                    <div className="flex flex-col flex-1">
-                      <div className="flex gap-4">
-                        <div className="flex items-center justify-center rounded-md">
-                          <div className="bg-square p-4 rounded-lg">
-                            <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />
+                {currentUsers.length === 0 ? (
+                  <p className="text-center text-gray-500">No users found</p>
+                ) : (
+                  currentUsers.map((data) => (
+                    <div
+                      key={data.id}
+                      className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
+                    >
+                      <div className="flex flex-col flex-1">
+                        <div className="flex gap-4">
+                          <div className="flex items-center justify-center rounded-md">
+                            <div className="bg-square p-4 rounded-lg">
+                              <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex flex-col justify-between py-1 w-full">
-                          <div className="grid gap-1 text-start">
-                            <p className="text-xs font-bold text-[#113e21] truncate">
-                              {data.username}
-                            </p>
-                            <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
-                              {data.contact_number}
-                            </p>
-                            <p className="text-xs font-bold capitalize truncate">
-                              {data.is_verified ? (
-                                <span className="text-[#007a3f]">Verified</span>
-                              ) : (
-                                <span className="text-[#a10b00]">
-                                  Not Verified
-                                </span>
-                              )}
-                            </p>
-                            <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
-                              {data.violation}
-                            </p>
+                          <div className="flex flex-col justify-between py-1 w-full">
+                            <div className="grid gap-1 text-start">
+                              <p className="text-xs font-bold text-[#113e21] truncate">
+                                {data.username}
+                              </p>
+                              <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                                {data.contact_number}
+                              </p>
+                              <p className="text-xs font-bold capitalize truncate">
+                                {data.is_verified ? (
+                                  <span className="text-[#007a3f]">
+                                    Verified
+                                  </span>
+                                ) : (
+                                  <span className="text-[#a10b00]">
+                                    Not Verified
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-xs font-normal text-[#2f2f2f] capitalize truncate">
+                                {data.violation}
+                              </p>
 
-                            <p className="text-xs font-bold capitalize truncate">
-                              {data.role === "superadmin" ? (
-                                <span className="text-[#363636]">
-                                  {data.role}
-                                </span>
-                              ) : data.role === "citizen" ? (
-                                <span className="text-[#363636]">
-                                  {data.role}
-                                </span>
-                              ) : (
-                                <span className="text-[#363636]">
-                                  {data.role}
-                                </span>
-                              )}
-                            </p>
-                            <p className="text-xs font-bold capitalize truncate">
-                              {data.account_status === "active" ? (
-                                <span className="text-[#007a3f]">
-                                  {data.account_status}
-                                </span>
-                              ) : data.account_status === "Suspended" ? (
-                                <span className="text-[#af3232]">
-                                  {data.account_status}
-                                </span>
-                              ) : (
-                                <span className="text-[#363636]">
-                                  {data.account_status}
-                                </span>
-                              )}
-                            </p>
+                              <p className="text-xs font-bold capitalize truncate">
+                                {data.role === "superadmin" ? (
+                                  <span className="text-[#363636]">
+                                    {data.role}
+                                  </span>
+                                ) : data.role === "citizen" ? (
+                                  <span className="text-[#363636]">
+                                    {data.role}
+                                  </span>
+                                ) : (
+                                  <span className="text-[#363636]">
+                                    {data.role}
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-xs font-bold capitalize truncate">
+                                {data.account_status === "active" ? (
+                                  <span className="text-[#007a3f]">
+                                    {data.account_status}
+                                  </span>
+                                ) : data.account_status === "Suspended" ? (
+                                  <span className="text-[#af3232]">
+                                    {data.account_status}
+                                  </span>
+                                ) : (
+                                  <span className="text-[#363636]">
+                                    {data.account_status}
+                                  </span>
+                                )}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
+                      <div className="flex justify-center items-center mt-4">
+                        <button
+                          className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                          onClick={() => {
+                            setShowAccount(true);
+                            setName(data.username);
+                            setPhoneNumber(data.contact_number);
+                            setVerified(data.is_verified);
+                            setViolation(data.violation);
+                            setStatus(data.account_status);
+                            setType(data.role);
+                            setAddress(data.address);
+                            setEmailAddress(data.email);
+                            setIdNumber(data.id_number);
+                            setPhoto(data.photo);
+                            setSelfieWId(data.selfie_w_id);
+                            setIdPicture(data.id_picture);
+                          }}
+                        >
+                          {data.is_verified
+                            ? "REVIEW"
+                            : userVerificationStatus[data.id] === null
+                            ? "Loading..."
+                            : userVerificationStatus[data.id]
+                            ? "VERIFY"
+                            : "REVIEW"}
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex justify-center items-center mt-4">
-                      <button
-                        className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
-                        onClick={() => {
-                          setShowAccount(true);
-                          setName(data.username);
-                          setPhoneNumber(data.contact_number);
-                          setVerified(data.is_verified);
-                          setViolation(data.violation);
-                          setStatus(data.account_status);
-                          setType(data.role);
-                          setAddress(data.address);
-                          setEmailAddress(data.email);
-                          setIdNumber(data.id_number);
-                          setPhoto(data.photo);
-                          setSelfieWId(data.selfie_w_id);
-                          setIdPicture(data.id_picture);
-                        }}
-                      >
-                        {data.is_verified
-                          ? "REVIEW"
-                          : userVerificationStatus[data.id] === null
-                          ? "Loading..."
-                          : userVerificationStatus[data.id]
-                          ? "VERIFY"
-                          : "REVIEW"}
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
 
               {/* pagination  */}

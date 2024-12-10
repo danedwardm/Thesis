@@ -44,31 +44,6 @@ const Dashboard = () => {
     getCurrentLocation();
   }, []);
 
-  useEffect(() => {
-    const loadGoogleMapsScript = () => {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        const map = new google.maps.Map(mapRef.current, {
-          center: location, // Dynamically set map center to user's location
-          zoom: 15, // Adjust zoom level as needed
-        });
-
-        // Create a marker at the user's current location
-        const marker = new google.maps.Marker({
-          position: location,
-          map: map,
-          title: "Your Current Location",
-        });
-      };
-      document.head.appendChild(script);
-    };
-
-    loadGoogleMapsScript();
-  }, [googleMapsApiKey, location]); // Re-run whenever location changes
-
   return (
     <div className="relative bg-second h-screen w-screen overflow-hidden flex flex-col">
       {/* Background squares */}
@@ -169,11 +144,11 @@ const Dashboard = () => {
               Map of Reports
             </p>
           </div>
-          <div className="flex flex-col justify-center items-end px-3">
+          {/* <div className="flex flex-col justify-center items-end px-3">
             <button className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase hover:bg-textSecond hover:text-accent ease-in-out duration-500">
               Filter
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Map */}

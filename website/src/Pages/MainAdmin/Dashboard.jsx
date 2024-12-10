@@ -15,9 +15,12 @@ const mapContainerStyle = {
 };
 
 const Dashboard = () => {
-  const { totalNotDoneReportsCount } = useAuth();
+  const { totalNotDoneReportsCount, weeklyReportsCount } = useAuth();
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef(null);
+  const [cachedWeeklyReportCount, setCachedWeeklyReportCount] = useState(
+    parseInt(localStorage.getItem("weeklyReportCount")) || 0
+  );
   const [location, setLocation] = useState({
     lat: 14.9767, // Default fallback coordinates (e.g., UCC South Campus)
     lng: 120.9705,
@@ -30,10 +33,11 @@ const Dashboard = () => {
           (position) => {
             const { latitude, longitude } = position.coords;
             setLocation({ lat: latitude, lng: longitude });
+            console.log("Latitude:", latitude, ",", longitude);
           },
           (error) => {
             console.error("Error getting location:", error);
-            // You can use default location here if geolocation fails
+            // In case of error, you can either fallback to a default location or handle it differently
           }
         );
       } else {
@@ -43,33 +47,6 @@ const Dashboard = () => {
 
     getCurrentLocation();
   }, []);
-
-
-
-  useEffect(() => {
-    const loadGoogleMapsScript = () => {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        const map = new google.maps.Map(mapRef.current, {
-          center: location, // Dynamically set map center to user's location
-          zoom: 15, // Adjust zoom level as needed
-        });
-
-        // Create a marker at the user's current location
-        const marker = new google.maps.Marker({
-          position: location,
-          map: map,
-          title: "Your Current Location",
-        });
-      };
-      document.head.appendChild(script);
-    };
-
-    loadGoogleMapsScript();
-  }, [googleMapsApiKey, location]); // Re-run whenever location changes
 
   return (
     <div className="relative bg-second h-screen w-screen overflow-hidden flex flex-col">
@@ -139,7 +116,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                0 
+                {weeklyReportsCount || cachedWeeklyReportCount}
               </div>
             </div>
           </div>

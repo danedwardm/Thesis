@@ -7,7 +7,7 @@ import { FaUser } from "react-icons/fa";
 import { MdNotificationsActive } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { app } from "../../../Firebase/firebaseConfig";
-const db = getFirestore(app)
+const db = getFirestore(app);
 import { useAuth } from "../../../AuthContext/AuthContext"; // Import the Auth context
 import { NavLink } from "react-router-dom";
 import { collection, getFirestore, onSnapshot } from "firebase/firestore";
@@ -16,7 +16,7 @@ const NavBar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [toggleNotifsOpen, setIsNotifsOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  const [notification, setNotification] = useState([])
+  const [notification, setNotification] = useState([]);
   const navigate = useNavigate(); // Use navigate for redirecting
   const { onLogout } = useAuth(); // Get the logout function from the context
 
@@ -40,33 +40,37 @@ const NavBar = () => {
 
   useEffect(() => {
     const fetchNotification = async () => {
-      console.log("Fetching notifications");
-  
-      const notificationRef = collection(db, 'notifications');
-  
-      // Listen to changes in the entire 'verifyAccount' collection
-      const unsubscribe = onSnapshot(notificationRef, (querySnapshot) => {
-        // Filter the documents that have the 'for_superadmin' field
-        const notifications = querySnapshot.docs
-          .filter((doc) => doc.data() && doc.data().hasOwnProperty('for_superadmin'))
-          .map((doc) => {
-            return { id: doc.id, ...doc.data() };
-          });
+      // console.log("Fetching notifications");
 
-          console.log("Fetching...", notifications)
-        // Update the state with filtered notifications
-        setNotification(notifications);
-      }, (error) => {
-        console.error('Error fetching verification info:', error);
-      });
-  
+      const notificationRef = collection(db, "notifications");
+
+      // Listen to changes in the entire 'verifyAccount' collection
+      const unsubscribe = onSnapshot(
+        notificationRef,
+        (querySnapshot) => {
+          // Filter the documents that have the 'for_superadmin' field
+          const notifications = querySnapshot.docs
+            .filter(
+              (doc) => doc.data() && doc.data().hasOwnProperty("for_superadmin")
+            )
+            .map((doc) => {
+              return { id: doc.id, ...doc.data() };
+            });
+
+          // console.log("Fetching...", notifications)
+          // Update the state with filtered notifications
+          setNotification(notifications);
+        },
+        (error) => {
+          console.error("Error fetching verification info:", error);
+        }
+      );
+
       return () => unsubscribe();
     };
-  
+
     fetchNotification();
   }, []);
-  
-  
 
   return (
     <>
@@ -116,7 +120,7 @@ const NavBar = () => {
                         // onClick={handleLogout} // Change from NavLink to div and handleLogout
                         className="block px-4 py-2 font-bold text-textSecond hover:text-main cursor-pointer"
                       >
-                       User {item.user_id} {item.title}
+                        User {item.user_id} {item.title}
                       </div>
                     </li>
                   ))}

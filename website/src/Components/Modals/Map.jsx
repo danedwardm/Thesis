@@ -9,7 +9,9 @@ const Map = ({ lat, lon }) => {
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log("reports", reports);
+  const user_id = localStorage.getItem("user_id");
+  const accountType = localStorage.getItem("accountType");
+  // console.log("reports", reports);
 
   const API_KEY = "b29aa0efcb4db33afa698232bfb7b3a2"; // Replace with your OpenWeatherMap API key
   const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
@@ -22,7 +24,7 @@ const Map = ({ lat, lon }) => {
         setLoading(true);
         setError(null);
         const response = await axios.get(WEATHER_API_URL);
-        console.log(response.data); // Log the response to see the structure of the data
+        // console.log(response.data); // Log the response to see the structure of the data
         setWeatherData(response.data);
         setLoading(false);
       } catch (err) {
@@ -39,12 +41,19 @@ const Map = ({ lat, lon }) => {
   if (loading) return <div>Loading weather data...</div>;
   if (error) return <div>{error}</div>;
 
+  const filteredReports =
+    accountType == "department_admin"
+      ? reports.filter((report) => report.assigned_to_id == user_id) // Only show reports assigned to this user
+      : reports;
+
+  // console.log("filteredReports", filteredReports);
+
   return (
     <div className="w-full h-full flex flex-col items-center">
       <MapContainer
         id="map"
         center={[lat, lon]}
-        zoom={10}
+        zoom={15}
         className="w-full h-full"
       >
         <TileLayer
@@ -72,7 +81,7 @@ const Map = ({ lat, lon }) => {
         </Marker>
 
         {/* Loop through reports and add a marker for each */}
-        {reports.map((report) => {
+        {filteredReports.map((report) => {
           const {
             latitude,
             longitude,
