@@ -260,31 +260,7 @@ const AuthProvider = ({ children }) => {
       }
     }
   };
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const account_type = localStorage.getItem("accountType");
-        if (account_type === "department_admin") {
-          const response = await axiosInstance.get("api/users/");
-          localStorage.setItem("workers_count", response.data.length);
-          setUsers(response.data);
-          console.log("Users:", response.data);
-        } else if (account_type === "superadmin") {
-          const response = await axiosInstance.get("api/users/");
-          localStorage.setItem("users_count", response.data.length);
-          setUsers(response.data);
-          // console.log("Users:", response.data);
-        }
 
-        // console.log("Data fetched successfully");
-      } catch (err) {
-        setError("Failed to fetch users.");
-        console.error("Error fetching users:", err); // Log any errors
-      }
-    };
-
-    fetchUsers();
-  }, []);
 
   const department = async () => {
     try {
@@ -393,6 +369,11 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("station");
     localStorage.removeItem("isEmailVerified"); // Remove email verification status
     localStorage.removeItem("departmentName"); // Remove department name
+    localStorage.removeItem("department");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("users_count");
+    localStorage.removeItem("weeklyReportCount");
+    localStorage.removeItem("new_notif_counts");
     delete axiosInstance.defaults.headers.common["Authorization"];
     setAuthenticated(false); // Set user as not authenticated
   };

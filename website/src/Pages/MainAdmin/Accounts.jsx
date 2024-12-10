@@ -19,6 +19,7 @@ import {
   getFirestore,
 } from "firebase/firestore";
 import { app } from "../../Firebase/firebaseConfig";
+import axiosInstance from "../../axios-instance";
 
 const db = getFirestore(app);
 
@@ -40,7 +41,6 @@ const Accounts = () => {
   const [idPicture, setIdPicture] = useState("");
   const [trustScore, setTrustScore] = useState("");
 
-  const { users } = useAuth();
   const [selectedAccountType, setSelectedAccountType] = useState("");
   const accountType = ["department_admin", "citizen", "worker"];
   const { account_type, departments } = useAuth();
@@ -55,6 +55,27 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
+  const [users, setUsers] = useState([])
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const account_type = localStorage.getItem("accountType");
+        if (!account_type === "superadmin") {
+          console.error("You are not superadmin!")
+          return;
+        }
+        const response = await axiosInstance.get("api/users/");
+        localStorage.setItem("users_count", response.data.length);
+        setUsers(response.data);
+        console.log("Users:", response.data);
+      } catch (err) {
+        setError("Failed to fetch users.");
+        console.error("Error fetching users:", err); // Log any errors
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const filteredUsers = users.filter((user) => {
     const matchesType =
@@ -66,7 +87,6 @@ const Accounts = () => {
       (selectedVerified === "Verified" ? user.is_verified : !user.is_verified);
     return matchesType && matchesStatus && matchesVerified; // Only include users that match both filters
   });
-  useEffect(() => console.log(users), [users])
 
   const handleAddAccount = () => {
     setShowAddAccount(true);

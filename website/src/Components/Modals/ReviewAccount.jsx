@@ -82,6 +82,37 @@ const ReviewAccount = ({
   const getUserInfo = (data, field, defaultValue) => {
     return data ? data[field] || defaultValue : defaultValue;
   };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState('');
+  const deleteAccount = async () => {
+    const confirmed = window.confirm('Are you sure you want to delete this account? This action cannot be undone.');
+
+    if (!confirmed) return; // Do nothing if the user cancels
+
+    setLoading(true);
+    setError(null);
+    setMessage('');
+
+    try {
+      const response = await axiosInstance.delete(`api/delete-account/${userId}/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`, 
+        },
+      });
+      if(!response){
+        alert("Cannot delete users atm.")
+        return;
+      }
+      
+      setMessage('User account has been deleted successfully!');
+      location.reload()
+    } catch (err) {
+      setError('There was an error deleting the account. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -356,7 +387,7 @@ const ReviewAccount = ({
                   )}
                   <div className="w-full flex flex-row gap-4 items-center justify-end mt-5">
                     {/* for dept admin */}
-                    <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
+                    <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate" onClick={() => deleteAccount()}>
                       DELETE
                     </button>
                     {/* for  superadmin */}

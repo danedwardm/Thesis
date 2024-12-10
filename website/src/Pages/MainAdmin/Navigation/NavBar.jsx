@@ -60,6 +60,15 @@ const NavBar = () => {
           // console.log("Fetching...", notifications)
           // Update the state with filtered notifications
           setNotification(notifications);
+          const todayStart = new Date();
+          todayStart.setHours(0, 0, 0, 0); // Set time to midnight for today's start
+
+          const todayNotifications = notifications.filter((notification) => {
+            const createdAt = notification.createdAt.toDate(); // Assuming createdAt is a Firestore Timestamp
+            return createdAt >= todayStart;
+          });
+
+          localStorage.setItem("new_notif_counts", todayNotifications.length); 
         },
         (error) => {
           console.error("Error fetching verification info:", error);
