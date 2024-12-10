@@ -2,15 +2,16 @@ import { initializeApp, getApp, getApps } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCEKoeUmd_Nps_xNbDdGAYqPLZPibHYppA",
-  authDomain: "crisp-63736.firebaseapp.com",
-  databaseURL: "https://crisp-63736-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "crisp-63736",
-  storageBucket: "crisp-63736.appspot.com",
-  messagingSenderId: "25886713465",
-  appId: "1:25886713465:web:021f343b5785e55c1d96a8",
-  measurementId: "G-NSBZMHRT4X",
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_DB_URL,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_ID,
+  appId: import.meta.env.VITE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
+
 
 // Initialize Firebase app
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
