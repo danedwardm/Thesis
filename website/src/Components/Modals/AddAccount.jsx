@@ -108,12 +108,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
 
     try {
       let res;
-
-      // Check if the user is a superadmin or department admin
       if (account_type === "superadmin") {
-        // Call department_admin_registration for superadmin
-        const department = localStorage.getItem("department");
-        setDepartment(department);
         res = await department_admin_registration(
           username,
           email,
@@ -262,7 +257,10 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
                           <div className="px-4 py-3 bg-white w-full flex items-center justify-center border border-main rounded-md">
                             <select
                               value={department}
-                              onChange={(e) => setDepartment(e.target.value)}
+                              onChange={(e) => {
+                                console.log("ID: ", e.target.value)
+                                setDepartment(e.target.value)
+                              }}
                               className="outline-none bg-white w-full text-xs font-normal "
                               disabled={account_type === "department_admin"}
                             >

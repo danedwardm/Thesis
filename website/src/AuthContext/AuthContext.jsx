@@ -265,9 +265,9 @@ const AuthProvider = ({ children }) => {
       try {
         const account_type = localStorage.getItem("accountType");
         if (account_type === "department_admin") {
-          const response = await axiosInstance.get("api/users/");
-          localStorage.setItem("workers_count", response.data.length);
-          setUsers(response.data);
+          // const response = await axiosInstance.get("api/users/");
+          // localStorage.setItem("workers_count", response.data.length);
+          // setUsers(response.data);
           // console.log("Users:", response.data);
         } else if (account_type === "superadmin") {
           const response = await axiosInstance.get("api/users/");
