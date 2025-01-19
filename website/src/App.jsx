@@ -34,7 +34,7 @@ function App() {
           path="/login"
           element={
             authenticated ? (
-              account_type === "superadmin" ? (
+              account_type === "superadmin" || account_type === 'super_admin'? (
                 emailVerified ? (
                   <Navigate to="/admin/dashboard" replace />
                 ) : (
@@ -60,7 +60,7 @@ function App() {
           path="/admin/*"
           element={
             authenticated ? (
-              account_type === "superadmin" ? (
+              account_type === "superadmin" || account_type === 'super_admin' ? (
                 <Navigate to="/admin/dashboard" replace />
               ) : (
                 <Navigate to="/dept-admin/dashboard" replace />
@@ -89,7 +89,7 @@ function App() {
         {/* Protect the routes based on authentication */}
         <Route element={<ProtectedRoutes />}>
           {/* Admin Routes */}
-          {account_type === "superadmin" && (
+          {account_type === "superadmin" || account_type === "super_admin" && (
             <>
               <Route path="/admin/dashboard" element={<Dashboard />} />
               <Route path="/admin/reports" element={<Reports />} />

@@ -118,7 +118,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       let res;
 
       // Handle account creation based on account type
-      if (account_type === "superadmin") {
+      if (account_type === "superadmin" || account_type === "super_admin") {
         // const department = localStorage.getItem("department");
         // setDepartment(department);
         res = await department_admin_registration(

@@ -89,10 +89,10 @@ const AuthProvider = ({ children }) => {
 
   const fetchDocuments = async () => {
     const categories = [
-      "fires",
-      "street lights",
-      "potholes",
-      "floods",
+      "fire accident",
+      "street light",
+      "pothole",
+      "flood",
       "others",
       "road accident",
     ];
@@ -327,6 +327,7 @@ const AuthProvider = ({ children }) => {
             (dep) => !prev.some((existingDep) => existingDep.id === dep.id)
           ),
         ];
+        console.log("Departments:", uniqueDepartments);
         return uniqueDepartments;
       });
     } catch (error) {
@@ -356,7 +357,7 @@ const AuthProvider = ({ children }) => {
       } = res.data;
 
       if (
-        account_type !== "superadmin" &&
+        account_type !== "superadmin" && account_type !== "super_admin" &&
         account_type !== "department_admin" &&
         account_type !== "department_head"
       ) {
@@ -383,7 +384,7 @@ const AuthProvider = ({ children }) => {
       setToken(access)
       fetchUserInfo(access);
       // Fetch department details and store them in local storage
-      if (account_type == "superadmin") {
+      if (account_type == "superadmin" || account_type == "super_admin") {
         const departmentRes = await axiosInstance.get("api/departments/");
         const departmentData = departmentRes.data.find(
           (dep) => dep.id === department

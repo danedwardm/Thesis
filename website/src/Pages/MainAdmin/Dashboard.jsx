@@ -30,14 +30,12 @@ const Dashboard = () => {
     const fetchUsers = async () => {
       try {
         const account_type = localStorage.getItem("accountType");
-   if (!account_type === "superadmin") {
+   if (account_type !== "superadmin" || account_type !== 'super_admin') {
     console.error("cannot fetch users count you are not a superadmin ");
      return;
   }
-  const response = await axiosInstance.get("api/users/");
-  localStorage.setItem("users_count", response.data.length);
-
-        // console.log("Data fetched successfully");
+      const response = await axiosInstance.get("api/users/");
+      localStorage.setItem("users_count", response.data.length);
       } catch (err) {
         setError("Failed to fetch users.");
         console.error("Error fetching users:", err); // Log any errors
