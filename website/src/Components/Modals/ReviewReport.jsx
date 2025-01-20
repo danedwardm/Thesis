@@ -333,9 +333,9 @@ const ReviewReport = ({
                         </button>
                       )}
 
-                    <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
+                    {/* <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
                       ASSIGN
-                    </button>
+                    </button> */}
                     <button
                       className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                       onClick={handleDeleteModal}

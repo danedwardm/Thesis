@@ -112,7 +112,7 @@ const ReportCategoryChart = () => {
           "rgba(255, 99, 132, 0.6)", // Fires
           "rgba(54, 162, 235, 0.6)", // Street Lights
           "rgba(255, 206, 86, 0.6)", // Potholes
-          "rgba(75, 192, 192, 0.6)", // Floods
+          "rgba(79, 192, 75, 0.6)", // Floods
           "rgba(153, 102, 255, 0.6)", // Others
           "rgba(255, 159, 64, 0.6)", // Road Accident
         ],
@@ -120,7 +120,7 @@ const ReportCategoryChart = () => {
           "rgba(255, 99, 132, 1)", // Fires
           "rgba(54, 162, 235, 1)", // Street Lights
           "rgba(255, 206, 86, 1)", // Potholes
-          "rgba(75, 192, 192, 1)", // Floods
+          "rgba(79, 192, 75, 1)", // Floods
           "rgba(153, 102, 255, 1)", // Others
           "rgba(255, 159, 64, 1)", // Road Accident
         ],

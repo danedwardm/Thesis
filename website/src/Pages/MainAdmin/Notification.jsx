@@ -150,12 +150,10 @@ const Notification = () => {
                       name="reportType"
                       value={formData.reportType}
                       onChange={handleInputChange}
-                      class="p-2 text-sm border border-main rounded-md"
+                      className="p-2 text-sm border border-main rounded-md"
                       required
                     >
-                      <option value="" disabled selected>
-                        Select a Report Type
-                      </option>
+                      <option value="">Select a Report Type</option>
                       <option value="Announcement">Announcement</option>
                       <option value="Updates">Updates</option>
                       <option value="Safety Alert">Safety Alert</option>

@@ -59,7 +59,7 @@ const Reports = ({ assigned_to_id }) => {
         }));
       }
     } catch (error) {
-      console.error("Error fetching department details:", error);
+      // console.error("Error fetching department details:", error);
       setDepartmentNames((prevState) => ({
         ...prevState,
         [assigned_to_id]: "Department not found",
