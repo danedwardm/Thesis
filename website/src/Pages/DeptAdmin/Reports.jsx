@@ -77,7 +77,7 @@ const Reports = () => {
   };
 
   // Get unique report types and statuses for dropdown options
-  const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
+  // const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
   const statuses = [...new Set(reports.map((item) => item.status))];
 
   useEffect(() => {
@@ -123,7 +123,7 @@ const Reports = () => {
 
   const getIcon = (type) => {
     switch (type) {
-      case "fires":
+      case "fire":
         return <FaFire className="text-[#2f2f2f] text-xl" />;
       case "floods":
         return <FaWater className="text-[#2f2f2f] text-xl" />;

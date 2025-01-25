@@ -30,7 +30,7 @@ const Dashboard = () => {
     const fetchUsers = async () => {
       try {
         const account_type = localStorage.getItem("accountType");
-   if (account_type !== "superadmin" || account_type !== 'super_admin') {
+   if (account_type !== "superadmin") {
     console.error("cannot fetch users count you are not a superadmin ");
      return;
   }

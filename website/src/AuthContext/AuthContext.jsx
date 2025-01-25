@@ -423,6 +423,7 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("user_id");
     localStorage.removeItem("users_count");
     localStorage.removeItem("weeklyReportCount");
+    localStorage.removeItem("workers_count");
     localStorage.removeItem("new_notif_counts");
     delete axiosInstance.defaults.headers.common["Authorization"];
     setAuthenticated(false); // Set user as not authenticated
