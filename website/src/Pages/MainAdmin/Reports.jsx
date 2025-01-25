@@ -40,6 +40,11 @@ const Reports = ({ assigned_to_id }) => {
   const [reportValidated, setReportValidated] = useState(false);
   const [reportedType, setReportedType] = useState("");
   const [openTime, setOpenTime] = useState("");
+  const [lat, setLat] = useState("");
+  const [long, setLong] = useState("");
+  const [closedTime, setClosedTime] = useState("");
+  const [respondTime, setRespondTime] = useState("");
+  const [validationTime, setValidationTime] = useState("");
   const [userFeedback, setUserFeedback] = useState([]);
   const [workerFeedback, setWorkerFeedback] = useState([]);
 
@@ -85,7 +90,7 @@ const Reports = ({ assigned_to_id }) => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9; // Number of items per page
+  const itemsPerPage = 12; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
@@ -198,7 +203,7 @@ const Reports = ({ assigned_to_id }) => {
 
   const getIcon = (type) => {
     switch (type) {
-      case "fires":
+      case "fires" && "fire accident":
         return <FaFire className="text-[#2f2f2f] text-xl" />;
       case "floods":
         return <FaWater className="text-[#2f2f2f] text-xl" />;
@@ -270,15 +275,21 @@ const Reports = ({ assigned_to_id }) => {
                   <p className="text-white font-semibold text-sm">reports</p>
                 </div>
                 {/* filter */}
-                <div>
-                  <button
+                <div className="flex flex-row">
+                  <div
+                    className="bg-white text-main font-bold text-sm py-3 px-6 border border-accent border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer"
+                    // onClick={handleAddAccount}
+                  >
+                    ADD TYPE
+                  </div>
+                  <div
                     className={`font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer h-full ${
                       filterOpen ? "bg-main text-white" : "bg-white text-main"
                     }`}
                     onClick={() => setFilterOpen(!filterOpen)}
                   >
                     FILTER
-                  </button>
+                  </div>
                   {filterOpen && (
                     <div className="absolute top-auto right-10 mt-2 bg-white border rounded-md shadow-lg w-48">
                       <div className="p-2">
@@ -453,7 +464,7 @@ const Reports = ({ assigned_to_id }) => {
                                     </span>
                                   ) : data.status === "reviewing" ? (
                                     <span className="text-[#6e4615] font-bold">
-                                      {data.status.toUpperCase()}
+                                      UNDER REVIEW
                                     </span>
                                   ) : data.status === "Ongoing" ? (
                                     <span className="text-[#FFA500] font-bold">
@@ -528,7 +539,7 @@ const Reports = ({ assigned_to_id }) => {
                                       data.custom_type
                                   : data.type_of_report
                               );
-                              setDescription(data.description);
+                              setDescription(data.report_description);
                               setDate(`${formattedDate} ${formattedTime}`);
                               setStatus(data.status);
                               setAssignedTo(data.assigned_to);
@@ -542,6 +553,11 @@ const Reports = ({ assigned_to_id }) => {
                               setReportedType(data.type_of_report);
                               setReportValidated(data.is_validated);
                               setOpenTime(timeElapsed(data.report_date));
+                              setLat(data.latitude);
+                              setLong(data.longitude);
+                              setClosedTime(data.report_closed_time);
+                              setRespondTime(data.review_elapsed_time);
+                              setValidationTime(data.validation_time);
                             }}
                           >
                             {data.is_validated ? "REVIEW" : "VALIDATE"}
@@ -617,6 +633,11 @@ const Reports = ({ assigned_to_id }) => {
         reportedType={reportedType}
         reportValidated={reportValidated}
         openTime={openTime}
+        lat={lat}
+        long={long}
+        closedTime={closedTime}
+        respondTime={respondTime}
+        validationTime={validationTime}
       />
     </>
   );
