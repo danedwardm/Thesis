@@ -23,19 +23,21 @@ const Dashboard = () => {
     parseInt(localStorage.getItem("weeklyReportCount")) || 0
   );
   const [location, setLocation] = useState({
-    lat: 14.9767, // Default fallback coordinates (e.g., UCC South Campus)
-    lng: 120.9705,
+    lat: 14.7545804, // Default fallback coordinates (e.g., UCC South Campus)
+    lng: 121.030909,
   });
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const account_type = localStorage.getItem("accountType");
-   if (account_type !== "superadmin") {
-    console.error("cannot fetch users count you are not a superadmin ");
-     return;
-  }
-      const response = await axiosInstance.get("api/users/");
-      localStorage.setItem("users_count", response.data.length);
+        if (!account_type === "superadmin") {
+          console.error("cannot fetch users count you are not a superadmin ");
+          return;
+        }
+        const response = await axiosInstance.get("api/users/");
+        localStorage.setItem("users_count", response.data.length);
+
+        // console.log("Data fetched successfully");
       } catch (err) {
         setError("Failed to fetch users.");
         console.error("Error fetching users:", err); // Log any errors
@@ -154,7 +156,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                {localStorage.getItem('users_count') || 0}
+                {localStorage.getItem("users_count") || 0}
               </div>
             </div>
           </div>

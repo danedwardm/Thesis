@@ -49,8 +49,8 @@ const categoryColors = {
     borderColor: "rgba(255, 206, 86, 1)",
   },
   floods: {
-    backgroundColor: "rgba(75, 192, 192, 0.4)", // Green
-    borderColor: "rgba(75, 192, 192, 1)",
+    backgroundColor: "rgba(79, 192, 75, 0.4)", // Green
+    borderColor: "rgba(79, 192, 75, 1)",
   },
   others: {
     backgroundColor: "rgba(153, 102, 255, 0.4)", // Purple

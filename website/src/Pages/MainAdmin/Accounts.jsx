@@ -55,13 +55,13 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState([]);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const account_type = localStorage.getItem("accountType");
         if (!account_type === "superadmin") {
-          console.error("You are not superadmin!")
+          console.error("You are not superadmin!");
           return;
         }
         const response = await axiosInstance.get("api/users/");
@@ -502,7 +502,7 @@ const Accounts = () => {
                                 setAddress(data.address);
                                 setEmailAddress(data.email);
                                 setUserID(data.id);
-                                setUserScore(data.score);
+                                // setUserScore(data.score);
                               }}
                             >
                               {data.is_verified

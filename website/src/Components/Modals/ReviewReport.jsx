@@ -7,6 +7,7 @@ import { PiImages } from "react-icons/pi";
 import ImageModal from "./ImageModal";
 import Feedback from "./Feedback";
 import DeleteReport from "./DeleteReport";
+import Map from "../../Components/Modals/Map";
 
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore"; // Add these imports for Firestore operations
 import { app } from "../../Firebase/firebaseConfig";
@@ -34,6 +35,11 @@ const ReviewReport = ({
   reportedType,
   reportValidated,
   openTime,
+  lat,
+  long,
+  closedTime,
+  respondTime,
+  validationTime,
 }) => {
   if (!isVisible) return null;
 
@@ -56,6 +62,39 @@ const ReviewReport = ({
   const handleDeleteModal = () => {
     setShowDeleteModal(true);
   };
+
+  function convertToDaysHoursMinutes(time) {
+    // Split time into hours and minutes
+    const [hours, minutes] = time.split(":").map(Number);
+
+    // Convert total time into minutes
+    const totalMinutes = hours * 60 + minutes;
+
+    // Calculate days, hours, and minutes
+    const days = Math.floor(totalMinutes / 1440); // 1440 minutes in a day
+    const remainingMinutes = totalMinutes % 1440;
+    const hoursLeft = Math.floor(remainingMinutes / 60);
+    const minutesLeft = remainingMinutes % 60;
+
+    // Build the result string with conditional formatting
+    let result = "";
+
+    if (days > 0) {
+      result += `${days} day${days > 1 ? "s" : ""}`;
+    }
+
+    if (hoursLeft > 0) {
+      if (result) result += ", "; // Add separator if days were already added
+      result += `${hoursLeft} hour${hoursLeft > 1 ? "s" : ""}`;
+    }
+
+    if (minutesLeft > 0 || (days === 0 && hoursLeft === 0)) {
+      if (result) result += ", "; // Add separator if days or hours were already added
+      result += `${minutesLeft} minute${minutesLeft > 1 ? "s" : ""}`;
+    }
+
+    return result;
+  }
 
   const handleValidateClick = async () => {
     const localDate = new Date();
@@ -183,19 +222,9 @@ const ReviewReport = ({
                     </p>
                   </div>
                 </div>
-                <div className="w-full flex flex-col items-center justify-center">
-                  <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
-                    <p className="text-xs font-semibold ">Location</p>
-                  </div>
-                  <div className="px-4 py-3 bg-white w-full flex items-center border border-main rounded-md">
-                    <p className="text-xs font-semibold text-gray-500 truncate">
-                      {location}
-                    </p>
-                  </div>
-                </div>
                 <div className="w-full flex flex-col items-center justify-center py-2">
                   <div className="flex justify-start items-center w-full py-2">
-                    <p className="text-xs font-semibold ">Item Description</p>
+                    <p className="text-xs font-semibold ">Description</p>
                   </div>
                   <div className="p-4 rounded-md bg-white w-full border text-gray-500 border-main">
                     <textarea
@@ -224,20 +253,148 @@ const ReviewReport = ({
                   </div>
                   <div className="w-1/2 flex flex-col items-center justify-center">
                     <div className="flex items-center justify-start w-full py-2 px-1">
+                      <p className="text-xs font-semibold ">Status</p>
+                    </div>
+                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                      <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
+                        <p className="text-xs font-bold uppercase truncate">
+                          {reportStatus === "assigned" ? (
+                            <span className="truncate text-[#a10b00]">
+                              {reportStatus}
+                            </span>
+                          ) : reportStatus === "ongoing" ? (
+                            <span className="font-bold text-[#007a3f]">
+                              {reportStatus}
+                            </span>
+                          ) : (
+                            <span className="font-bold text-[#363636]">
+                              {reportStatus}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="w-full flex flex-row gap-4 items-center justify-center">
+                  <div className="w-1/2 flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-start w-full py-2 px-1">
                       <p className="text-xs font-semibold ">
-                        Report has been open for
+                        Assigned Department
                       </p>
                     </div>
                     <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                       <div className="w-full bg-white resize-none outline-none text-xs font-normal">
+                        <p className="text-xs font-semibold text-gray-500 truncate">
+                          {/* {date} */}
+                          IDK Di pa ayos
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/2 flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-start w-full py-2 px-1">
+                      <p className="text-xs font-semibold ">Assigned Worker</p>
+                    </div>
+                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                      <div className="w-full bg-white resize-none outline-none text-xs font-normal">
                         <span className="text-xs font-semibold text-gray-500 truncate">
-                          {openTime}
+                          {/* {assignedTo} */}
+                          IDK Di pa ayos
                         </span>
                       </div>
                     </div>
                   </div>
                 </div>
+                <div className="w-full flex flex-row gap-4 items-center justify-center">
+                  <div className="w-1/3 flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-start w-full py-2 px-1">
+                      <p className="text-xs font-semibold ">Validation Time</p>
+                    </div>
+                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                      <div className="w-full bg-white resize-none outline-none text-xs font-normal ">
+                        <span className="text-xs font-semibold text-gray-500">
+                          {validationTime
+                            ? convertToDaysHoursMinutes(validationTime)
+                            : "Not yet validated"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/3 flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-start w-full py-2 px-1">
+                      <p className="text-xs font-semibold ">Likes</p>
+                    </div>
+                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                      <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
+                        <p className="text-xs font-bold text-gray-500 truncate">
+                          {upvote}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/3 flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-start w-full py-2 px-1">
+                      <p className="text-xs font-semibold ">Dislikes</p>
+                    </div>
+                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                      <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
+                        <p className="text-xs font-bold text-gray-500 truncate">
+                          {downvote}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="w-full flex flex-row gap-4 items-center justify-center">
+                  <div className="w-1/3 flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-start w-full py-2 px-1">
+                      <p className="text-xs font-semibold ">Report Open For</p>
+                    </div>
+                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                      <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
+                        <p className="text-xs font-bold text-gray-500 truncate">
+                          {closedTime
+                            ? convertToDaysHoursMinutes(closedTime)
+                            : openTime}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/3 flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-start w-full py-2 px-1">
+                      <p className="text-xs font-semibold ">Responding Time</p>
+                    </div>
+                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                      <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
+                        <p className="text-xs font-bold text-gray-500 truncate">
+                          {respondTime
+                            ? convertToDaysHoursMinutes(respondTime)
+                            : "Not responded yet"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-1/3 flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-start w-full py-2 px-1">
+                      <p className="text-xs font-semibold ">
+                        Report Close Time
+                      </p>
+                    </div>
+                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                      <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
+                        <p className="text-xs font-bold text-gray-500 truncate">
+                          {closedTime
+                            ? convertToDaysHoursMinutes(closedTime)
+                            : "Report is still open"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
+
               {/* attachment and button section */}
               <div className="w-full lg:w-1/2 flex flex-col mt-4">
                 <div className="w-full flex flex-row gap-2 items-center justify-start py-2 px-1">
@@ -249,73 +406,112 @@ const ReviewReport = ({
                   </p>
                 </div>
                 <div className="w-full flex flex-col items-center justify-center">
-                  {attachment && attachment.length > 0 ? (
-                    <div
-                      className="w-full md:h-[360px] h-[200px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
-                      onClick={handleImageClick}
-                    >
-                      <img
-                        src={attachment}
-                        className="w-full h-full object-cover object-center hover:scale-105 ease-in-out duration-500"
-                        alt={`Image ${attachment}`}
-                      />
-                    </div>
-                  ) : (
-                    <div className="w-full md:h-[360px] h-[200px] bg-white rounded-md flex flex-col items-center justify-center border border-main">
-                      <PiImages className="text-xl" />
-                      <p className="text-xs font-normal">No media file</p>
-                    </div>
-                  )}
-                  <div className="w-full flex flex-row gap-4 items-center justify-center">
-                    <div className="w-1/3 flex flex-col items-center justify-center">
-                      <div className="flex items-center justify-start w-full py-2 px-1">
-                        <p className="text-xs font-semibold ">Status</p>
-                      </div>
-                      <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
-                        <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
-                          <p className="text-xs font-bold uppercase truncate">
-                            {reportStatus === "assigned" ? (
-                              <span className="truncate text-[#a10b00]">
-                                {reportStatus}
-                              </span>
-                            ) : reportStatus === "ongoing" ? (
-                              <span className="font-bold text-[#007a3f]">
-                                {reportStatus}
-                              </span>
-                            ) : (
-                              <span className="font-bold text-[#363636]">
-                                {reportStatus}
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="w-1/3 flex flex-col items-center justify-center">
-                      <div className="flex items-center justify-start w-full py-2 px-1">
-                        <p className="text-xs font-semibold ">Upvote</p>
-                      </div>
-                      <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
-                        <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
-                          <p className="text-xs font-bold text-gray-500 truncate">
-                            {upvote}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="w-1/3 flex flex-col items-center justify-center">
-                      <div className="flex items-center justify-start w-full py-2 px-1">
-                        <p className="text-xs font-semibold ">Downvote</p>
-                      </div>
-                      <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
-                        <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
-                          <p className="text-xs font-bold text-gray-500 truncate">
-                            {downvote}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+                  <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
+                    <p className="text-xs font-semibold ">Location</p>
                   </div>
+                  <div className="bg-white w-full flex flex-col items-start border border-main rounded-md">
+                    <div className="w-full h-[225px] rounded-md overflow-hidden cursor-pointer mb-3">
+                      <Map lat={lat} lon={long} />
+                    </div>
+                    <p className="text-xs font-semibold text-gray-500 truncate mb-3 ml-3">
+                      {location}
+                    </p>
+                  </div>
+                </div>
+                <div className="w-full flex flex-col items-center justify-center">
+                  {reportStatus === "done" ? (
+                    <>
+                      <div className="w-full flex flex-row items-center justify-center mt-2 gap-3">
+                        {attachment && attachment.length > 0 ? (
+                          <div className="w-full flex flex-col">
+                            <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
+                              <p className="text-xs font-semibold ">Before</p>
+                            </div>
+                            <div
+                              className="w-full md:h-[200px] h-[100px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
+                              onClick={handleImageClick}
+                            >
+                              <img
+                                src={attachment}
+                                className="w-full h-full object-cover object-center hover:scale-105 ease-in-out duration-500"
+                                alt={`Image ${attachment}`}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-full md:h-[200px] h-[100px] bg-white rounded-md flex flex-col items-center justify-center border border-main">
+                            <PiImages className="text-xl" />
+                            <p className="text-xs font-normal">No media file</p>
+                          </div>
+                        )}
+
+                        {attachment && attachment.length > 0 ? (
+                          <div className="w-full flex flex-col">
+                            <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
+                              <p className="text-xs font-semibold ">After</p>
+                            </div>
+                            <div
+                              className="w-full md:h-[200px] h-[100px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
+                              onClick={handleImageClick}
+                            >
+                              <img
+                                src={attachment}
+                                className="w-full h-full object-cover object-center hover:scale-105 ease-in-out duration-500"
+                                alt={`Image ${attachment}`}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-full md:h-[200px] h-[100px] bg-white rounded-md flex flex-col items-center justify-center border border-main">
+                            <PiImages className="text-xl" />
+                            <p className="text-xs font-normal">No media file</p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="w-full flex flex-col items-center justify-center">
+                        <div className="flex justify-start items-center w-full py-2">
+                          <p className="text-xs font-semibold ">
+                            Worker Remarks
+                          </p>
+                        </div>
+                        <div className="p-4 rounded-md bg-white w-full border text-gray-500 border-main">
+                          <textarea
+                            name=""
+                            id=""
+                            rows={2}
+                            className="outline-none bg-white w-full resize-none text-xs font-normal"
+                            placeholder="Actions or Remarks"
+                            value={description}
+                            readOnly={true}
+                          ></textarea>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
+                        <p className="text-xs font-semibold mt-3">Proof</p>
+                      </div>
+                      {attachment && attachment.length > 0 ? (
+                        <div
+                          className="w-full md:h-[250px] h-[100px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
+                          onClick={handleImageClick}
+                        >
+                          <img
+                            src={attachment}
+                            className="w-full h-full object-cover object-center hover:scale-105 ease-in-out duration-500"
+                            alt={`Image ${attachment}`}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full md:h-[250px] h-[100px] bg-white rounded-md flex flex-col items-center justify-center border border-main">
+                          <PiImages className="text-xl" />
+                          <p className="text-xs font-normal">No media file</p>
+                        </div>
+                      )}
+                    </>
+                  )}
+
                   <div className="w-full flex flex-row gap-4 items-center justify-end mt-5">
                     {/* <button
                       className="py-3 px-4 border border-main bg-textSecond text-black  rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
@@ -333,9 +529,9 @@ const ReviewReport = ({
                         </button>
                       )}
 
-                    <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
+                    {/* <button className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
                       ASSIGN
-                    </button>
+                    </button> */}
                     <button
                       className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
                       onClick={handleDeleteModal}
