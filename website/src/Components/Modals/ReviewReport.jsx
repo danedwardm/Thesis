@@ -12,6 +12,7 @@ import Map from "../../Components/Modals/Map";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore"; // Add these imports for Firestore operations
 import { app } from "../../Firebase/firebaseConfig";
 import { useAuth } from "../../AuthContext/AuthContext";
+import { use } from "react";
 
 const db = getFirestore(app);
 
@@ -40,6 +41,7 @@ const ReviewReport = ({
   closedTime,
   respondTime,
   validationTime,
+  workers,
 }) => {
   if (!isVisible) return null;
 
@@ -48,12 +50,20 @@ const ReviewReport = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const [workerList, setWorkerList] = useState('');
+  const { user, departments } = useAuth();
   const account_type = localStorage.getItem("accountType");
 
   useEffect(() => {
-    setUsername(user.username); // Log user when it's available
+    setUsername(user.username); 
   }, [user]);
+  useEffect(() => {
+    if (workers.length > 0) {
+      const workerUsernames = workers.map((worker) => worker.username);
+      setWorkerList(workerUsernames.join(", "));
+    }
+  }, [workers]);
+  const deptName = departments.find((dept) => dept.id === assignedTo);
 
   const handleImageClick = () => {
     setShowImageModal(true);
@@ -287,8 +297,7 @@ const ReviewReport = ({
                     <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                       <div className="w-full bg-white resize-none outline-none text-xs font-normal">
                         <p className="text-xs font-semibold text-gray-500 truncate">
-                          {/* {date} */}
-                          IDK Di pa ayos
+                          {deptName ? deptName.name : "Not yet assigned"}
                         </p>
                       </div>
                     </div>
@@ -301,7 +310,7 @@ const ReviewReport = ({
                       <div className="w-full bg-white resize-none outline-none text-xs font-normal">
                         <span className="text-xs font-semibold text-gray-500 truncate">
                           {/* {assignedTo} */}
-                          IDK Di pa ayos
+                          {workerList ? workerList : "Not yet assigned"}
                         </span>
                       </div>
                     </div>
@@ -357,7 +366,7 @@ const ReviewReport = ({
                         <p className="text-xs font-bold text-gray-500 truncate">
                           {closedTime
                             ? convertToDaysHoursMinutes(closedTime)
-                            : openTime}
+                            : openTime ? openTime : "Not yet opened"}
                         </p>
                       </div>
                     </div>

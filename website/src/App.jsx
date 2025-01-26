@@ -60,7 +60,7 @@ function App() {
           path="/admin/*"
           element={
             authenticated ? (
-              account_type === "superadmin" ? (
+              account_type === "superadmin"  ? (
                 <Navigate to="/admin/dashboard" replace />
               ) : (
                 <Navigate to="/dept-admin/dashboard" replace />

@@ -89,10 +89,10 @@ const AuthProvider = ({ children }) => {
 
   const fetchDocuments = async () => {
     const categories = [
-      "fires",
-      "street lights",
-      "potholes",
-      "floods",
+      "fire accident",
+      "street light",
+      "pothole",
+      "flood",
       "others",
       "road accident",
       "fire accident",
@@ -310,8 +310,8 @@ const AuthProvider = ({ children }) => {
   const department = async () => {
     try {
       if (
-        account_type == "super_admin" ||
-        account_type == "superadmin" ||
+        account_type == "department_admin" ||
+        account_type == "departmentadmin" ||
         account_type == "worker" ||
         account_type == "citizen"
       )
@@ -356,7 +356,7 @@ const AuthProvider = ({ children }) => {
       } = res.data;
 
       if (
-        account_type !== "superadmin" &&
+        account_type !== "superadmin" && account_type !== "super_admin" &&
         account_type !== "department_admin" &&
         account_type !== "department_head"
       ) {
@@ -383,7 +383,7 @@ const AuthProvider = ({ children }) => {
       setToken(access);
       fetchUserInfo(access);
       // Fetch department details and store them in local storage
-      if (account_type == "superadmin") {
+      if (account_type == "superadmin" || account_type == "super_admin") {
         const departmentRes = await axiosInstance.get("api/departments/");
         const departmentData = departmentRes.data.find(
           (dep) => dep.id === department
@@ -422,6 +422,7 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("user_id");
     localStorage.removeItem("users_count");
     localStorage.removeItem("weeklyReportCount");
+    localStorage.removeItem("workers_count");
     localStorage.removeItem("new_notif_counts");
     delete axiosInstance.defaults.headers.common["Authorization"];
     setAuthenticated(false); // Set user as not authenticated
