@@ -310,8 +310,8 @@ const AuthProvider = ({ children }) => {
   const department = async () => {
     try {
       if (
-        account_type == "super_admin" ||
-        account_type == "superadmin" ||
+        account_type == "department_admin" ||
+        account_type == "departmentadmin" ||
         account_type == "worker" ||
         account_type == "citizen"
       )
@@ -327,7 +327,6 @@ const AuthProvider = ({ children }) => {
             (dep) => !prev.some((existingDep) => existingDep.id === dep.id)
           ),
         ];
-        console.log("Departments:", uniqueDepartments);
         return uniqueDepartments;
       });
     } catch (error) {

@@ -47,7 +47,7 @@ const Reports = ({ assigned_to_id }) => {
   const [validationTime, setValidationTime] = useState("");
   const [userFeedback, setUserFeedback] = useState([]);
   const [workerFeedback, setWorkerFeedback] = useState([]);
-
+  const [workers, setWorkers] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // To store any errors
   const [departmentNames, setDepartmentNames] = useState("");
@@ -123,13 +123,6 @@ const Reports = ({ assigned_to_id }) => {
       score,
     };
   });
-
-  useEffect(() => {
-    // Log each report's assigned_to_id to the console
-    reports.forEach((report) => {
-      console.log("Assigned to ID:", report.assigned_to_id); // This will show the assigned_to_id of each report
-    });
-  }, [reports]);
 
   // Create an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -542,7 +535,7 @@ const Reports = ({ assigned_to_id }) => {
                               setDescription(data.report_description);
                               setDate(`${formattedDate} ${formattedTime}`);
                               setStatus(data.status);
-                              setAssignedTo(data.assigned_to);
+                              setAssignedTo(data.department_id);
                               setAttachment(data.image_path);
                               setUpvote(data.upvote);
                               setDownvote(data.downvote);
@@ -550,6 +543,7 @@ const Reports = ({ assigned_to_id }) => {
                               setProof(data.proof);
                               setIsValidated(data.is_validated);
                               setReportId(data.id);
+                              setWorkers(data.workers);
                               setReportedType(data.type_of_report);
                               setReportValidated(data.is_validated);
                               setOpenTime(timeElapsed(data.report_date));
@@ -638,6 +632,7 @@ const Reports = ({ assigned_to_id }) => {
         closedTime={closedTime}
         respondTime={respondTime}
         validationTime={validationTime}
+        workers={workers}
       />
     </>
   );
