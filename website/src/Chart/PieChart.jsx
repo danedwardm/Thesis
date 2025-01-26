@@ -48,11 +48,12 @@ const PieChart = () => {
     setReportCounts({});
 
     const categories = [
-      "fires",
-      "street lights",
+      "fire accident",
+      "street light",
       "potholes",
       "floods",
       "others",
+      'fallen tree',
       "road accident",
     ];
 

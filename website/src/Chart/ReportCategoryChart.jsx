@@ -61,11 +61,12 @@ const ReportCategoryChart = () => {
   // Fetch documents from Firestore with date filtering
   const fetchDocuments = async (filter) => {
     const categories = [
-      "fires",
-      "street lights",
+      "fire accident",
+      "street light",
       "potholes",
       "floods",
       "others",
+      'fallen tree',
       "road accident",
     ];
 

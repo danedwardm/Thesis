@@ -23,6 +23,8 @@ const Analysis = () => {
           <Navbar />
           <NavText />
           <div className="grid grid-cols-1 lg:grid-cols-2 col-span-4 justify-center items-center pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[15vh] mb-[10vh]">
+            <PieChart />
+            <ReportCategoryChart />
             <ReportTrends />
             <ReportTimeTrends />
           </div>
