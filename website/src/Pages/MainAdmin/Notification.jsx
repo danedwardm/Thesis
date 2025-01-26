@@ -86,6 +86,7 @@ const Notification = () => {
         title: formData.reportType,
         description: formData.description,
         createdAt: new Date(),
+        general: true,
       });
 
       if (!notifRef) {
