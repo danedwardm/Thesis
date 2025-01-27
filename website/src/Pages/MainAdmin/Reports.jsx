@@ -49,43 +49,37 @@ const Reports = ({ assigned_to_id }) => {
   const [workers, setWorkers] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // To store any errors
-  const [departmentNames, setDepartmentNames] = useState("");
 
-  const fetchDepartmentDetails = async (assigned_to_id) => {
-    try {
-      const response = await axiosInstance.get(
-        `api/get-department-details/${assigned_to_id}/`
-      );
-      if (response.data.department_name) {
-        setDepartmentNames((prevState) => ({
-          ...prevState,
-          [assigned_to_id]: response.data.department_name,
-        }));
-      }
-    } catch (error) {
-      // console.error("Error fetching department details:", error);
-      setDepartmentNames((prevState) => ({
-        ...prevState,
-        [assigned_to_id]: "Department not found",
-      }));
-    }
-  };
-
-  // Fetch department names for each report
-  useEffect(() => {
-    const fetchDepartments = () => {
-      reports.forEach((report) => {
-        console.log(report.workerFeedback[0])
-        if (!departmentNames[assigned_to_id]) {
-          // Avoid redundant fetches
-          fetchDepartmentDetails(assigned_to_id);
-        }
-      });
-    };
-
-    fetchDepartments();
-    setIsLoading(false);
-  }, [reports, departmentNames]); // Trigger effect when reports change
+  const departments = [
+    {
+      id: 1,
+      name: "Fire Department",
+    },
+    {
+      id: 2,
+      name: "Medical Department",
+    },
+    {
+      id: 3,
+      name: "Police Department",
+    },
+    {
+      id: 4,
+      name: "Street Maintenance Department",
+    },
+    {
+      id: 5,
+      name: "Pothole Repair Department",
+    },
+    {
+      id: 6,
+      name: "General Department",
+    },
+    {
+      id: 7,
+      name: "Department of Public Works",
+    },
+  ];
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -380,7 +374,7 @@ const Reports = ({ assigned_to_id }) => {
                     });
 
                     const departmentName =
-                      departmentNames[data.assigned_to_id] ||
+                    departments.find((dept) => dept.id === data.department_id)||
                       (isLoading ? "Loading..." : "No department found");
 
                     return (
@@ -420,7 +414,7 @@ const Reports = ({ assigned_to_id }) => {
                                     : "NOT VALIDATED"}
                                 </p>
                                 <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
-                                  {departmentName}
+                                  {departmentName.name}
                                 </p>
                                 {/* Date and Time */}
                                 <p className="text-xs font-normal text-[#2f2f2f]">
