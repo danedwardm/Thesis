@@ -53,7 +53,7 @@ const ReviewReport = ({
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [workerList, setWorkerList] = useState("");
-  const { user, departments } = useAuth();
+  const { user } = useAuth();
   const account_type = localStorage.getItem("accountType");
 
   const [mapImage, setMapImage] = useState(null);
@@ -126,6 +126,36 @@ const ReviewReport = ({
       setWorkerList(workerUsernames.join(", "));
     }
   }, [workers]);
+  const departments = [
+    {
+      id: 1,
+      name: "Fire Department",
+    },
+    {
+      id: 2,
+      name: "Medical Department",
+    },
+    {
+      id: 3,
+      name: "Police Department",
+    },
+    {
+      id: 4,
+      name: "Street Maintenance Department",
+    },
+    {
+      id: 5,
+      name: "Pothole Repair Department",
+    },
+    {
+      id: 6,
+      name: "General Department",
+    },
+    {
+      id: 7,
+      name: "Department of Public Works",
+    },
+  ];
   const deptName = departments.find((dept) => dept.id === assignedTo);
 
   const handleImageClick = () => {
@@ -608,32 +638,7 @@ const ReviewReport = ({
                     >
                       DOWNLOAD
                     </button>
-                    {/* <PDFDownloadLink
-                      document={
-                        <ReportPDF
-                          userName={userName}
-                          location={location}
-                          reportType={reportType}
-                          description={description}
-                          date={date}
-                          reportStatus={reportStatus}
-                          assignedTo={assignedTo}
-                          attachment={attachment}
-                        />
-                      }
-                      fileName="report.pdf"
-                      className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500"
-                    >
-                      {({ loading }) =>
-                        loading ? "Generating PDF..." : "DOWNLOAD"
-                      }
-                    </PDFDownloadLink> */}
-                    {/* <button
-                      className="py-3 px-4 border border-main bg-textSecond text-black  rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
-                      onClick={handleFeeedbackClick}
-                    >
-                      FEEDBACK
-                    </button> */}
+
                     {!reportValidated &&
                       account_type !== "department_admin" && (
                         <button

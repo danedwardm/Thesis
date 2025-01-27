@@ -38,7 +38,7 @@ const Reports = () => {
   const [reportId, setReportId] = useState([]);
   const [userFeedback, setUserFeedback] = useState([]);
   const [workerFeedback, setWorkerFeedback] = useState([]);
-
+  const [workers, setWorkers] = useState([]);
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6; // Number of items per page
@@ -414,12 +414,12 @@ const Reports = () => {
                                 setDescription(data.description);
                                 setDate(`${formattedDate} ${formattedTime}`);
                                 setStatus(data.status);
-                                setAssignedTo(data.assigned_to);
+                                setAssignedTo(data.department_id);
                                 setAttachment(data.image_path);
                                 setUpvote(data.upvote);
                                 setDownvote(data.downvote);
                                 setFeedback(data.userFeedback);
-                                console.log(data.userFeedback);
+                                setWorkers(data.workers);
                                 setProof(data.proof);
                                 setReportId(data.id);
                                 setReportValidated(data.is_validated);
@@ -498,6 +498,7 @@ const Reports = () => {
         reportId={reportId}
         reportValidated={reportValidated}
         openTime={openTime}
+        workers={workers}
       />
     </>
   );
