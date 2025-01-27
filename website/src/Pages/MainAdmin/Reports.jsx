@@ -45,8 +45,7 @@ const Reports = ({ assigned_to_id }) => {
   const [closedTime, setClosedTime] = useState("");
   const [respondTime, setRespondTime] = useState("");
   const [validationTime, setValidationTime] = useState("");
-  const [userFeedback, setUserFeedback] = useState([]);
-  const [workerFeedback, setWorkerFeedback] = useState([]);
+  const [workerFeedback, setWorkerFeedback] = useState(null);
   const [workers, setWorkers] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // To store any errors
@@ -76,7 +75,7 @@ const Reports = ({ assigned_to_id }) => {
   useEffect(() => {
     const fetchDepartments = () => {
       reports.forEach((report) => {
-        const assigned_to_id = report.assigned_to_id;
+        console.log(report.workerFeedback[0])
         if (!departmentNames[assigned_to_id]) {
           // Avoid redundant fetches
           fetchDepartmentDetails(assigned_to_id);
@@ -140,22 +139,10 @@ const Reports = ({ assigned_to_id }) => {
   const statuses = [...new Set(reports.map((item) => item.status))];
 
   const emergencyTypes = [
-    "Fire",
-    "Fires",
+    "Fire Accident",
     "Flood",
-    "Floods",
-    "Earthquake",
-    "Earthquakes",
+    "Road Accident",
   ];
-
-  const departmentMapping = {
-    //
-    1: "Fire Department",
-    2: "Medical Department",
-    3: "Police Department",
-    4: "Street Maintenance",
-    5: "Pothole Repair",
-  };
 
   const timeElapsed = (reportDate) => {
     const now = new Date();
@@ -544,6 +531,7 @@ const Reports = ({ assigned_to_id }) => {
                               setIsValidated(data.is_validated);
                               setReportId(data.id);
                               setWorkers(data.workers);
+                              data.workerFeedback[0] && setWorkerFeedback(data.workerFeedback[0].proof);
                               setReportedType(data.type_of_report);
                               setReportValidated(data.is_validated);
                               setOpenTime(timeElapsed(data.report_date));
@@ -618,6 +606,7 @@ const Reports = ({ assigned_to_id }) => {
         reportStatus={status}
         assignedTo={assignedTo}
         attachment={attachment}
+        workerFeedback={workerFeedback}
         upvote={upvote}
         downvote={downvote}
         feedback={feedback}
