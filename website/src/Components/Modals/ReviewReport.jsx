@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
 
 import { RiAttachment2 } from "react-icons/ri";
 import { TiInfoLarge } from "react-icons/ti";
@@ -8,6 +9,8 @@ import ImageModal from "./ImageModal";
 import Feedback from "./Feedback";
 import DeleteReport from "./DeleteReport";
 import Map from "../../Components/Modals/Map";
+import Maps2 from "../../Components/Modals/Maps2";
+import ReportPDF from "../../Components/Modals/reportPDF";
 
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore"; // Add these imports for Firestore operations
 import { app } from "../../Firebase/firebaseConfig";
@@ -31,7 +34,6 @@ const ReviewReport = ({
   downvote,
   feedback,
   proof,
-  isValidated,
   reportId,
   reportedType,
   reportValidated,
@@ -50,12 +52,73 @@ const ReviewReport = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
-  const [workerList, setWorkerList] = useState('');
+  const [workerList, setWorkerList] = useState("");
   const { user } = useAuth();
   const account_type = localStorage.getItem("accountType");
 
+  const [mapImage, setMapImage] = useState(null);
+
+  const handleMapCapture = (imageData) => {
+    setMapImage(imageData);
+  };
+
+  const openPDFInNewTab = async () => {
+    if (!mapImage) {
+      // Handle case if map image is not available
+      alert("Please wait until the map image is captured.");
+      return;
+    }
+
+    // Generate the PDF Blob using @react-pdf/renderer
+    const pdfBlob = await pdf(
+      <ReportPDF
+        userName={userName || "Unknown"}
+        location={location || "Unknown Location"}
+        reportType={reportType || "N/A"}
+        description={description || "No Description"}
+        date={date || "N/A"}
+        reportStatus={reportStatus || "Pending"}
+        assignedTo={assignedTo || "Unassigned"} // Extract the name
+        attachment={attachment}
+        upvote={upvote || 0}
+        downvote={downvote || 0}
+        feedback={feedback || "No feedback"}
+        proof={proof || "No proof available"}
+        reportId={reportId || "N/A"}
+        reportedType={reportedType || "Unknown"}
+        reportValidated={reportValidated || false}
+        openTime={openTime || "N/A"}
+        lat={lat || 0}
+        long={long || 0}
+        closedTime={closedTime || 0}
+        respondTime={respondTime || 0}
+        validationTime={validationTime || 0}
+        workers={Array.isArray(workers) ? workers.join(", ") : "No workers"}
+        mapImage={mapImage}
+      />
+    ).toBlob();
+
+    // Create a Blob URL for the PDF
+    const pdfURL = URL.createObjectURL(pdfBlob);
+
+    // Open the PDF in a new tab
+    const newTab = window.open(pdfURL, "_blank");
+
+    // OPTIONAL: Trigger a download with a custom filename in the new tab
+    if (newTab) {
+      const link = document.createElement("a");
+      link.href = pdfURL;
+      link.download = "Report.pdf"; // Set the desired filename
+      newTab.onload = () => {
+        newTab.document.body.appendChild(link);
+        link.click();
+        link.remove();
+      };
+    }
+  };
+
   useEffect(() => {
-    setUsername(user.username); 
+    setUsername(user.username);
   }, [user]);
   useEffect(() => {
     if (workers.length > 0) {
@@ -63,17 +126,19 @@ const ReviewReport = ({
       setWorkerList(workerUsernames.join(", "));
     }
   }, [workers]);
-  const departments = [{
-    id: 1,
-    name: "Fire Department",
-   },{
-    id: 2,
-    name: "Medical Department",
-   },
-   {
-    id: 3,
-    name: "Police Department",
-   },
+  const departments = [
+    {
+      id: 1,
+      name: "Fire Department",
+    },
+    {
+      id: 2,
+      name: "Medical Department",
+    },
+    {
+      id: 3,
+      name: "Police Department",
+    },
     {
       id: 4,
       name: "Street Maintenance Department",
@@ -89,8 +154,8 @@ const ReviewReport = ({
     {
       id: 7,
       name: "Department of Public Works",
-    }
-]
+    },
+  ];
   const deptName = departments.find((dept) => dept.id === assignedTo);
 
   const handleImageClick = () => {
@@ -215,7 +280,10 @@ const ReviewReport = ({
             }
           }}
         >
-          <div className="relative w-full lg:w-3/4 bg-second flex flex-col items-center justify-center p-8 md:p-10 rounded-xl shadow-xl overflow-hidden">
+          <div
+            // ref={printRef}
+            className="relative w-full lg:w-3/4 bg-second flex flex-col items-center justify-center p-8 md:p-10 rounded-xl shadow-xl overflow-hidden"
+          >
             {/* bg squares */}
             <div className="absolute inset-0 z-0 pointer-events-none">
               <div className="absolute h-[30vh] w-[30vh] bg-square rounded-[20px] rotate-45 -top-24 -left-24"></div>
@@ -279,7 +347,7 @@ const ReviewReport = ({
                 <div className="w-full flex flex-row gap-4 items-center justify-center">
                   <div className="w-1/2 flex flex-col items-center justify-center">
                     <div className="flex items-center justify-start w-full py-2 px-1">
-                      <p className="text-xs font-semibold ">Date</p>
+                      <p className="text-xs font-semibold ">Date & Time</p>
                     </div>
                     <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                       <div className="w-full bg-white resize-none outline-none text-xs font-normal">
@@ -315,10 +383,10 @@ const ReviewReport = ({
                   </div>
                 </div>
 
-                <div className="w-full flex flex-row gap-4 items-center justify-center">
+                <div className="w-full flex flex-row gap-4 items-center justify-center truncate">
                   <div className="w-1/2 flex flex-col items-center justify-center">
                     <div className="flex items-center justify-start w-full py-2 px-1">
-                      <p className="text-xs font-semibold ">
+                      <p className="text-xs font-semibold truncate">
                         Assigned Department
                       </p>
                     </div>
@@ -330,9 +398,11 @@ const ReviewReport = ({
                       </div>
                     </div>
                   </div>
-                  <div className="w-1/2 flex flex-col items-center justify-center">
+                  <div className="w-1/2 flex flex-col items-center justify-center truncate">
                     <div className="flex items-center justify-start w-full py-2 px-1">
-                      <p className="text-xs font-semibold ">Assigned Worker</p>
+                      <p className="text-xs font-semibold truncate">
+                        Assigned Worker
+                      </p>
                     </div>
                     <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                       <div className="w-full bg-white resize-none outline-none text-xs font-normal">
@@ -344,18 +414,20 @@ const ReviewReport = ({
                     </div>
                   </div>
                 </div>
-                <div className="w-full flex flex-row gap-4 items-center justify-center">
+                <div className="w-full flex flex-row gap-4 items-center justify-center truncate">
                   <div className="w-1/3 flex flex-col items-center justify-center">
                     <div className="flex items-center justify-start w-full py-2 px-1">
-                      <p className="text-xs font-semibold ">Validation Time</p>
+                      <p className="text-xs font-semibold truncate">
+                        Validation Time
+                      </p>
                     </div>
                     <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                       <div className="w-full bg-white resize-none outline-none text-xs font-normal ">
-                        <span className="text-xs font-semibold text-gray-500">
+                        <p className="text-xs font-semibold text-gray-500 truncate">
                           {validationTime
                             ? convertToDaysHoursMinutes(validationTime)
                             : "Not yet validated"}
-                        </span>
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -384,24 +456,30 @@ const ReviewReport = ({
                     </div>
                   </div>
                 </div>
-                <div className="w-full flex flex-row gap-4 items-center justify-center">
+                <div className="w-full flex flex-row gap-4 items-center justify-center truncate">
                   <div className="w-1/3 flex flex-col items-center justify-center">
                     <div className="flex items-center justify-start w-full py-2 px-1">
-                      <p className="text-xs font-semibold ">Report Open For</p>
+                      <p className="text-xs font-semibold truncate">
+                        Report Open For
+                      </p>
                     </div>
                     <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                       <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
                         <p className="text-xs font-bold text-gray-500 truncate">
                           {closedTime
                             ? convertToDaysHoursMinutes(closedTime)
-                            : openTime ? openTime : "Not yet opened"}
+                            : openTime
+                            ? openTime
+                            : "Not yet opened"}
                         </p>
                       </div>
                     </div>
                   </div>
-                  <div className="w-1/3 flex flex-col items-center justify-center">
+                  <div className="w-1/3 flex flex-col items-center justify-center truncate">
                     <div className="flex items-center justify-start w-full py-2 px-1">
-                      <p className="text-xs font-semibold ">Responding Time</p>
+                      <p className="text-xs font-semibold truncate">
+                        Responding Time
+                      </p>
                     </div>
                     <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                       <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
@@ -413,9 +491,9 @@ const ReviewReport = ({
                       </div>
                     </div>
                   </div>
-                  <div className="w-1/3 flex flex-col items-center justify-center">
+                  <div className="w-1/3 flex flex-col items-center justify-center truncate">
                     <div className="flex items-center justify-start w-full py-2 px-1">
-                      <p className="text-xs font-semibold ">
+                      <p className="text-xs font-semibold truncate">
                         Report Close Time
                       </p>
                     </div>
@@ -448,9 +526,13 @@ const ReviewReport = ({
                   </div>
                   <div className="bg-white w-full flex flex-col items-start border border-main rounded-md">
                     <div className="w-full h-[225px] rounded-md overflow-hidden cursor-pointer mb-3">
-                      <Map lat={lat} lon={long} />
+                      <Maps2
+                        lat={lat}
+                        lon={long}
+                        onMapCapture={handleMapCapture}
+                      />
                     </div>
-                    <p className="text-xs font-semibold text-gray-500 truncate mb-3 ml-3">
+                    <p className="text-xs font-semibold text-gray-500 mb-3 mx-3">
                       {location}
                     </p>
                   </div>
@@ -531,7 +613,7 @@ const ReviewReport = ({
                       </div>
                       {attachment && attachment.length > 0 ? (
                         <div
-                          className="w-full md:h-[250px] h-[100px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
+                          className="w-full md:h-[250px] h-[150px] rounded-md overflow-hidden cursor-pointer border border-main mb-3"
                           onClick={handleImageClick}
                         >
                           <img
@@ -541,7 +623,7 @@ const ReviewReport = ({
                           />
                         </div>
                       ) : (
-                        <div className="w-full md:h-[250px] h-[100px] bg-white rounded-md flex flex-col items-center justify-center border border-main">
+                        <div className="w-full md:h-[250px] h-[150px] bg-white rounded-md flex flex-col items-center justify-center border border-main">
                           <PiImages className="text-xl" />
                           <p className="text-xs font-normal">No media file</p>
                         </div>
@@ -550,12 +632,13 @@ const ReviewReport = ({
                   )}
 
                   <div className="w-full flex flex-row gap-4 items-center justify-end mt-5">
-                    {/* <button
-                      className="py-3 px-4 border border-main bg-textSecond text-black  rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
-                      onClick={handleFeeedbackClick}
+                    <button
+                      className="py-3 px-4 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                      onClick={openPDFInNewTab}
                     >
-                      FEEDBACK
-                    </button> */}
+                      DOWNLOAD
+                    </button>
+
                     {!reportValidated &&
                       account_type !== "department_admin" && (
                         <button
@@ -607,6 +690,7 @@ const ReviewReport = ({
         reportId={reportId}
         reportedType={reportedType}
       />
+      {/* <Maps2 lat={lat} lon={long} onMapCapture={handleMapCapture} /> */}
     </>
   );
 };
