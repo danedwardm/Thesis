@@ -399,7 +399,7 @@ const Reports = ({ assigned_to_id }) => {
                     return (
                       <div
                         key={index}
-                        className="bg-[#FAF5FF] min-w-[370px] max-w-[370px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
+                        className="bg-[#FAF5FF] min-w-[270px] max-w-[370px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
                       >
                         <div className="flex flex-col flex-1">
                           <div className="flex gap-4">
