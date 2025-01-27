@@ -30,6 +30,7 @@ const ReviewReport = ({
   reportStatus,
   assignedTo,
   attachment,
+  workerFeedback,
   upvote,
   downvote,
   feedback,
@@ -574,9 +575,9 @@ const ReviewReport = ({
                               onClick={handleImageClick}
                             >
                               <img
-                                src={attachment}
+                                src={workerFeedback}
                                 className="w-full h-full object-cover object-center hover:scale-105 ease-in-out duration-500"
-                                alt={`Image ${attachment}`}
+                                alt={`Image ${workerFeedback}`}
                               />
                             </div>
                           </div>
@@ -609,7 +610,7 @@ const ReviewReport = ({
                   ) : (
                     <>
                       <div className="py-2 px-1 flex flex-row items-center justify-start w-full">
-                        <p className="text-xs font-semibold mt-3">Proof</p>
+                        <p className="text-xs font-semibold mt-3">Attachment</p>
                       </div>
                       {attachment && attachment.length > 0 ? (
                         <div
