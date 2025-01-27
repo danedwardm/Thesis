@@ -37,8 +37,7 @@ const AuthProvider = ({ children }) => {
     const account_type = localStorage.getItem("accountType"); // Example token check
     const is_email_verified =
       localStorage.getItem("isEmailVerified") === "true"; // Check email verification status
-    if (token) {
-      department();
+    if (token) {   
       setAccountType(account_type);
       setAuthenticated(true);
       setEmailVerified(is_email_verified); // Set email verification status
@@ -151,6 +150,9 @@ const AuthProvider = ({ children }) => {
           const notDoneReports = updateReports.filter(
             (report) => report.status !== "done"
           );
+
+          const activeReport = updateReports.filter(report => report.status === "Ongoing");
+          localStorage.setItem("activeReportCount", activeReport.length);
           totalCount += notDoneReports.length;
           setTotalNotDoneReportsCount(totalCount);
           // console.log("Total not done reports count:", totalCount);
@@ -314,11 +316,12 @@ const AuthProvider = ({ children }) => {
         account_type == "departmentadmin" ||
         account_type == "worker" ||
         account_type == "citizen"
-      )
-        return;
+      ) return;
+        
       const res = await axiosInstance.get("api/departments/", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       setDepartment((prev) => {
         const newDepartments = res.data;
         const uniqueDepartments = [
@@ -382,15 +385,8 @@ const AuthProvider = ({ children }) => {
       setEmailVerified(is_email_verified); // Set email verification status
       setToken(access);
       fetchUserInfo(access);
-      // Fetch department details and store them in local storage
-      if (account_type == "superadmin" || account_type == "super_admin") {
-        const departmentRes = await axiosInstance.get("api/departments/");
-        const departmentData = departmentRes.data.find(
-          (dep) => dep.id === department
-        );
-        if (departmentData) {
-          localStorage.setItem("departmentName", departmentData.name);
-        }
+      if (account_type === "superadmin" || account_type === "super_admin") {
+        department();
       }
       return { ...res.data, is_email_verified }; // Adding the is_email_verified here
     } catch (error) {

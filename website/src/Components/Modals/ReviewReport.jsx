@@ -51,7 +51,7 @@ const ReviewReport = ({
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
   const [workerList, setWorkerList] = useState('');
-  const { user, departments } = useAuth();
+  const { user } = useAuth();
   const account_type = localStorage.getItem("accountType");
 
   useEffect(() => {
@@ -63,6 +63,34 @@ const ReviewReport = ({
       setWorkerList(workerUsernames.join(", "));
     }
   }, [workers]);
+  const departments = [{
+    id: 1,
+    name: "Fire Department",
+   },{
+    id: 2,
+    name: "Medical Department",
+   },
+   {
+    id: 3,
+    name: "Police Department",
+   },
+    {
+      id: 4,
+      name: "Street Maintenance Department",
+    },
+    {
+      id: 5,
+      name: "Pothole Repair Department",
+    },
+    {
+      id: 6,
+      name: "General Department",
+    },
+    {
+      id: 7,
+      name: "Department of Public Works",
+    }
+]
   const deptName = departments.find((dept) => dept.id === assignedTo);
 
   const handleImageClick = () => {
