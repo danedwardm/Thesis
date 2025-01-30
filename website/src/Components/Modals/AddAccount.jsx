@@ -177,6 +177,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       password_confirm,
     });
   };
+
   const handleStationAddressChange = (newLocation) => {
     setStationAddress(`${newLocation.lat}, ${newLocation.lng}`);
     setSelectedLocation(newLocation);

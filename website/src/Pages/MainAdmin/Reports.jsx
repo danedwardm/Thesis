@@ -46,6 +46,7 @@ const Reports = ({ assigned_to_id }) => {
   const [respondTime, setRespondTime] = useState("");
   const [validationTime, setValidationTime] = useState("");
   const [workerFeedback, setWorkerFeedback] = useState(null);
+  const [workerFeedbackDesc, setWorkerFeedbackDesc] = useState(null);
   const [workers, setWorkers] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // To store any errors
@@ -132,11 +133,7 @@ const Reports = ({ assigned_to_id }) => {
   const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
   const statuses = [...new Set(reports.map((item) => item.status))];
 
-  const emergencyTypes = [
-    "Fire Accident",
-    "Flood",
-    "Road Accident",
-  ];
+  const emergencyTypes = ["Fire Accident", "Flood", "Road Accident"];
 
   const timeElapsed = (reportDate) => {
     const now = new Date();
@@ -183,7 +180,7 @@ const Reports = ({ assigned_to_id }) => {
         return <FaWater className="text-[#2f2f2f] text-xl" />;
       case "road accident ":
         return <FaCar className="text-[#2f2f2f] text-xl" />;
-      case "street lights":
+      case "street light":
         return <FaTrafficLight className="text-[#2f2f2f] text-xl" />;
       case "potholes":
         return <GiHole className="text-[#2f2f2f] text-xl" />;
@@ -250,12 +247,6 @@ const Reports = ({ assigned_to_id }) => {
                 </div>
                 {/* filter */}
                 <div className="flex flex-row">
-                  <div
-                    className="bg-white text-main font-bold text-sm py-3 px-6 border border-accent border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer"
-                    // onClick={handleAddAccount}
-                  >
-                    ADD TYPE
-                  </div>
                   <div
                     className={`font-bold text-sm py-3 px-6 border border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer h-full ${
                       filterOpen ? "bg-main text-white" : "bg-white text-main"
@@ -374,8 +365,9 @@ const Reports = ({ assigned_to_id }) => {
                     });
 
                     const departmentName =
-                    departments.find((dept) => dept.id === data.department_id)||
-                      (isLoading ? "Loading..." : "No department found");
+                      departments.find(
+                        (dept) => dept.id === data.department_id
+                      ) || (isLoading ? "Loading..." : "No department found");
 
                     return (
                       <div
@@ -495,8 +487,11 @@ const Reports = ({ assigned_to_id }) => {
                         <div className="flex justify-center items-center mt-4">
                           <button
                             className={`w-full py-2 px-4 font-semibold rounded-md truncate ${
-                              emergencyTypes.includes(data.type_of_report) &&
-                              !data.is_validated
+                              data.status === "done"
+                                ? "bg-textSecond text-white" // If the status is "done", use these styles
+                                : emergencyTypes.includes(
+                                    data.type_of_report
+                                  ) && !data.is_validated
                                 ? "bg-orange-600 text-white hover:bg-orange-500"
                                 : emergencyTypes.includes(data.type_of_report)
                                 ? "bg-red-600 text-white hover:bg-red-500"
@@ -525,7 +520,12 @@ const Reports = ({ assigned_to_id }) => {
                               setIsValidated(data.is_validated);
                               setReportId(data.id);
                               setWorkers(data.workers);
-                              data.workerFeedback[0] && setWorkerFeedback(data.workerFeedback[0].proof);
+                              data.workerFeedback[0] &&
+                                setWorkerFeedback(data.workerFeedback[0].proof);
+                              data.workerFeedback[0] &&
+                                setWorkerFeedbackDesc(
+                                  data.workerFeedback[0].description
+                                );
                               setReportedType(data.type_of_report);
                               setReportValidated(data.is_validated);
                               setOpenTime(timeElapsed(data.report_date));
@@ -601,6 +601,7 @@ const Reports = ({ assigned_to_id }) => {
         assignedTo={assignedTo}
         attachment={attachment}
         workerFeedback={workerFeedback}
+        workerFeedbackDesc={workerFeedbackDesc}
         upvote={upvote}
         downvote={downvote}
         feedback={feedback}

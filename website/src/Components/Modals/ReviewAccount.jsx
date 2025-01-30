@@ -25,6 +25,7 @@ const ReviewAccount = ({
   phoneNumber,
   verified,
   violation,
+  station,
   accountStatus,
   type,
   address,
@@ -295,18 +296,33 @@ const ReviewAccount = ({
                       </div>
                     </div>
                   </div>
-                  <div className="w-1/2 flex flex-col items-center justify-center">
-                    <div className="flex items-center justify-start w-full py-2 px-1">
-                      <p className="text-xs font-semibold ">Violations</p>
-                    </div>
-                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
-                      <div className="w-full flex bg-white resize-none outline-none text-xs ritems-center justify-center">
-                        <p className="text-xs font-extrabold text-black truncate">
-                          {violation}
-                        </p>
+                  {type === "worker" ? (
+                    <div className="w-1/2 flex flex-col items-center justify-center">
+                      <div className="flex items-center justify-start w-full py-2 px-1">
+                        <p className="text-xs font-semibold ">Sation</p>
+                      </div>
+                      <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                        <div className="w-full flex bg-white resize-none outline-none text-xs ritems-center justify-center">
+                          <p className="text-xs font-extrabold text-[#363636] truncate uppercase">
+                            {station}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="w-1/2 flex flex-col items-center justify-center">
+                      <div className="flex items-center justify-start w-full py-2 px-1">
+                        <p className="text-xs font-semibold ">Violations</p>
+                      </div>
+                      <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                        <div className="w-full flex bg-white resize-none outline-none text-xs ritems-center justify-center">
+                          <p className="text-xs font-extrabold text-black truncate">
+                            {violation}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               {/* attachment and button section */}

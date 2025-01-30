@@ -74,7 +74,7 @@ const ReportTimeTrends = () => {
       "potholes",
       "floods",
       "others",
-      'fallen tree',
+      "fallen tree",
       "road accident",
     ];
 
@@ -122,8 +122,8 @@ const ReportTimeTrends = () => {
   useEffect(() => {
     if (reports.length > 0) {
       const reportCounts = {
-        fires: Array(24).fill(0),
-        "street lights": Array(24).fill(0),
+        "fire accident": Array(24).fill(0),
+        "street light": Array(24).fill(0),
         potholes: Array(24).fill(0),
         floods: Array(24).fill(0),
         others: Array(24).fill(0),
@@ -206,6 +206,9 @@ const ReportTimeTrends = () => {
                   },
                 },
               },
+              datalabels: {
+                display: false, // Disable data labels
+              },
             },
             scales: {
               x: {
@@ -241,11 +244,11 @@ export default ReportTimeTrends;
 
 // Define category colors for the chart
 const categoryColors = {
-  fires: {
+  "fire accident": {
     backgroundColor: "rgba(255, 99, 132, 0.4)", // Pink
     borderColor: "rgba(255, 99, 132, 1)",
   },
-  "street lights": {
+  "street light": {
     backgroundColor: "rgba(54, 162, 235, 0.4)", // Blue
     borderColor: "rgba(54, 162, 235, 1)",
   },
