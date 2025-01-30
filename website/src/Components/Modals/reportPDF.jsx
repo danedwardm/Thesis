@@ -8,7 +8,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import LOGO from "../../assets/android-icon-square.png";
-import Map from "../../Components/Modals/Maps2";
+import Map from "./Maps2";
 
 const styles = StyleSheet.create({
   page: {
@@ -123,6 +123,7 @@ const ReportPDF = ({
   validationTime,
   workers,
   mapImage,
+  workerFeedbackDesc,
 }) => (
   <Document>
     <Page size="A4" style={styles.page}>
@@ -239,7 +240,7 @@ const ReportPDF = ({
 
         <View>
           <Text style={styles.label}>Worker Remarks</Text>
-          <Text style={styles.value}>{description}</Text>
+          <Text style={styles.value}>{workerFeedbackDesc}</Text>
         </View>
 
         <Text style={styles.header}>Attachments</Text>

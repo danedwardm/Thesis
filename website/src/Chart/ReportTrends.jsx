@@ -36,7 +36,7 @@ ChartJS.register(
 
 // Define a color palette for each report category
 const categoryColors = {
-  'fire accident': {
+  "fire accident": {
     backgroundColor: "rgba(255, 99, 132, 0.4)", // Pink
     borderColor: "rgba(255, 99, 132, 1)",
   },
@@ -96,14 +96,13 @@ const ReportTrends = () => {
 
   // Fetch documents from Firestore with date filtering
   const fetchDocuments = async (filter) => {
-
     const categories = [
       "fire accident",
       "street light",
       "potholes",
       "floods",
       "others",
-      'fallen tree',
+      "fallen tree",
       "road accident",
     ];
 
@@ -235,6 +234,9 @@ const ReportTrends = () => {
                     return `${context.dataset.label}: ${context.raw} reports`;
                   },
                 },
+              },
+              datalabels: {
+                display: false, // Disable data labels
               },
             },
             scales: {
