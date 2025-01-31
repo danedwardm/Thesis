@@ -22,6 +22,7 @@ const Dashboard = () => {
   const [cachedWeeklyReportCount, setCachedWeeklyReportCount] = useState(
     parseInt(localStorage.getItem("weeklyReportCount")) || 0
   );
+  const [users, setUsers] = useState([]);
   const [location, setLocation] = useState({
     lat: 14.7545804, // Default fallback coordinates (e.g., UCC South Campus)
     lng: 121.030909,
@@ -36,16 +37,21 @@ const Dashboard = () => {
         }
         const response = await axiosInstance.get("api/users/");
         localStorage.setItem("users_count", response.data.length);
-
+        setUsers(response.data.length);
         // console.log("Data fetched successfully");
       } catch (err) {
         setError("Failed to fetch users.");
         console.error("Error fetching users:", err); // Log any errors
       }
     };
-
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    if (users){
+      setUsers(localStorage.getItem("users_count"));
+    }
+  }, [users])
 
   useEffect(() => {
     const getCurrentLocation = () => {
@@ -156,7 +162,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                {localStorage.getItem("users_count") || 0}
+                {users}
               </div>
             </div>
           </div>
