@@ -441,6 +441,7 @@ const AuthProvider = ({ children }) => {
         reports,
         account_type,
         departments,
+        setDepartment,
         department_admin_registration,
         worker_registration,
         user,

@@ -4,11 +4,12 @@ import Prompt from "./Prompt";
 import { LuEye, LuEyeOff, LuMapPin } from "react-icons/lu";
 import { useAuth } from "../../AuthContext/AuthContext";
 import MapPicker from "./MapPicker";
+import axiosInstance from "../../axios-instance";
 
 const AddDeptType = ({ isVisible, onClose, account_type }) => {
   if (!isVisible) return null;
 
-  const { departments } = useAuth();
+  const { departments, setDepartment } = useAuth();
   const [showPrompt, setShowPrompt] = useState(false);
   const [departmentType, setDepartmentType] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -62,8 +63,8 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
     const normalizedInput = normalize(departmentType.toLowerCase());
 
     // Check if the normalized input matches any existing department name
-    const duplicate = department.some((department) =>
-      normalize(department.toLowerCase()).includes(normalizedInput)
+    const duplicate = departments.some((department) =>
+      normalize(department.name.toLowerCase()).includes(normalizedInput)
     );
 
     if (duplicate) {
@@ -87,8 +88,34 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
       return;
     }
 
-    // Continue with your form submission logic here...
+    const res = await axiosInstance.post("api/department/create/",{ name: departmentType });
+    if (res.status === 200 || res.status === 201) {
+      console.log("Department added successfully!");
+      setIsLoading(false);
+      departments.filter((department) => department.name !== departmentType);
+      // onClose(); 
+    } else {
+      console.log("Failed to add department.");
+      alert("Failed to add department.");
+      setIsLoading(false);
+    }
   };
+
+  const deleteDepartment = async (id) => {
+    try {
+      const res = await axiosInstance.delete(`api/department/${parseInt(id)}/delete/`, {
+        id: id,
+      });
+      if (res.status === 200 || res.status === 204) {
+        console.log("Department deleted successfully!");
+        setDepartment((prev) => [...prev, departmentType]);
+        // onClose(); // Close the AddAccount modal
+      }
+
+    } catch (error) {
+      console.error("Error deleting department:", error);
+    }
+  }
 
   return (
     <>
@@ -157,18 +184,18 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {department.map((department, index) => (
+                        {departments.map((department, index) => (
                           <tr key={index}>
                             <td className="px-4 py-2 border-b text-xs">
                               {index + 1}
                             </td>
                             <td className="px-4 py-2 border-b text-xs">
-                              {department}
+                              {department.name}
                             </td>
                             <td className="px-4 py-2 border-b text-xs">
                               {/* Delete button */}
                               <button
-                                // onClick={() => deleteDepartment(index)}
+                                onClick={() => deleteDepartment(department.id)}
                                 className="text-red-600 hover:text-red-800 text-xs font-semibold border border-red-600 rounded-md px-2 py-1"
                               >
                                 Delete
