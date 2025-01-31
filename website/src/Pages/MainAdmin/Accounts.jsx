@@ -6,6 +6,7 @@ import Navbar from "./Navigation/NavBar";
 import NavText from "./Navigation/NavText";
 import ReviewAccount from "../../Components/Modals/ReviewAccount";
 import AddAccount from "../../Components/Modals/AddAccount";
+import AddDeptType from "../../Components/Modals/AddDeptType";
 import DenyVerification from "../../Components/Modals/DenyVerification";
 
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
@@ -26,11 +27,13 @@ const db = getFirestore(app);
 
 const Accounts = () => {
   const [showAddAccount, setShowAddAccount] = useState(false);
+  const [showAddDeptType, setShowAddDeptType] = useState(false);
   const [showAccount, setShowAccount] = useState(false);
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [verified, setVerified] = useState(false);
   const [violation, setViolation] = useState("");
+  const [station, setStation] = useState("");
   const [status, setStatus] = useState("");
   const [type, setType] = useState("");
   const [userID, setUserID] = useState("");
@@ -91,6 +94,10 @@ const Accounts = () => {
 
   const handleAddAccount = () => {
     setShowAddAccount(true);
+  };
+
+  const handleAddDeptType = () => {
+    setShowAddDeptType(true);
   };
 
   // Calculate total pages
@@ -200,6 +207,12 @@ const Accounts = () => {
                   <p className="text-white font-semibold text-sm">accounts</p>
                 </div>
                 <div className="flex flex-row">
+                  <div
+                    className="bg-white text-main font-bold text-sm py-3 px-6 border border-accent border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer"
+                    onClick={handleAddDeptType}
+                  >
+                    ADD DEPT TYPE
+                  </div>
                   <div
                     className="bg-white text-main font-bold text-sm py-3 px-6 border border-accent border-b-main rounded-t-lg hover:bg-main hover:text-accent ease-in-out duration-500 text-center cursor-pointer"
                     onClick={handleAddAccount}
@@ -498,6 +511,7 @@ const Accounts = () => {
                                 setPhoneNumber(data.contact_number);
                                 setVerified(data.is_verified);
                                 setViolation(data.violation);
+                                setStation(data.station);
                                 setStatus(data.account_status);
                                 setType(data.role);
                                 setAddress(data.address);
@@ -605,6 +619,7 @@ const Accounts = () => {
                             setPhoneNumber(data.contact_number);
                             setVerified(data.is_verified);
                             setViolation(data.violation);
+                            setStation(data.station);
                             setStatus(data.account_status);
                             setType(data.role);
                             setAddress(data.address);
@@ -682,6 +697,7 @@ const Accounts = () => {
         phoneNumber={phoneNumber}
         verified={verified}
         violation={violation}
+        station={station}
         accountStatus={status}
         type={type}
         address={address}
@@ -693,6 +709,11 @@ const Accounts = () => {
         departments={departments}
         account_type={account_type}
         onClose={() => setShowAddAccount(false)}
+      />
+      <AddDeptType
+        isVisible={showAddDeptType}
+        account_type={account_type}
+        onClose={() => setShowAddDeptType(false)}
       />
     </>
   );

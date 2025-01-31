@@ -63,20 +63,7 @@ const Maps2 = ({ lat, lon, onMapCapture }) => {
         <TileLayer
           url={`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${API_KEY}`}
         />
-        <Marker position={[lat, lon]}>
-          <Popup>
-            <div>
-              <h4>Current Location</h4>
-              <h4>Weather Data</h4>
-              <p>
-                Temperature: {(weatherData.main.temp - 273.15).toFixed(2)}°C
-              </p>
-              <p>Weather: {weatherData.weather[0].description}</p>
-              <p>Humidity: {weatherData.main.humidity}%</p>
-              <p>Wind Speed: {weatherData.wind.speed} m/s</p>
-            </div>
-          </Popup>
-        </Marker>
+        <Marker position={[lat, lon]}></Marker>
       </MapContainer>
     </div>
   );

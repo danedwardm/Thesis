@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
     const account_type = localStorage.getItem("accountType"); // Example token check
     const is_email_verified =
       localStorage.getItem("isEmailVerified") === "true"; // Check email verification status
-    if (token) {   
+    if (token) {
       setAccountType(account_type);
       setAuthenticated(true);
       setEmailVerified(is_email_verified); // Set email verification status
@@ -155,7 +155,9 @@ const AuthProvider = ({ children }) => {
             (report) => report.status !== "done"
           );
 
-          const activeReport = updateReports.filter(report => report.status === "Ongoing");
+          const activeReport = updateReports.filter(
+            (report) => report.status === "Ongoing"
+          );
           localStorage.setItem("activeReportCount", activeReport.length);
           totalCount += notDoneReports.length;
           setTotalNotDoneReportsCount(totalCount);
@@ -320,8 +322,9 @@ const AuthProvider = ({ children }) => {
         account_type == "departmentadmin" ||
         account_type == "worker" ||
         account_type == "citizen"
-      ) return;
-        
+      )
+        return;
+
       const res = await axiosInstance.get("api/departments/", {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -363,7 +366,8 @@ const AuthProvider = ({ children }) => {
       } = res.data;
 
       if (
-        account_type !== "superadmin" && account_type !== "super_admin" &&
+        account_type !== "superadmin" &&
+        account_type !== "super_admin" &&
         account_type !== "department_admin" &&
         account_type !== "department_head"
       ) {

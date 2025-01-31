@@ -9,11 +9,12 @@ import {
 import { Pie } from "react-chartjs-2";
 import { app } from "../Firebase/firebaseConfig";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels"; // Import the plugin
 
 const db = getFirestore(app);
 
 // Register the components
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels); // Register the plugin
 
 const PieChart = () => {
   const [reportCounts, setReportCounts] = useState({});
@@ -53,7 +54,7 @@ const PieChart = () => {
       "potholes",
       "floods",
       "others",
-      'fallen tree',
+      "fallen tree",
       "road accident",
     ];
 
@@ -68,10 +69,10 @@ const PieChart = () => {
         }
       }
 
-      console.log(`Fetching reports for ${category} with filter: ${filter}`);
+      // console.log(`Fetching reports for ${category} with filter: ${filter}`);
       return onSnapshot(q, (snapshot) => {
         const count = snapshot.docs.length; // Count the number of documents in each category
-        console.log(`${category} count:`, count); // Debug log to verify count
+        // console.log(`${category} count:`, count); // Debug log to verify count
         setReportCounts((prevCounts) => ({
           ...prevCounts,
           [category]: count, // Replace the previous count with the current count
@@ -117,7 +118,7 @@ const PieChart = () => {
   };
 
   return (
-    <div className="w-screen flex-grow h-[400px] mt-8 ml-8">
+    <div className="w-screen flex-grow h-[400px] justify-center items-center mt-8 ml-8">
       <div className="font-bold text-md text-main">
         Distribution of Reports by Category
       </div>
@@ -150,6 +151,23 @@ const PieChart = () => {
               legend: {
                 display: true,
                 position: "top",
+              },
+              datalabels: {
+                color: "#000", // Label text color
+                font: {
+                  weight: "normal", // Make the text bold
+                  size: 11, // Adjust the font size
+                },
+                formatter: (value, context) => {
+                  // Hide labels for slices with a value of 0
+                  if (value === 0) {
+                    return null; // or return "";
+                  }
+                  // Display the label and value for non-zero slices
+                  return `${
+                    context.chart.data.labels[context.dataIndex]
+                  }:${value}`;
+                },
               },
               tooltip: {
                 callbacks: {

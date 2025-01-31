@@ -31,6 +31,7 @@ const ReviewReport = ({
   assignedTo,
   attachment,
   workerFeedback,
+  workerFeedbackDesc,
   upvote,
   downvote,
   feedback,
@@ -79,7 +80,7 @@ const ReviewReport = ({
         description={description || "No Description"}
         date={date || "N/A"}
         reportStatus={reportStatus || "Pending"}
-        assignedTo={assignedTo || "Unassigned"} // Extract the name
+        assignedTo={deptName.name || "Unassigned"} // Extract the name
         attachment={attachment}
         upvote={upvote || 0}
         downvote={downvote || 0}
@@ -94,8 +95,9 @@ const ReviewReport = ({
         closedTime={closedTime || 0}
         respondTime={respondTime || 0}
         validationTime={validationTime || 0}
-        workers={Array.isArray(workers) ? workers.join(", ") : "No workers"}
+        workers={workerList || "No workers"}
         mapImage={mapImage}
+        workerFeedbackDesc={workerFeedbackDesc || "No feedback"}
       />
     ).toBlob();
 
@@ -601,7 +603,7 @@ const ReviewReport = ({
                             rows={2}
                             className="outline-none bg-white w-full resize-none text-xs font-normal"
                             placeholder="Actions or Remarks"
-                            value={description}
+                            value={workerFeedbackDesc}
                             readOnly={true}
                           ></textarea>
                         </div>
