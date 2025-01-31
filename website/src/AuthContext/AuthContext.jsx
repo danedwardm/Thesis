@@ -86,6 +86,10 @@ const AuthProvider = ({ children }) => {
     fetchWorker();
   }, []);
 
+  useEffect(() => {
+    department();  
+  }, [])
+
   const fetchDocuments = async () => {
     const categories = [
       "fire accident",

@@ -10,7 +10,8 @@ import DenyVerification from "../../Components/Modals/DenyVerification";
 
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import { useAuth } from "../../AuthContext/AuthContext";
+import { 
+  useAuth } from "../../AuthContext/AuthContext";
 import {
   collection,
   onSnapshot,
