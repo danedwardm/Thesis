@@ -47,7 +47,7 @@ const Accounts = () => {
 
   const [selectedAccountType, setSelectedAccountType] = useState("");
   const accountType = ["department_admin", "citizen", "worker"];
-  const { account_type, departments } = useAuth();
+  const { account_type, departments, department } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
   const [userVerificationStatus, setUserVerificationStatus] = useState({});
@@ -80,6 +80,8 @@ const Accounts = () => {
 
     fetchUsers();
   }, []);
+
+
 
   const filteredUsers = users.filter((user) => {
     const matchesType =
