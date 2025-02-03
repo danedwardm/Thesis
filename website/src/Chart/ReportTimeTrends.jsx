@@ -128,6 +128,7 @@ const ReportTimeTrends = () => {
         floods: Array(24).fill(0),
         others: Array(24).fill(0),
         "road accident": Array(24).fill(0),
+        "fallen tree": Array(24).fill(0),
       };
 
       // Count the number of reports for each hour of the day, by category
@@ -267,5 +268,9 @@ const categoryColors = {
   "road accident": {
     backgroundColor: "rgba(255, 159, 64, 0.4)", // Orange
     borderColor: "rgba(255, 159, 64, 1)",
+  },
+  "fallen tree": {
+    backgroundColor: "rgba(75, 192, 192, 0.4)", // Teal
+    borderColor: "rgba(75, 192, 192, 1)",
   },
 };

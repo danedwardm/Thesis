@@ -432,16 +432,21 @@ const ReviewAccount = ({
                         >
                           VERIFY
                         </button>
-                        <button
-                          className={
-                            verified !== true && verified !== "true"
-                              ? "py-3 px-4 border border-black bg-red-500 text-black rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
-                              : "hidden"
-                          }
-                          onClick={handleDenyClick}
-                        >
-                          DENY
-                        </button>
+
+                        {userInfo[0]?.id_picture_image_path ? (
+                          <button
+                            className={
+                              verified !== true && verified !== "true"
+                                ? "py-3 px-4 border  bg-red-600 text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+                                : "hidden"
+                            }
+                            onClick={handleDenyClick}
+                          >
+                            DENY
+                          </button>
+                        ) : (
+                          <></>
+                        )}
                       </>
                     )}
 

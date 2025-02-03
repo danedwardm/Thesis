@@ -60,6 +60,10 @@ const categoryColors = {
     backgroundColor: "rgba(255, 159, 64, 0.4)", // Orange
     borderColor: "rgba(255, 159, 64, 1)",
   },
+  "fallen tree": {
+    backgroundColor: "rgba(75, 192, 192, 0.4)", // Teal
+    borderColor: "rgba(75, 192, 192, 1)",
+  },
 };
 
 const ReportTrends = () => {
@@ -181,8 +185,8 @@ const ReportTrends = () => {
           label: category,
           data: data,
           fill: false,
-          backgroundColor: "rgba(0, 0, 0, 0)", // Transparent background
-          borderColor: "rgba(0, 0, 0, 0)", // Transparent border
+          backgroundColor: color.backgroundColor,
+          borderColor: color.borderColor,
           tension: 0.1, // Smooth lines
         });
       });

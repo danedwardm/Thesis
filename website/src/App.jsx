@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Landing from "./Pages/Landing";
 import Login from "./Pages/Login";
 import Dashboard from "./Pages/MainAdmin/Dashboard";
@@ -17,18 +17,42 @@ import ReportTrends from "./Chart/ReportTrends";
 import ReportCategoryChart from "./Chart/ReportCategoryChart";
 import PieChart from "./Chart/PieChart";
 import OtpModal from "./Components/Modals/OtpModal"; // Import the OTP modal
+import PopUpNotif from "./Components/Modals/PopUpNotif";
 
 function App() {
   const { account_type, authenticated, emailVerified } = useAuth(); // Access authentication status and email verification status
   const [showOtpModal, setShowOtpModal] = useState(false); // State for OTP Modal visibility
 
   const handleOtpModalClose = () => setShowOtpModal(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newNotification = {
+        message: `This is a new notification at ${new Date().toLocaleTimeString()}`,
+        type: Math.random() > 0.5 ? "success" : "error", // Randomly pick success or error
+        id: Date.now(),
+      };
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        newNotification,
+      ]);
+    }, 10000); // Add a new notification every 5 seconds
+
+    return () => clearInterval(interval); // Cleanup on component unmount
+  }, []);
+
+  const removeNotification = (id) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notif) => notif.id !== id)
+    );
+  };
 
   return (
     <BrowserRouter>
       <Routes>
         <Route index element={<Landing />} />
-        
+
         {/* Login Route */}
         <Route
           path="/login"
@@ -38,13 +62,19 @@ function App() {
                 emailVerified ? (
                   <Navigate to="/admin/dashboard" replace />
                 ) : (
-                  <Login showOtpModal={true} setShowOtpModal={setShowOtpModal} />
+                  <Login
+                    showOtpModal={true}
+                    setShowOtpModal={setShowOtpModal}
+                  />
                 )
               ) : account_type === "department_admin" ? (
                 emailVerified ? (
                   <Navigate to="/dept-admin/dashboard" replace />
                 ) : (
-                  <Login showOtpModal={true} setShowOtpModal={setShowOtpModal} />
+                  <Login
+                    showOtpModal={true}
+                    setShowOtpModal={setShowOtpModal}
+                  />
                 )
               ) : (
                 <Navigate to="/login" />
@@ -60,7 +90,7 @@ function App() {
           path="/admin/*"
           element={
             authenticated ? (
-              account_type === "superadmin"  ? (
+              account_type === "superadmin" ? (
                 <Navigate to="/admin/dashboard" replace />
               ) : (
                 <Navigate to="/dept-admin/dashboard" replace />
@@ -126,6 +156,17 @@ function App() {
           onResend={() => {}}
         />
       )}
+
+      {notifications.map((notif, index) => (
+        <PopUpNotif
+          key={notif.id}
+          message={notif.message}
+          type={notif.type}
+          isOpen={true}
+          onClose={() => removeNotification(notif.id)}
+          index={index} // Pass index for proper stacking
+        />
+      ))}
     </BrowserRouter>
   );
 }

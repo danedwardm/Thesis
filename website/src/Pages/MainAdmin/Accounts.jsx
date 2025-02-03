@@ -11,8 +11,7 @@ import DenyVerification from "../../Components/Modals/DenyVerification";
 
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { HiOutlineDocumentReport } from "react-icons/hi";
-import { 
-  useAuth } from "../../AuthContext/AuthContext";
+import { useAuth } from "../../AuthContext/AuthContext";
 import {
   collection,
   onSnapshot,
@@ -80,8 +79,6 @@ const Accounts = () => {
 
     fetchUsers();
   }, []);
-
-
 
   const filteredUsers = users.filter((user) => {
     const matchesType =
@@ -174,6 +171,11 @@ const Accounts = () => {
         ...prevStatus,
         [user.id]: null, // Ensure it's set to null initially to indicate loading
       }));
+
+      console.log(
+        "Fetching verification status for user:",
+        userVerificationStatus
+      );
 
       // Listen for verification status
       onSnapshot(q, (snapshot) => {
@@ -505,7 +507,14 @@ const Accounts = () => {
                           </td>
                           <td className="p-4 text-center">
                             <button
-                              className="bg-main text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond ease-in-out duration-500 truncate"
+                              className={`${
+                                data.is_verified ||
+                                userVerificationStatus[data.id] === null
+                                  ? "bg-main"
+                                  : userVerificationStatus[data.id]
+                                  ? "bg-red-600"
+                                  : "bg-main"
+                              } text-white py-2 px-4 font-semibold rounded-md hover:bg-textSecond ease-in-out duration-500 truncate`}
                               onClick={() => {
                                 // Handle the review button click
                                 setShowAccount(true);
