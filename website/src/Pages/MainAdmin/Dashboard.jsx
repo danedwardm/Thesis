@@ -16,7 +16,7 @@ const mapContainerStyle = {
 };
 
 const Dashboard = () => {
-  const { totalNotDoneReportsCount, weeklyReportsCount } = useAuth();
+  const { totalNotDoneReportsCount, weeklyReportsCount, department } = useAuth();
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef(null);
   const [cachedWeeklyReportCount, setCachedWeeklyReportCount] = useState(
@@ -52,6 +52,10 @@ const Dashboard = () => {
       setUsers(localStorage.getItem("users_count"));
     }
   }, [users]);
+
+  useEffect(() => { 
+    department();
+  },[])
 
   useEffect(() => {
     const getCurrentLocation = () => {

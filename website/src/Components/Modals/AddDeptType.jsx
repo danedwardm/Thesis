@@ -9,23 +9,15 @@ import axiosInstance from "../../axios-instance";
 const AddDeptType = ({ isVisible, onClose, account_type }) => {
   if (!isVisible) return null;
 
-  const { departments, setDepartment } = useAuth();
+  const { departments, department } = useAuth();
   const [showPrompt, setShowPrompt] = useState(false);
   const [departmentType, setDepartmentType] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [incompleteInput, setIncompleteInput] = useState(false);
   const [errors, setErrors] = useState("");
   const [isTableVisible, setIsTableVisible] = useState(false);
-
-  const department = [
-    "Fire Department",
-    "Medical Department",
-    "Police Department",
-    "Street Maintenance",
-    "Pothole Repair",
-    "General Department",
-    "Department of Public Works",
-  ];
+  const [depts, setDepts] = useState(departments);
+  const [load, setLoad] = useState({});
 
   const toggleTableVisibility = () => {
     setIsTableVisible(!isTableVisible);
@@ -92,7 +84,7 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
     if (res.status === 200 || res.status === 201) {
       console.log("Department added successfully!");
       setIsLoading(false);
-      departments.filter((department) => department.name !== departmentType);
+      depts.push(res.data);
       // onClose(); 
     } else {
       console.log("Failed to add department.");
@@ -103,17 +95,17 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
 
   const deleteDepartment = async (id) => {
     try {
-      const res = await axiosInstance.delete(`api/department/${parseInt(id)}/delete/`, {
-        id: id,
-      });
+      setLoad((prev) => ({ ...prev, [id]: true })); 
+      const res = await axiosInstance.delete(`api/department/${parseInt(id)}/delete/`);
       if (res.status === 200 || res.status === 204) {
         console.log("Department deleted successfully!");
-        setDepartment((prev) => [...prev, departmentType]);
-        // onClose(); // Close the AddAccount modal
+        setDepts((prev) => prev.filter((department) => department.id !== id));
       }
-
+      
     } catch (error) {
       console.error("Error deleting department:", error);
+    } finally {
+      setLoad((prev) => ({ ...prev, [id]: false }));
     }
   }
 
@@ -184,21 +176,42 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {departments.map((department, index) => (
+                        {depts.map((department, index) => (
                           <tr key={index}>
                             <td className="px-4 py-2 border-b text-xs">
-                              {index + 1}
+                              {department.id}
                             </td>
                             <td className="px-4 py-2 border-b text-xs">
                               {department.name}
                             </td>
                             <td className="px-4 py-2 border-b text-xs">
-                              {/* Delete button */}
+                              {/* Delete button */}                        
                               <button
                                 onClick={() => deleteDepartment(department.id)}
-                                className="text-red-600 hover:text-red-800 text-xs font-semibold border border-red-600 rounded-md px-2 py-1"
+                                className="text-red-600 hover:text-red-800 text-xs font-semibold border border-red-600 rounded-md px-2 py-1 items-center justify-center flex"
                               >
-                                Delete
+                                {load[department.id] ? (
+                                    <svg
+                                      className="animate-spin h-5 w-5 mr-3 text-red-600"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 50 50"
+                                      stroke="currentColor"
+                                    >
+                                      <circle
+                                        cx="25"
+                                        cy="25"
+                                        r="20"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                        fill="none"
+                                        strokeLinecap="round"
+                                        strokeDasharray="125"
+                                        strokeDashoffset="50"
+                                      />
+                                    </svg>)
+                                  : "Delete"}  
+                                                    
                               </button>
                             </td>
                           </tr>

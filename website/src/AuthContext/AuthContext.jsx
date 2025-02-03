@@ -162,20 +162,28 @@ const AuthProvider = ({ children }) => {
           totalCount += notDoneReports.length;
           setTotalNotDoneReportsCount(totalCount);
           // console.log("Total not done reports count:", totalCount);
-          const oneWeekAgo = new Date();
-          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          const today = new Date(); // Get the current date
+          const dayOfWeek = today.getDay(); 
+
+          const startOfWeek = new Date(today);
+          startOfWeek.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)); // Adjust for Sunday
+
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+
           const accountType = localStorage.getItem("accountType");
 
           if (accountType === "superadmin") {
             let weeklyCount = 0;
+
+            // Filter reports that fall within the current week (Monday to Sunday)
             const weeklyReports = updateReports.filter((data) => {
               const reportDate = new Date(data.report_date);
-              return reportDate >= oneWeekAgo;
-            });
-
-            weeklyCount += weeklyReports.length;
-            localStorage.setItem("weeklyReportCount", weeklyCount);
-            setWeeklyReportsCount(weeklyCount); // Assuming you have a state setter for this
+              return reportDate >= startOfWeek && reportDate <= endOfWeek;
+              });
+            weeklyCount = weeklyReports.length;
+            localStorage.setItem("weeklyReportCount", weeklyCount); 
+            setWeeklyReportsCount(weeklyCount);
           }
 
           if (accountType === "department_admin") {
@@ -443,7 +451,9 @@ const AuthProvider = ({ children }) => {
         departments,
         setDepartment,
         department_admin_registration,
+        department,
         worker_registration,
+        weeklyReportsCount,
         user,
         users,
         totalNotDoneReportsCount,
