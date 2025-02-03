@@ -48,10 +48,10 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (users){
+    if (users) {
       setUsers(localStorage.getItem("users_count"));
     }
-  }, [users])
+  }, [users]);
 
   useEffect(() => {
     const getCurrentLocation = () => {

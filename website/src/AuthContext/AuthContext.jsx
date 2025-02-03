@@ -87,8 +87,8 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    department();  
-  }, [])
+    department();
+  }, []);
 
   const fetchDocuments = async () => {
     const categories = [

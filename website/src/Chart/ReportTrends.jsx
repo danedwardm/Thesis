@@ -60,6 +60,10 @@ const categoryColors = {
     backgroundColor: "rgba(255, 159, 64, 0.4)", // Orange
     borderColor: "rgba(255, 159, 64, 1)",
   },
+  "fallen tree": {
+    backgroundColor: "rgba(75, 192, 192, 0.4)", // Teal
+    borderColor: "rgba(75, 192, 192, 1)",
+  },
 };
 
 const ReportTrends = () => {
