@@ -43,14 +43,9 @@ const WeatherMap = ({ lat, lon }) => {
         zoom={15}
         className="w-full h-full rounded-2xl"
       >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors"
-        />
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <TileLayer
           url={`https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${API_KEY}`}
-          attribution="&copy; <a href='https://openweathermap.org'>OpenWeatherMap</a>"
-          opacity={0.7}
         />
         {/* Add a marker for the weather location */}
         <Marker position={[lat, lon]}>

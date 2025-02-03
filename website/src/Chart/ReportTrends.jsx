@@ -185,8 +185,8 @@ const ReportTrends = () => {
           label: category,
           data: data,
           fill: false,
-          backgroundColor: "rgba(0, 0, 0, 0)", // Transparent background
-          borderColor: "rgba(0, 0, 0, 0)", // Transparent border
+          backgroundColor: color.backgroundColor,
+          borderColor: color.borderColor,
           tension: 0.1, // Smooth lines
         });
       });

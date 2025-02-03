@@ -7,6 +7,7 @@ import { IoIosNotifications } from "react-icons/io";
 import { MdReport } from "react-icons/md";
 import { useAuth } from "../../AuthContext/AuthContext";
 import Map from "../../Components/Modals/Map";
+import PopUpNotif from "../../Components/Modals/PopUpNotif";
 import axiosInstance from "../../axios-instance";
 
 // Google Maps container style
@@ -16,7 +17,8 @@ const mapContainerStyle = {
 };
 
 const Dashboard = () => {
-  const { totalNotDoneReportsCount, weeklyReportsCount, department } = useAuth();
+  const { totalNotDoneReportsCount, weeklyReportsCount, department } =
+    useAuth();
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
   const mapRef = useRef(null);
   const [cachedWeeklyReportCount, setCachedWeeklyReportCount] = useState(
@@ -27,6 +29,7 @@ const Dashboard = () => {
     lat: 14.7545804, // Default fallback coordinates (e.g., UCC South Campus)
     lng: 121.030909,
   });
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -53,9 +56,9 @@ const Dashboard = () => {
     }
   }, [users]);
 
-  useEffect(() => { 
+  useEffect(() => {
     department();
-  },[])
+  }, []);
 
   useEffect(() => {
     const getCurrentLocation = () => {
@@ -189,7 +192,6 @@ const Dashboard = () => {
         {/* Map */}
         <div className="w-full flex-grow bg-black md:mt-5 mt-3 border-2 border-t-main z-10">
           {/* <div ref={mapRef} style={mapContainerStyle}></div> */}
-
           <Map lat={location.lat} lon={location.lng} />
         </div>
       </div>
