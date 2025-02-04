@@ -30,7 +30,7 @@ const AuthProvider = ({ children }) => {
   const [totalNotDoneReportsCount, setTotalNotDoneReportsCount] = useState(0);
   const [weeklyReportsCount, setWeeklyReportsCount] = useState(0);
   const [emailVerified, setEmailVerified] = useState(false);
-
+  const [popUp, setPopUp] = useState({});
   // Check authentication on initial load from localStorage
   useEffect(() => {
     const token = localStorage.getItem("accessToken"); // Example token check
@@ -458,6 +458,8 @@ const AuthProvider = ({ children }) => {
         users,
         totalNotDoneReportsCount,
         emailVerified, // Provide email verification status
+        popUp,
+        setPopUp,
       }}
     >
       {children}

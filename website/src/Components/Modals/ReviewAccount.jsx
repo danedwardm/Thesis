@@ -80,6 +80,7 @@ const ReviewAccount = ({
     }
   };
 
+
   const getUserInfo = (data, field, defaultValue) => {
     return data ? data[field] || defaultValue : defaultValue;
   };
@@ -485,6 +486,7 @@ const ReviewAccount = ({
       />
       <DenyVerification
         isVisible={showDenyModal}
+        userId={userId}
         onClose={() => setShowDenyModal(false)}
       />
     </>
