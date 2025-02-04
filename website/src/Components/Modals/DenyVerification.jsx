@@ -1,10 +1,55 @@
 import React, { useState } from "react";
 
 import Data from "../../JSON/readonDeny.json";
-
-const DenyVerification = ({ isVisible, onClose }) => {
+import axiosInstance from "../../axios-instance";
+import { app } from "../../Firebase/firebaseConfig";
+import { addDoc, collection, deleteDoc, doc, getDocs, getFirestore, query, QuerySnapshot, serverTimestamp, setDoc, where, writeBatch } from "firebase/firestore";
+const db = getFirestore(app);
+const DenyVerification = ({ isVisible, userId, onClose }) => {
   if (!isVisible) return null;
   const [selectedValue, setSelectedValue] = useState("");
+
+  const handleDecline = async () => { 
+      try {
+        console.log("Declining user: ", userId);
+        const declineRef = collection(db, "declinedVerification");
+        const notificationRef = collection(db, "notifications");
+        const verifyRef = collection(db, "verifyAccount");
+       
+        const res = await axiosInstance.put(`/api/deny-user/${userId}/`);
+        
+        if (res.status === 200 || res.status === 201 || res.status === 300) {
+          const batch = writeBatch(db);
+          const declineDocRef = doc(declineRef);
+          const verifyQuery = query(verifyRef, where("user", "==", userId));
+          const querySnapshot = await getDocs(verifyQuery);
+          batch.set(declineDocRef, {
+            userId: userId,
+            reason: selectedValue,
+            timestamp: serverTimestamp()
+          });
+
+            const notificationDocRef = doc(notificationRef);
+            batch.set(notificationDocRef, {
+            userId: userId.toString(),
+            title: `Verification Denied`,
+            description: `Your verification was denied. Reason: ${selectedValue}`,
+            screen: "/(tabs)/profile",
+            createdAt: serverTimestamp()
+          });
+          querySnapshot.forEach((doc) => {
+            batch.delete(doc.ref);
+          });
+          await batch.commit();
+
+          alert("User denied success!");
+          location.reload();
+        }
+      } catch (error) {
+        console.error("Error denying user: ", error.message);
+      }
+    }
+
   return (
     <>
       <div className="fixed inset-0 w-full h-screen bg-black/75 flex items-center justify-center z-40">
@@ -65,7 +110,11 @@ const DenyVerification = ({ isVisible, onClose }) => {
               </div>
             </div>
             <div className="w-full flex flex-row gap-4 items-center justify-end mt-4">
-              <button className="py-2 px-3 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate">
+              <button className="py-2 px-3 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+              onClick={(e) => {
+                e.preventDefault();
+                handleDecline();
+              }}>
                 DENY
               </button>
               <button

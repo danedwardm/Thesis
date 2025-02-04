@@ -18,7 +18,7 @@ const NavBar = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [notification, setNotification] = useState([]);
   const navigate = useNavigate(); // Use navigate for redirecting
-  const { onLogout } = useAuth(); // Get the logout function from the context
+  const { onLogout, setPopUp } = useAuth(); // Get the logout function from the context
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const toggleNotifs = () => setIsNotifsOpen(!toggleNotifsOpen);
@@ -59,15 +59,17 @@ const NavBar = () => {
 
           // console.log("Fetching...", notifications)
           // Update the state with filtered notifications
-          setNotification(notifications);
+         
           const todayStart = new Date();
           todayStart.setHours(0, 0, 0, 0); // Set time to midnight for today's start
 
           const todayNotifications = notifications.filter((notification) => {
-            const createdAt = notification.createdAt.toDate(); // Assuming createdAt is a Firestore Timestamp
+            const createdAt = notification.createdAt.toDate();
+            setPopUp({title: notification.title, type: notification.description, id: createdAt});
             return createdAt >= todayStart;
           });
-
+          setNotification(todayNotifications);
+        
           localStorage.setItem("new_notif_counts", todayNotifications.length); 
         },
         (error) => {
@@ -115,7 +117,8 @@ const NavBar = () => {
               onClick={toggleNotifs}
             >
               <MdNotificationsActive className="text-second text-3xl" />
-              <div className="absolute top-0 right-12 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
+              {notification.length > 0 && <div className="absolute top-0 right-12 w-3 h-3 bg-red-500 rounded-full border-2 border-white"/>}
+
             </div>
             <div
               className="rounded-full bg-second w-[35px] h-[35px] flex items-center justify-center cursor-pointer"
@@ -138,7 +141,7 @@ const NavBar = () => {
                         // onClick={handleLogout} // Change from NavLink to div and handleLogout
                         className="block px-4 py-2 font-bold text-textSecond hover:text-main cursor-pointer"
                       >
-                        User {item.user_id} {item.title}
+                        A User {item.title}
                       </div>
                     </li>
                   ))}

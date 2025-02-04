@@ -18,29 +18,41 @@ import ReportCategoryChart from "./Chart/ReportCategoryChart";
 import PieChart from "./Chart/PieChart";
 import OtpModal from "./Components/Modals/OtpModal"; // Import the OTP modal
 import PopUpNotif from "./Components/Modals/PopUpNotif";
+import { useRef } from "react";
 
 function App() {
-  const { account_type, authenticated, emailVerified } = useAuth(); // Access authentication status and email verification status
+  const { account_type, authenticated, emailVerified, popUp } = useAuth(); // Access authentication status and email verification status
   const [showOtpModal, setShowOtpModal] = useState(false); // State for OTP Modal visibility
 
   const handleOtpModalClose = () => setShowOtpModal(false);
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const newNotification = {
-        message: `This is a new notification at ${new Date().toLocaleTimeString()}`,
-        type: Math.random() > 0.5 ? "success" : "error", // Randomly pick success or error
-        id: Date.now(),
-      };
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        newNotification,
-      ]);
-    }, 10000); // Add a new notification every 5 seconds
+   
+    if (!popUp || !popUp.id || !popUp.title || !popUp.type) {
+      console.error("Invalid popUp object:", popUp);
+      return; // Exit if popUp is invalid or missing required fields
+    }
+    const storedPopUpId = localStorage.getItem("popUpId");
+    if (storedPopUpId === JSON.stringify(popUp.id)) {
+      return; // Exit if the popUp has already been shown
+    } 
+    localStorage.setItem("popUpId", JSON.stringify(popUp.id));
+    setNotifications((prevNotifications) => [...prevNotifications, popUp]);
+    console.log(popUp)
+   
+    const timeoutId = setTimeout(() => {
+      setNotifications((prevNotifications) =>
+        prevNotifications.filter((notif) => notif.id !== popUp.id)
+      );
+      console.log("PopUp removed:", popUp);
+    }, Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000); 
 
-    return () => clearInterval(interval); // Cleanup on component unmount
-  }, []);
+    return () => {
+      clearTimeout(timeoutId);
+    };
+
+  }, [popUp]);
 
   const removeNotification = (id) => {
     setNotifications((prevNotifications) =>
@@ -160,8 +172,8 @@ function App() {
       {notifications.map((notif, index) => (
         <PopUpNotif
           key={notif.id}
-          message={notif.message}
-          type={notif.type}
+          message={notif.type}
+          type={notif.title}
           isOpen={true}
           onClose={() => removeNotification(notif.id)}
           index={index} // Pass index for proper stacking
