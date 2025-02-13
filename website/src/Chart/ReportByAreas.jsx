@@ -1,0 +1,180 @@
+import React, { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  getFirestore,
+} from "firebase/firestore";
+import { app } from "../Firebase/firebaseConfig";
+import { Chart, registerables } from "chart.js";
+import { getAddressFromCoordinates } from "../utils/getAddressFromCoordinates";
+
+Chart.register(...registerables);
+
+const db = getFirestore(app);
+
+const ReportByAreas = ({ dateFilter }) => {
+  const [reportCounts, setReportCounts] = useState({});
+
+  // Helper: get the start of the period based on filter
+  const getStartOfPeriod = (filter) => {
+    const now = new Date();
+    switch (filter) {
+      case "today":
+        now.setHours(0, 0, 0, 0);
+        return now;
+      case "week":
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+        return startOfWeek;
+      case "month":
+        now.setDate(1);
+        now.setHours(0, 0, 0, 0);
+        return now;
+      case "year":
+        now.setMonth(0, 1);
+        now.setHours(0, 0, 0, 0);
+        return now;
+      default:
+        return null;
+    }
+  };
+
+  // Note: We're no longer declaring fetchDocuments as async.
+  const fetchDocuments = (filter) => {
+    const categories = [
+      "fire accident",
+      "street light",
+      "potholes",
+      "floods",
+      "others",
+      "fallen tree",
+      "road accident",
+    ];
+
+    // We'll accumulate counts here
+    const addressCounts = {};
+
+    const unsubscribeFunctions = categories.map((category) => {
+      let collRef = collection(db, `reports/${category}/reports`);
+      let q = collRef;
+
+      if (filter && filter !== "all") {
+        const startOfPeriod = getStartOfPeriod(filter);
+        if (startOfPeriod) {
+          // Assuming report_date is stored as a Timestamp/Date,
+          // pass the Date object directly.
+          q = query(collRef, where("report_date", ">=", startOfPeriod));
+        }
+      }
+
+      return onSnapshot(q, (snapshot) => {
+        console.log(`Snapshot for category "${category}"`, snapshot.docs.length);
+        snapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          console.log("Data", data);
+          const { latitude, longitude } = data;
+          console.log("Latitude and Longitude", latitude, longitude);
+          if (latitude && longitude) {
+            // Use .then() instead of await so that we don't mark the callback as async.
+            getAddressFromCoordinates(latitude, longitude)
+              .then((address) => {
+                if (address) {
+                  addressCounts[address] = (addressCounts[address] || 0) + 1;
+                  // Update state with new counts (merging with any previous counts)
+                  setReportCounts((prevCounts) => ({
+                    ...prevCounts,
+                    ...addressCounts,
+                  }));
+                }
+              })
+              .catch((err) =>
+                console.error("Error getting address for", latitude, longitude, err)
+              );
+          }
+        });
+      });
+    });
+
+    // Return the cleanup function that unsubscribes from all listeners.
+    return () => {
+      unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+    };
+  };
+
+  useEffect(() => {
+    // Pass dateFilter into fetchDocuments so that filtering is applied
+    const unsubscribe = fetchDocuments(dateFilter);
+    return unsubscribe;
+  }, [dateFilter]);
+
+  const chartData = {
+    labels: Object.keys(reportCounts),
+    datasets: [
+      {
+        label: "Number of Reports per Location",
+        data: Object.values(reportCounts),
+        backgroundColor: "rgba(54, 162, 235, 0.6)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  return (
+
+     <div className="w-4/5 flex-grow h-[400px] mt-8 ml-8">
+          <div className="font-bold text-md text-main">
+            Report Counts by Category
+          </div>
+    
+          {/* Dropdown for Date Filter */}
+          <div className="mb-4">
+            <label htmlFor="dateFilter" className="mr-2 font-semibold text-sm">
+              Select Date Filter:{" "}
+            </label>
+            <select
+              id="dateFilter"
+              onChange={(e) => setDateFilter(e.target.value)}
+              value={dateFilter}
+              className="p-1 border rounded-md text-xs border-main"
+            >
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+              <option value="all">All Time</option>
+            </select>
+          </div>
+    
+          <h2>Incident Reports by Location</h2>
+      <Bar
+        data={chartData}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (context) => `${context.raw} reports`,
+              },
+            },
+          },
+          scales: {
+            x: { title: { display: true, text: "Locations" } },
+            y: {
+              title: { display: true, text: "Number of Reports" },
+              beginAtZero: true,
+            },
+          },
+        }}
+      />
+    </div>
+  );
+};
+
+export default ReportByAreas;
