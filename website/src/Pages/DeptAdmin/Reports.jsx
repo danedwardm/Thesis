@@ -32,13 +32,21 @@ const Reports = () => {
   const [upvote, setUpvote] = useState(0);
   const [downvote, setDownvote] = useState(0);
   const [feedback, setFeedback] = useState("");
+  const [isValidated, setIsValidated] = useState("");
   const [proof, setProof] = useState("");
-  const [reportValidated, setReportValidated] = useState(false);
-  const [openTime, setOpenTime] = useState("");
   const [reportId, setReportId] = useState([]);
-  const [userFeedback, setUserFeedback] = useState([]);
+  const [reportValidated, setReportValidated] = useState(false);
+  const [reportedType, setReportedType] = useState("");
+  const [openTime, setOpenTime] = useState("");
+  const [lat, setLat] = useState("");
+  const [long, setLong] = useState("");
+  const [closedTime, setClosedTime] = useState("");
+  const [respondTime, setRespondTime] = useState("");
+  const [validationTime, setValidationTime] = useState("");
   const [workerFeedback, setWorkerFeedback] = useState([]);
   const [workers, setWorkers] = useState([]);
+  const [workerFeedbackDesc, setWorkerFeedbackDesc] = useState(null);
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6; // Number of items per page
@@ -47,6 +55,7 @@ const Reports = () => {
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const [newReports, setNewReports] = useState([]);
   const user_id = localStorage.getItem("user_id");
+
   // Filter data based on selected filters
   const filteredData = reports.filter((item) => {
     return (
@@ -401,9 +410,7 @@ const Reports = () => {
                               onClick={() => {
                                 setShowReport(true);
                                 setName(data.username);
-                                setLocation(
-                                  `${data.longitude} , ${data.latitude}`
-                                );
+                                setLocation(data.location);
                                 setReportType(
                                   data.custom_type
                                     ? data.type_of_report +
@@ -411,19 +418,34 @@ const Reports = () => {
                                         data.custom_type
                                     : data.type_of_report
                                 );
-                                setDescription(data.description);
+                                setDescription(data.report_description);
                                 setDate(`${formattedDate} ${formattedTime}`);
                                 setStatus(data.status);
                                 setAssignedTo(data.department_id);
                                 setAttachment(data.image_path);
                                 setUpvote(data.upvote);
                                 setDownvote(data.downvote);
-                                setFeedback(data.userFeedback);
-                                setWorkers(data.workers);
+                                setFeedback(data.feedback);
                                 setProof(data.proof);
+                                setIsValidated(data.is_validated);
                                 setReportId(data.id);
+                                setWorkers(data.workers);
+                                data.workerFeedback[0] &&
+                                  setWorkerFeedback(
+                                    data.workerFeedback[0].proof
+                                  );
+                                data.workerFeedback[0] &&
+                                  setWorkerFeedbackDesc(
+                                    data.workerFeedback[0].description
+                                  );
+                                setReportedType(data.type_of_report);
                                 setReportValidated(data.is_validated);
                                 setOpenTime(timeElapsed(data.report_date));
+                                setLat(data.latitude);
+                                setLong(data.longitude);
+                                setClosedTime(data.report_closed_time);
+                                setRespondTime(data.review_elapsed_time);
+                                setValidationTime(data.validation_time);
                               }}
                             >
                               {"REVIEW"}
@@ -491,13 +513,22 @@ const Reports = () => {
         reportStatus={status}
         assignedTo={assignedTo}
         attachment={attachment}
+        workerFeedback={workerFeedback}
+        workerFeedbackDesc={workerFeedbackDesc}
         upvote={upvote}
         downvote={downvote}
         feedback={feedback}
         proof={proof}
+        isValidated={isValidated}
         reportId={reportId}
+        reportedType={reportedType}
         reportValidated={reportValidated}
         openTime={openTime}
+        lat={lat}
+        long={long}
+        closedTime={closedTime}
+        respondTime={respondTime}
+        validationTime={validationTime}
         workers={workers}
       />
     </>

@@ -15,10 +15,11 @@ Chart.register(...registerables);
 
 const db = getFirestore(app);
 
-const ReportByAreas = ({ dateFilter }) => {
+const ReportByAreas = () => {
   const [reportCounts, setReportCounts] = useState({});
+  const [dateFilter, setDateFilter] = useState("month"); // Add state for dateFilter
 
-  // Helper: get the start of the period based on filter
+  // Helper function to get the start of a day, week, month, or year
   const getStartOfPeriod = (filter) => {
     const now = new Date();
     switch (filter) {
@@ -26,20 +27,19 @@ const ReportByAreas = ({ dateFilter }) => {
         now.setHours(0, 0, 0, 0);
         return now;
       case "week":
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay());
+        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
         startOfWeek.setHours(0, 0, 0, 0);
         return startOfWeek;
       case "month":
-        now.setDate(1);
+        now.setDate(1); // Set to the first day of the current month
         now.setHours(0, 0, 0, 0);
         return now;
       case "year":
-        now.setMonth(0, 1);
+        now.setMonth(0, 1); // Set to the first day of the current year
         now.setHours(0, 0, 0, 0);
         return now;
       default:
-        return null;
+        return null; // All-time (no filter)
     }
   };
 
@@ -67,17 +67,20 @@ const ReportByAreas = ({ dateFilter }) => {
         if (startOfPeriod) {
           // Assuming report_date is stored as a Timestamp/Date,
           // pass the Date object directly.
-          q = query(collRef, where("report_date", ">=", startOfPeriod));
+          q = query(q, where("report_date", ">=", startOfPeriod.toISOString()));
         }
       }
 
       return onSnapshot(q, (snapshot) => {
-        console.log(`Snapshot for category "${category}"`, snapshot.docs.length);
+        // console.log(
+        //   `Snapshot for category "${category}"`,
+        //   snapshot.docs.length
+        // );
         snapshot.docs.forEach((doc) => {
           const data = doc.data();
-          console.log("Data", data);
+          // console.log("Data", data);
           const { latitude, longitude } = data;
-          console.log("Latitude and Longitude", latitude, longitude);
+          // console.log("Latitude and Longitude", latitude, longitude);
           if (latitude && longitude) {
             // Use .then() instead of await so that we don't mark the callback as async.
             getAddressFromCoordinates(latitude, longitude)
@@ -92,7 +95,12 @@ const ReportByAreas = ({ dateFilter }) => {
                 }
               })
               .catch((err) =>
-                console.error("Error getting address for", latitude, longitude, err)
+                console.error(
+                  "Error getting address for",
+                  latitude,
+                  longitude,
+                  err
+                )
               );
           }
         });
@@ -125,32 +133,31 @@ const ReportByAreas = ({ dateFilter }) => {
   };
 
   return (
+    <div className="w-4/5 flex-grow h-[400px] mt-8 ml-8">
+      <div className="font-bold text-md text-main">
+        Report Counts by Category
+      </div>
 
-     <div className="w-4/5 flex-grow h-[400px] mt-8 ml-8">
-          <div className="font-bold text-md text-main">
-            Report Counts by Category
-          </div>
-    
-          {/* Dropdown for Date Filter */}
-          <div className="mb-4">
-            <label htmlFor="dateFilter" className="mr-2 font-semibold text-sm">
-              Select Date Filter:{" "}
-            </label>
-            <select
-              id="dateFilter"
-              onChange={(e) => setDateFilter(e.target.value)}
-              value={dateFilter}
-              className="p-1 border rounded-md text-xs border-main"
-            >
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
-              <option value="all">All Time</option>
-            </select>
-          </div>
-    
-          <h2>Incident Reports by Location</h2>
+      {/* Dropdown for Date Filter */}
+      <div className="mb-4">
+        <label htmlFor="dateFilter" className="mr-2 font-semibold text-sm">
+          Select Date Filter:{" "}
+        </label>
+        <select
+          id="dateFilter"
+          onChange={(e) => setDateFilter(e.target.value)} // Update state when the filter changes
+          value={dateFilter}
+          className="p-1 border rounded-md text-xs border-main"
+        >
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="year">This Year</option>
+          <option value="all">All Time</option>
+        </select>
+      </div>
+
+      <h2>Incident Reports by Location</h2>
       <Bar
         data={chartData}
         options={{

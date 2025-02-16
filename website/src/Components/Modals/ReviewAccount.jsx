@@ -80,7 +80,6 @@ const ReviewAccount = ({
     }
   };
 
-
   const getUserInfo = (data, field, defaultValue) => {
     return data ? data[field] || defaultValue : defaultValue;
   };
@@ -300,7 +299,7 @@ const ReviewAccount = ({
                   {type === "worker" ? (
                     <div className="w-1/2 flex flex-col items-center justify-center">
                       <div className="flex items-center justify-start w-full py-2 px-1">
-                        <p className="text-xs font-semibold ">Sation</p>
+                        <p className="text-xs font-semibold ">Station</p>
                       </div>
                       <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
                         <div className="w-full flex bg-white resize-none outline-none text-xs ritems-center justify-center">

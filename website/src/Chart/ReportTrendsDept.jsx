@@ -71,11 +71,12 @@ const ReportTrends = () => {
   // Fetch reports from Firestore with date filtering
   const fetchDocuments = async (filter) => {
     const categories = [
-      "fires",
-      "street lights",
+      "fire accident",
+      "street light",
       "potholes",
       "floods",
       "others",
+      "fallen tree",
       "road accident",
     ];
 
@@ -167,7 +168,7 @@ const ReportTrends = () => {
   }, [reports]);
 
   return (
-    <div className="w-[650px] flex-grow h-[400px] mt-8 ml-8">
+    <div className="w-4/5 flex-grow h-[400px] mt-8 ml-8">
       <div className="font-bold text-md text-main">
         Report Trends Based on Date
       </div>
