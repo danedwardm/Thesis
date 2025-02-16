@@ -28,6 +28,8 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true); // Add loading state
   const [error, setError] = useState(null);
   const [totalNotDoneReportsCount, setTotalNotDoneReportsCount] = useState(0);
+  const [totalNotDoneReportsCountDept, setTotalNotDoneReportsCountDept] =
+    useState(0);
   const [weeklyReportsCount, setWeeklyReportsCount] = useState(0);
   const [emailVerified, setEmailVerified] = useState(false);
   const [popUp, setPopUp] = useState({});
@@ -101,20 +103,24 @@ const AuthProvider = ({ children }) => {
       "fire accident",
       "fallen tree",
     ];
+
     // Initialize a variable to accumulate the total count of reports that are not "done"
     let totalCount = 0;
+    let totalCountsDept = 0; // Variable for department_admin
+    const countedReportIds = new Set();
+    const countedReportDeptIds = new Set();
 
     const unsubscribeFunctions = categories.map((category) => {
       return onSnapshot(
         collection(db, `reports/${category}/reports`),
         async (snapshot) => {
+          totalCount = 0;
           const updateReports = await Promise.all(
             snapshot.docs.map(async (doc) => {
               const data = doc.data();
-              // console.log(data); // Log to check if the `id` exists and is unique
+              const reportId = doc.id;
 
               // Fetch user and worker feedback for each report
-              const reportId = doc.id;
               const userFeedbackRef = collection(
                 db,
                 `reports/${category}/reports/${reportId}/userFeedback`
@@ -134,11 +140,12 @@ const AuthProvider = ({ children }) => {
                   submitted_at: doc.data().submited_at, // assuming 'submitted_at' is a Firestore timestamp
                 })
               );
+
               const workerFeedbackDescriptions =
                 workerFeedbackSnapshot.docs.map((doc) => ({
                   description: doc.data().description,
                   proof: doc.data().proof,
-                  submitted_at: doc.data().submited_at, // assuming 'submitted_at' is a Firestore timestamp
+                  submitted_at: doc.data().submited_at,
                 }));
 
               // Return the report along with feedback
@@ -150,23 +157,31 @@ const AuthProvider = ({ children }) => {
               };
             })
           );
+
           // Filter reports to only include those that are NOT "done"
           const notDoneReports = updateReports.filter(
-            (report) => report.status !== "done"
+            (report) =>
+              report.status !== "done" && !countedReportIds.has(report.id)
           );
-
           const activeReport = updateReports.filter(
             (report) => report.status === "Ongoing"
           );
           localStorage.setItem("activeReportCount", activeReport.length);
-          totalCount += notDoneReports.length;
+
+          notDoneReports.forEach((report) => {
+            countedReportIds.add(report.id);
+          });
+          totalCount += notDoneReports.length; // Accumulate the count of "not done" reports
+          // Store the accumulated totalCount in state only after all categories are processed
           setTotalNotDoneReportsCount(totalCount);
-          // console.log("Total not done reports count:", totalCount);
+
           const today = new Date(); // Get the current date
-          const dayOfWeek = today.getDay(); 
+          const dayOfWeek = today.getDay();
 
           const startOfWeek = new Date(today);
-          startOfWeek.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)); // Adjust for Sunday
+          startOfWeek.setDate(
+            today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)
+          ); // Adjust for Sunday
 
           const endOfWeek = new Date(startOfWeek);
           endOfWeek.setDate(startOfWeek.getDate() + 6);
@@ -180,9 +195,10 @@ const AuthProvider = ({ children }) => {
             const weeklyReports = updateReports.filter((data) => {
               const reportDate = new Date(data.report_date);
               return reportDate >= startOfWeek && reportDate <= endOfWeek;
-              });
+            });
+
             weeklyCount = weeklyReports.length;
-            localStorage.setItem("weeklyReportCount", weeklyCount); 
+            localStorage.setItem("weeklyReportCount", weeklyCount);
             setWeeklyReportsCount(weeklyCount);
           }
 
@@ -190,18 +206,36 @@ const AuthProvider = ({ children }) => {
             const user_id = localStorage.getItem("user_id");
             let weeklyAssignedCount = 0; // Reset count for department_admin
 
+            // Filter reports for the current user and within the weekly range
             const weeklyAssignedReports = updateReports.filter((data) => {
               if (data.assigned_to_id == user_id) {
                 const reportDate = new Date(data.report_date);
-                return reportDate >= oneWeekAgo;
+                return reportDate >= startOfWeek && reportDate <= endOfWeek;
               }
               return false; // Only include reports assigned to the current user
             });
 
             weeklyAssignedCount += weeklyAssignedReports.length;
             localStorage.setItem("weeklyAssignedReport", weeklyAssignedCount);
+
+            // Filter reports to only include those that are NOT "done" and assigned to the current user
+            const notDoneReportsForDept = updateReports.filter(
+              (report) =>
+                report.status !== "done" &&
+                report.assigned_to_id == user_id &&
+                !countedReportDeptIds.has(report.id)
+            );
+
+            totalCountsDept += notDoneReportsForDept.length; // Accumulate the "not done" count for department_admin
+            setTotalNotDoneReportsCountDept(totalCountsDept); // Update state for department_admin
+
+            // Add the report IDs to the Set to track them
+            notDoneReportsForDept.forEach((report) => {
+              countedReportDeptIds.add(report.id);
+            });
           }
 
+          // Update the reports state
           setReports((prevReports) => {
             const combinedReports = [...prevReports, ...updateReports];
             const uniqueReports = [
@@ -457,6 +491,7 @@ const AuthProvider = ({ children }) => {
         user,
         users,
         totalNotDoneReportsCount,
+        totalNotDoneReportsCountDept,
         emailVerified, // Provide email verification status
         popUp,
         setPopUp,

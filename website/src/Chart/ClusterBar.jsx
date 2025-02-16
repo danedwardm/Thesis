@@ -83,7 +83,9 @@ const ReportAnalytics = () => {
         let totalValidationTime = 0;
         let totalReviewTime = 0;
         let totalClosedTime = 0;
-        let count = snapshot.size;
+        let validationCount = 0;
+        let reviewCount = 0;
+        let closedCount = 0;
 
         const parseTimeToMinutes = (timeStr) => {
           if (!timeStr) return 0;
@@ -93,22 +95,33 @@ const ReportAnalytics = () => {
 
         snapshot.forEach((doc) => {
           const report = doc.data();
-          totalValidationTime += parseTimeToMinutes(report.validation_time);
-          totalReviewTime += parseTimeToMinutes(report.review_elapsed_time);
-          totalClosedTime += parseTimeToMinutes(report.report_closed_time);
+
+          // Only include if the field exists
+          if (report.validation_time) {
+            totalValidationTime += parseTimeToMinutes(report.validation_time);
+            validationCount++;
+          }
+          if (report.review_elapsed_time) {
+            totalReviewTime += parseTimeToMinutes(report.review_elapsed_time);
+            reviewCount++;
+          }
+          if (report.report_closed_time) {
+            totalClosedTime += parseTimeToMinutes(report.report_closed_time);
+            closedCount++;
+          }
         });
 
         setAverages((prev) => ({
           ...prev,
           [category]: {
-            avgValidationTime: count
-              ? totalValidationTime / count / 60 // Convert minutes to hours
+            avgValidationTime: validationCount
+              ? totalValidationTime / validationCount / 60 // Convert minutes to hours
               : 0,
-            avgReviewTime: count
-              ? totalReviewTime / count / 60 // Convert minutes to hours
+            avgReviewTime: reviewCount
+              ? totalReviewTime / reviewCount / 60 // Convert minutes to hours
               : 0,
-            avgClosedTime: count
-              ? totalClosedTime / count / 60 // Convert minutes to hours
+            avgClosedTime: closedCount
+              ? totalClosedTime / closedCount / 60 // Convert minutes to hours
               : 0,
           },
         }));

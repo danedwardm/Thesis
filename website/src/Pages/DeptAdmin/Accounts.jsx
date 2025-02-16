@@ -35,7 +35,7 @@ const Accounts = () => {
 
   const [selectedAccountType, setSelectedAccountType] = useState("");
   const accountType = ["department_admin", "citizen", "worker"];
-  const { account_type, departments, authenticated, users} = useAuth();
+  const { account_type, departments, authenticated, users } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
   const accountStatuses = ["Status", "Suspended", "Blocked"];
   const [station, setStation] = useState("");
@@ -48,7 +48,6 @@ const Accounts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filte
-
 
   const filteredUsers = users.filter((user) => {
     const matchesType =
@@ -154,7 +153,7 @@ const Accounts = () => {
                     </div>
                     {filterOpen && (
                       <div className="absolute top-auto right-10 mt-2 bg-white border rounded-md shadow-lg w-48">
-                        <div className="p-2">
+                        {/* <div className="p-2">
                           <p className="font-bold text-main">Account Type</p>
                           <ul className="list-disc pl-4">
                             <div>
@@ -194,8 +193,8 @@ const Accounts = () => {
                               </div>
                             ))}
                           </ul>
-                        </div>
-                        <div className="p-2 border-t">
+                        </div> */}
+                        {/* <div className="p-2 border-t">
                           <p className="font-bold text-main">Status</p>
                           <ul className="list-disc pl-4">
                             <div>
@@ -235,7 +234,7 @@ const Accounts = () => {
                               </div>
                             ))}
                           </ul>
-                        </div>
+                        </div> */}
                         <div className="p-2 border-t">
                           <p className="font-bold text-main">Verified</p>
                           <ul className="list-disc pl-4">

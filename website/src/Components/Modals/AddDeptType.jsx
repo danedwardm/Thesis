@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import Prompt from "./Prompt";
 import { LuEye, LuEyeOff, LuMapPin } from "react-icons/lu";
+import { FaCaretDown, FaCaretRight } from "react-icons/fa";
 import { useAuth } from "../../AuthContext/AuthContext";
 import MapPicker from "./MapPicker";
 import axiosInstance from "../../axios-instance";
@@ -18,6 +19,9 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
   const [isTableVisible, setIsTableVisible] = useState(false);
   const [depts, setDepts] = useState(departments);
   const [load, setLoad] = useState({});
+
+  const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+  const [departmentToDelete, setDepartmentToDelete] = useState(null);
 
   const toggleTableVisibility = () => {
     setIsTableVisible(!isTableVisible);
@@ -80,34 +84,57 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
       return;
     }
 
-    const res = await axiosInstance.post("api/department/create/",{ name: departmentType });
+    const res = await axiosInstance.post("api/department/create/", {
+      name: departmentType,
+    });
     if (res.status === 200 || res.status === 201) {
-      console.log("Department added successfully!");
+      // console.log("Department added successfully!");
       setIsLoading(false);
+      setDepartmentType("");
       depts.push(res.data);
-      // onClose(); 
+      // onClose();
     } else {
-      console.log("Failed to add department.");
+      // console.log("Failed to add department.");
       alert("Failed to add department.");
       setIsLoading(false);
     }
   };
 
-  const deleteDepartment = async (id) => {
+  // Function to show delete confirmation modal
+  const confirmDeleteDepartment = (department) => {
+    setDepartmentToDelete(department);
+    setDeleteConfirmVisible(true);
+  };
+
+  // Handle the actual deletion
+  const deleteDepartment = async () => {
+    if (!departmentToDelete) return;
+
     try {
-      setLoad((prev) => ({ ...prev, [id]: true })); 
-      const res = await axiosInstance.delete(`api/department/${parseInt(id)}/delete/`);
+      setLoad((prev) => ({ ...prev, [departmentToDelete.id]: true }));
+      const res = await axiosInstance.delete(
+        `api/department/${parseInt(departmentToDelete.id)}/delete/`
+      );
       if (res.status === 200 || res.status === 204) {
         console.log("Department deleted successfully!");
-        setDepts((prev) => prev.filter((department) => department.id !== id));
+        setDepts((prev) =>
+          prev.filter((department) => department.id !== departmentToDelete.id)
+        );
+        setDeleteConfirmVisible(false);
+        setDepartmentToDelete(null);
       }
-      
     } catch (error) {
       console.error("Error deleting department:", error);
     } finally {
-      setLoad((prev) => ({ ...prev, [id]: false }));
+      setLoad((prev) => ({ ...prev, [departmentToDelete.id]: false }));
     }
-  }
+  };
+
+  // Handle canceling deletion
+  const cancelDelete = () => {
+    setDeleteConfirmVisible(false);
+    setDepartmentToDelete(null);
+  };
 
   return (
     <>
@@ -157,10 +184,11 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
                 <div className="w-full mt-6">
                   <div className="relative w-full flex items-center justify-start z-20 mb-2">
                     <p
-                      className="text-md text-main uppercase font-extrabold cursor-pointer"
+                      className="text-md text-main uppercase font-extrabold cursor-pointer justify-between flex items-center"
                       onClick={toggleTableVisibility}
                     >
-                      Existing Department Types
+                      Existing Department Types{" "}
+                      {isTableVisible ? <FaCaretRight /> : <FaCaretDown />}
                     </p>
                   </div>
                   {isTableVisible && (
@@ -185,33 +213,36 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
                               {department.name}
                             </td>
                             <td className="px-4 py-2 border-b text-xs">
-                              {/* Delete button */}                        
+                              {/* Delete button */}
                               <button
-                                onClick={() => deleteDepartment(department.id)}
+                                onClick={() =>
+                                  confirmDeleteDepartment(department)
+                                }
                                 className="text-red-600 hover:text-red-800 text-xs font-semibold border border-red-600 rounded-md px-2 py-1 items-center justify-center flex"
                               >
                                 {load[department.id] ? (
-                                    <svg
-                                      className="animate-spin h-5 w-5 mr-3 text-red-600"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      fill="none"
-                                      viewBox="0 0 50 50"
+                                  <svg
+                                    className="animate-spin h-5 w-5 mr-3 text-red-600"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 50 50"
+                                    stroke="currentColor"
+                                  >
+                                    <circle
+                                      cx="25"
+                                      cy="25"
+                                      r="20"
                                       stroke="currentColor"
-                                    >
-                                      <circle
-                                        cx="25"
-                                        cy="25"
-                                        r="20"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                        fill="none"
-                                        strokeLinecap="round"
-                                        strokeDasharray="125"
-                                        strokeDashoffset="50"
-                                      />
-                                    </svg>)
-                                  : "Delete"}  
-                                                    
+                                      strokeWidth="4"
+                                      fill="none"
+                                      strokeLinecap="round"
+                                      strokeDasharray="125"
+                                      strokeDashoffset="50"
+                                    />
+                                  </svg>
+                                ) : (
+                                  "Delete"
+                                )}
                               </button>
                             </td>
                           </tr>
@@ -273,6 +304,32 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {deleteConfirmVisible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white rounded-xl p-6 w-1/3">
+            <p className="text-lg font-bold text-center mb-4">
+              Are you sure you want to delete this Department?
+            </p>
+            <div className="w-full flex flex-row gap-4 items-center justify-end mt-5">
+              <button
+                onClick={deleteDepartment}
+                className="py-2 px-3 border border-accent bg-main text-white rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+              >
+                Yes, Delete
+              </button>
+              <button
+                onClick={cancelDelete}
+                className="py-2 px-3 border border-main bg-white text-main rounded-lg text-xs font-bold hover:scale-105 ease-in-out duration-500 truncate"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Prompt
         isVisible={showPrompt}
         onClose={() => setShowPrompt(false)}

@@ -82,6 +82,17 @@ const Notification = () => {
   const sendNotificationToUsers = async (e) => {
     try {
       e.preventDefault();
+
+      // Check if description is empty
+      if (!formData.description.trim()) {
+        alert("Description cannot be empty!");
+        return;
+      }
+      if (!formData.reportType.trim()) {
+        alert("Report Type cannot be empty!");
+        return;
+      }
+
       const notifRef = await addDoc(collection(db, "globalNotification"), {
         title: formData.reportType,
         description: formData.description,
@@ -121,7 +132,7 @@ const Notification = () => {
           <Navbar />
           <NavText />
           <div className="h-[100vh] grid grid-col md:grid-cols-2 pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[20vh] w-full px-10 gap-8 ">
-            <div className="w-full flex items-center rounded-2xl border-2 border-main mb-[5vh]">
+            <div className="w-full h-[450px] sticky top-[20vh] flex items-center rounded-2xl border-2 border-main">
               {/* Weather Map Component */}
               <WeatherMap lat={location.lat} lon={location.lng} />
             </div>
