@@ -9,6 +9,8 @@ import {
   query,
   where,
   getFirestore,
+  getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import { app } from "../../Firebase/firebaseConfig";
 
@@ -54,7 +56,7 @@ const ReviewAccount = ({
 
   useEffect(() => {
     const verifyRef = collection(db, "verifyAccount");
-    const q = query(verifyRef, where("user", "==", userId));
+    const q = query(verifyRef, where("user", "==", parseInt(userId)));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedUserInfo = snapshot.docs.map((doc) => ({
@@ -72,8 +74,18 @@ const ReviewAccount = ({
     try {
       const res = await axiosInstance.put(`/api/verify-user/${id}/`);
       if (res) {
-        alert("User verified success!");
-        location.reload();
+        const verifyRef = collection(db, "verifyAccount");
+        console.log("Userid: ", userId)
+        const q = query(verifyRef, where("user", "==", parseInt(userId)));
+
+        // Update is_email_verified to true
+        const snapshot = await getDocs(q);
+        snapshot.forEach(async (doc) => {
+          await updateDoc(doc.ref, { is_account_verified: true });
+        });
+
+        alert("User verified successfully!");
+        // location.reload();
       }
     } catch (error) {
       console.error("Error verifying user: ", error.message);
