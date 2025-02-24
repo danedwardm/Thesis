@@ -135,7 +135,7 @@ const ReportByAreas = () => {
   return (
     <div className="w-4/5 flex-grow h-[400px] mt-8 ml-8">
       <div className="font-bold text-md text-main">
-        Report Counts by Category
+        Incident Reports by Location
       </div>
 
       {/* Dropdown for Date Filter */}
@@ -156,8 +156,6 @@ const ReportByAreas = () => {
           <option value="all">All Time</option>
         </select>
       </div>
-
-      <h2>Incident Reports by Location</h2>
       <Bar
         data={chartData}
         options={{

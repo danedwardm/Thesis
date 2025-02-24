@@ -183,6 +183,7 @@ const PieChart = () => {
                 },
               },
             },
+            cutout: "50%", // This line makes it a donut chart
           }}
         />
       ) : (

@@ -97,7 +97,7 @@ const Dashboard = () => {
       <div className="relative w-full flex flex-col items-center z-30 overflow-auto flex-grow">
         <Navbar />
         <NavText />
-        <div className="w-full mt-[30vh] md:mt-[30vh] lg:mt-[20vh] grid md:grid-cols-4 grid-cols-2 md:gap-6 gap-2 px-6">
+        <div className="w-full mt-[30vh] md:mt-[25vh] lg:mt-[20vh] grid md:grid-cols-4 grid-cols-2 md:gap-6 gap-2 px-6">
           {/* Number of calls */}
           <div className="col-span-1 m-3 md:px-3 py-5 text-2xl font-bold text-main mb-2 bg-white border border-main rounded-lg flex flex-col md:flex-row md:gap-2 gap-1 justify-between items-center overflow-hidden">
             <div className="lg:flex justify-center items-center ml-3 hidden">
