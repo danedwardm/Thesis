@@ -47,12 +47,9 @@ const Login = () => {
       if (res && res.account_type) {
         console.log("Account type:", res.account_type);
         if (res.account_type === "superadmin" || res.account_type === "super_admin") {
-          if (res.is_email_verified) {
+          if (res) {
             navigate("/admin/dashboard");
-          } else {
-            setOtpEmail(email);
-            setShowOtpModal(true); // Show OTP modal for unverified email
-          }
+          } 
         } else if (res.account_type === "department_admin") {
           if (res.is_email_verified) {
             navigate("/dept-admin/dashboard");

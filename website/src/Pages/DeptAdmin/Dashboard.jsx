@@ -134,7 +134,7 @@ const Dashboard = () => {
             </div>
             <div className="flex justify-center items-center gap-2 md:ml-3 w-full">
               <div className="rounded-full text-main md:text-4xl text-xl">
-                {localStorage.getItem("workers_count")}
+                {localStorage.getItem("workers_count") || 0}
               </div>
             </div>
           </div>

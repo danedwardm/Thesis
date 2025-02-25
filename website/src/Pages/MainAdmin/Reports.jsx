@@ -20,7 +20,7 @@ import { useAuth } from "../../AuthContext/AuthContext";
 import axiosInstance from "../../axios-instance";
 
 const Reports = ({ assigned_to_id }) => {
-  const { reports, users } = useAuth();
+  const { reports, users, departments } = useAuth();
   const [showReport, setShowReport] = useState(false);
   const [name, setName] = useState("");
   const [reportType, setReportType] = useState("");
@@ -51,53 +51,52 @@ const Reports = ({ assigned_to_id }) => {
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // To store any errors
 
-  const departments = [
-    {
-      id: 1,
-      name: "Fire Department",
-    },
-    {
-      id: 2,
-      name: "Medical Department",
-    },
-    {
-      id: 3,
-      name: "Police Department",
-    },
-    {
-      id: 4,
-      name: "Street Maintenance Department",
-    },
-    {
-      id: 5,
-      name: "Pothole Repair Department",
-    },
-    {
-      id: 6,
-      name: "General Department",
-    },
-    {
-      id: 7,
-      name: "Department of Public Works",
-    },
-  ];
+  // const departments = [
+  //   {
+  //     id: 1,
+  //     name: "Fire Department",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Medical Department",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Police Department",
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Street Maintenance Department",
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Pothole Repair Department",
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "General Department",
+  //   },
+  //   {
+  //     id: 7,
+  //     name: "Department of Public Works",
+  //   },
+  // ];
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
-  const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
+  const [selectedStatus, setSelectedStatus] = useState("Ongoing"); // Selected status filter
   const [newReports, setNewReports] = useState([]);
 
   // Filter data based on selected filters
-  const filteredData = reports.filter((item) => {
-    return (
-      (selectedReportType === "" ||
-        item.type_of_report === selectedReportType) &&
-      (selectedStatus === "" || item.status === selectedStatus)
-    );
-  });
+  const filteredData = reports
+  .filter(report => 
+    (selectedStatus === "" || report.status === selectedStatus) &&
+    (selectedReportType === "" || report.type === selectedReportType)
+  )
+  .sort((a, b) => new Date(b.report_date) - new Date(a.report_date));
   // Pagination logic
   const totalItems = filteredData.length; // Total items based on filtered data
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -188,7 +187,9 @@ const Reports = ({ assigned_to_id }) => {
         return <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />;
     }
   };
-
+  useEffect(() => {
+   console.log(currentData)
+  },[])
   function convertToDaysHoursMinutes(time) {
     // Split time into hours and minutes
     const [hours, minutes] = time.split(":").map(Number);
@@ -348,7 +349,7 @@ const Reports = ({ assigned_to_id }) => {
               <div className="w-full p-5 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 md:justify-start justify-center items-center">
                 {currentData
                   .sort(
-                    (a, b) => new Date(b.update_date) - new Date(a.update_date)
+                    (a, b) => new Date(b.report_date) - new Date(a.report_date)
                   )
                   .map((data, index) => {
                     const reportDate = new Date(data.report_date);

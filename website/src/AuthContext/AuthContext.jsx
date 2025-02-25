@@ -234,10 +234,12 @@ const AuthProvider = ({ children }) => {
               countedReportDeptIds.add(report.id);
             });
           }
-
+          const sortedReports = updateReports.sort(
+            (a, b) => new Date(b.report_date) - new Date(a.report_date)
+          );
           // Update the reports state
           setReports((prevReports) => {
-            const combinedReports = [...prevReports, ...updateReports];
+            const combinedReports = [...prevReports, ...sortedReports];
             const uniqueReports = [
               ...new Map(
                 combinedReports.map((item) => [item.id, item])
@@ -436,7 +438,7 @@ const AuthProvider = ({ children }) => {
       setToken(access);
       fetchUserInfo(access);
       if (account_type === "superadmin" || account_type === "super_admin") {
-        department();
+          department();
       }
       return { ...res.data, is_email_verified }; // Adding the is_email_verified here
     } catch (error) {
@@ -450,7 +452,7 @@ const AuthProvider = ({ children }) => {
           alert(detailMessage);
         }
       } else {
-        console.log("Error");
+        console.log("Error", error.message);
       }
     }
   };
