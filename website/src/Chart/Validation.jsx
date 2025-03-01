@@ -16,7 +16,7 @@ const db = getFirestore(app);
 // Register the components
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels); // Register the plugin
 
-const PieChart = ({ dateFilter, setDateFilter }) => {
+const Validation = ({ dateFilter, setDateFilter }) => {
   const [reportCounts, setReportCounts] = useState({});
 
   // Helper function to get the start of a day, week, month, or year
@@ -45,8 +45,7 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
 
   const fetchDocuments = async (filter) => {
     // Reset counts to avoid displaying stale data
-    setReportCounts({});
-
+    setReportCounts({ true: 0, false: 0 });
     const categories = [
       "fire accident",
       "street light",
@@ -56,6 +55,13 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
       "fallen tree",
       "road accident",
     ];
+
+    // Initialize totals for validated and not validated
+    let totalValidated = 0;
+    let totalNotValidated = 0;
+
+    // Create query for all reports
+    let q = collection(db, "reports");
 
     const unsubscribeFunctions = categories.map((category) => {
       let q = collection(db, `reports/${category}/reports`);
@@ -68,14 +74,34 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
         }
       }
 
-      // console.log(`Fetching reports for ${category} with filter: ${filter}`);
+      // Subscribe to reports collection and count by is_validated
       return onSnapshot(q, (snapshot) => {
-        const count = snapshot.docs.length; // Count the number of documents in each category
-        // console.log(`${category} count:`, count); // Debug log to verify count
-        setReportCounts((prevCounts) => ({
-          ...prevCounts,
-          [category]: count, // Replace the previous count with the current count
-        }));
+        const trueCount = snapshot.docs.filter(
+          (doc) => doc.data().is_validated === true
+        ).length;
+        const falseCount = snapshot.docs.filter(
+          (doc) => doc.data().is_validated === false
+        ).length;
+
+        // Log the category and counts to the console
+        // console.log(
+        //   `${category} - Validated: ${trueCount}, Not Validated: ${falseCount}`
+        // );
+
+        // Accumulate total validated and not validated counts
+        totalValidated += trueCount;
+        totalNotValidated += falseCount;
+
+        // Set the counts in state (overwrites each time, you may want to accumulate counts across categories)
+        setReportCounts({
+          true: totalValidated,
+          false: totalNotValidated,
+        });
+
+        // Log the total counts after every update
+        // console.log(
+        //   `Total Validated: ${totalValidated}, Total Not Validated: ${totalNotValidated}`
+        // );
       });
     });
 
@@ -91,37 +117,21 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
 
   // Prepare data for the chart
   const chartData = {
-    labels: Object.keys(reportCounts),
+    labels: ["Validated", "Not Validated"],
     datasets: [
       {
-        data: Object.values(reportCounts),
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.6)", // Fires
-          "rgba(54, 162, 235, 0.6)", // Street Lights
-          "rgba(255, 206, 86, 0.6)", // Potholes
-          "rgba(79, 192, 75, 0.6)", // Floods
-          "rgba(153, 102, 255, 0.6)", // Others
-          "rgba(255, 159, 64, 0.6)", // Road Accident
-          "rgba(35, 262, 162, 0.6)", // Teal
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)", // Fires
-          "rgba(54, 162, 235, 1)", // Street Lights
-          "rgba(255, 206, 86, 1)", // Potholes
-          "rgba(79, 192, 75, 1)", // Floods
-          "rgba(153, 102, 255, 1)", // Others
-          "rgba(255, 159, 64, 1)", // Road Accident
-          "rgba(35, 262, 162, 1)",
-        ],
+        data: [reportCounts.true || 0, reportCounts.false || 0],
+        backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)"],
+        borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
         borderWidth: 1,
       },
     ],
   };
 
   return (
-    <div className="w-screen flex-grow h-[400px] justify-center items-center mt-8 ml-8">
+    <div className="w-screen flex-grow h-[380px] justify-center items-center mt-8 ml-8">
       <div className="font-bold text-md text-main">
-        Distribution of Reports by Category
+        Distribution of Validated Reports
       </div>
 
       {/* Dropdown for Date Filter */}
@@ -145,7 +155,7 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
 
       {chartData.labels.length > 0 ? (
         <Pie
-          id="pie-chart"
+          id="pie-chart-validation"
           data={chartData}
           options={{
             responsive: true,
@@ -168,7 +178,7 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
                   // Display the label and value for non-zero slices
                   return `${
                     context.chart.data.labels[context.dataIndex]
-                  }:${value}`;
+                  }: ${value}`;
                 },
               },
               tooltip: {
@@ -195,4 +205,4 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
   );
 };
 
-export default PieChart;
+export default Validation;

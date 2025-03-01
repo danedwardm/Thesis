@@ -10,7 +10,7 @@ import Feedback from "./Feedback";
 import DeleteReport from "./DeleteReport";
 import Map from "../../Components/Modals/Map";
 import Maps2 from "../../Components/Modals/Maps2";
-import ReportPDF from "../../Components/Modals/reportPDF";
+import ReportPDF from "../../Components/Modals/ReportPDF";
 
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore"; // Add these imports for Firestore operations
 import { app } from "../../Firebase/firebaseConfig";

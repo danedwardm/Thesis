@@ -61,18 +61,17 @@ const categoryColors = {
     borderColor: "rgba(255, 159, 64, 1)",
   },
   "fallen tree": {
-    backgroundColor: "rgba(75, 192, 192, 0.4)", // Teal
-    borderColor: "rgba(75, 192, 192, 1)",
+    backgroundColor: "rgba(35, 262, 162, 0.4)", // Teal
+    borderColor: "rgba(35, 262, 162, 1)",
   },
 };
 
-const ReportTrends = () => {
+const ReportTrends = ({ dateFilter, setDateFilter }) => {
   const [reports, setReports] = useState([]);
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [],
   });
-  const [dateFilter, setDateFilter] = useState("month");
 
   // Helper function to get the start of a day, week, month, or year
   const getStartOfPeriod = (filter) => {
@@ -223,6 +222,7 @@ const ReportTrends = () => {
 
       {chartData.labels.length > 0 ? (
         <Line
+          id="report-trends"
           data={chartData}
           options={{
             responsive: true,

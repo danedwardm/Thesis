@@ -263,7 +263,7 @@ const Reports = () => {
 
               {/* card report  */}
               <div className="w-full p-5 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 md:justify-start justify-center items-center">
-              {currentData.length === 0 ? (
+                {currentData.length === 0 ? (
                   <p className="text-center text-gray-500">No reports found</p>
                 ) : (
                   currentData
@@ -287,10 +287,10 @@ const Reports = () => {
 
                       return (
                         <div
-                        key={index}
-                        className="bg-[#FAF5FF] w-[320px] h-[300px] border border-main rounded-lg p-6 flex flex-col mt-2 overflow-hidden"
-                      >
-                        <div className="flex flex-col flex-1 overflow-hidden">
+                          key={index}
+                          className="bg-[#FAF5FF] w-[320px] h-[300px] border border-main rounded-lg p-6 flex flex-col mt-2 overflow-hidden"
+                        >
+                          <div className="flex flex-col flex-1 overflow-hidden">
                             <div className="flex gap-4">
                               <div className="flex items-center justify-center rounded-md">
                                 <div className="bg-square p-4 rounded-lg">

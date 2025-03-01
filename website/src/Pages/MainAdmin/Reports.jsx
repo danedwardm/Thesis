@@ -84,7 +84,7 @@ const Reports = ({ assigned_to_id }) => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12; // Number of items per page
+  const itemsPerPage = 9; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
   const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
@@ -345,7 +345,7 @@ const Reports = ({ assigned_to_id }) => {
               </div>
 
               {/* card report  */}
-              <div className="w-full p-5 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 md:justify-start justify-center items-center">
+              <div className="w-auto p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:justify-start justify-center items-center">
                 {currentData
                   .sort(
                     (a, b) => new Date(b.update_date) - new Date(a.update_date)
@@ -372,7 +372,7 @@ const Reports = ({ assigned_to_id }) => {
                     return (
                       <div
                         key={index}
-                        className="bg-[#FAF5FF] w-[320px] h-[300px] border border-main rounded-lg p-6 flex flex-col mt-2 overflow-hidden"
+                        className="bg-[#FAF5FF] w-full h-full border border-main rounded-lg p-6 flex flex-col mt-2 overflow-hidden"
                       >
                         <div className="flex flex-col flex-1 overflow-hidden">
                           <div className="flex gap-4">

@@ -15,9 +15,8 @@ Chart.register(...registerables);
 
 const db = getFirestore(app);
 
-const ReportByAreas = () => {
+const ReportByAreas = ({ dateFilter, setDateFilter }) => {
   const [reportCounts, setReportCounts] = useState({});
-  const [dateFilter, setDateFilter] = useState("month"); // Add state for dateFilter
 
   // Helper function to get the start of a day, week, month, or year
   const getStartOfPeriod = (filter) => {
@@ -157,6 +156,7 @@ const ReportByAreas = () => {
         </select>
       </div>
       <Bar
+        id="report-by-areas"
         data={chartData}
         options={{
           responsive: true,
