@@ -15,9 +15,8 @@ Chart.register(...registerables);
 
 const db = getFirestore(app);
 
-const ReportByAreas = () => {
+const ReportByAreas = ({ dateFilter, setDateFilter }) => {
   const [reportCounts, setReportCounts] = useState({});
-  const [dateFilter, setDateFilter] = useState("month"); // Add state for dateFilter
 
   // Helper function to get the start of a day, week, month, or year
   const getStartOfPeriod = (filter) => {
@@ -135,7 +134,7 @@ const ReportByAreas = () => {
   return (
     <div className="w-4/5 flex-grow h-[400px] mt-8 ml-8">
       <div className="font-bold text-md text-main">
-        Report Counts by Category
+        Incident Reports by Location
       </div>
 
       {/* Dropdown for Date Filter */}
@@ -156,9 +155,8 @@ const ReportByAreas = () => {
           <option value="all">All Time</option>
         </select>
       </div>
-
-      <h2>Incident Reports by Location</h2>
       <Bar
+        id="report-by-areas"
         data={chartData}
         options={{
           responsive: true,

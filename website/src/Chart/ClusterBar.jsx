@@ -30,7 +30,7 @@ ChartJS.register(
 
 const db = getFirestore(app);
 
-const ReportAnalytics = () => {
+const ReportAnalytics = ({ dateFilter, setDateFilter }) => {
   const categories = [
     "fire accident",
     "street light",
@@ -42,7 +42,6 @@ const ReportAnalytics = () => {
   ];
 
   const [averages, setAverages] = useState({});
-  const [dateFilter, setDateFilter] = useState("month");
 
   useEffect(() => {
     const getStartDate = () => {
@@ -194,7 +193,7 @@ const ReportAnalytics = () => {
           <option value="all">All Time</option>
         </select>
       </div>
-      <Bar data={chartData} options={options} />
+      <Bar id="cluster-bar" data={chartData} options={options} />
     </div>
   );
 };

@@ -16,7 +16,7 @@ const db = getFirestore(app);
 // Register the components
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels); // Register the plugin
 
-const PieChart = ({ dateFilter, setDateFilter }) => {
+const Status = ({ dateFilter, setDateFilter }) => {
   const [reportCounts, setReportCounts] = useState({});
 
   // Helper function to get the start of a day, week, month, or year
@@ -45,8 +45,7 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
 
   const fetchDocuments = async (filter) => {
     // Reset counts to avoid displaying stale data
-    setReportCounts({});
-
+    setReportCounts({ ongoing: 0, done: 0, reviewing: 0, pending: 0 });
     const categories = [
       "fire accident",
       "street light",
@@ -56,6 +55,15 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
       "fallen tree",
       "road accident",
     ];
+
+    // Initialize totals for each status
+    let totalOngoing = 0;
+    let totalDone = 0;
+    let totalReviewing = 0;
+    let totalPending = 0;
+
+    // Create query for all reports
+    let q = collection(db, "reports");
 
     const unsubscribeFunctions = categories.map((category) => {
       let q = collection(db, `reports/${category}/reports`);
@@ -68,14 +76,44 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
         }
       }
 
-      // console.log(`Fetching reports for ${category} with filter: ${filter}`);
+      // Subscribe to reports collection and count by status
       return onSnapshot(q, (snapshot) => {
-        const count = snapshot.docs.length; // Count the number of documents in each category
-        // console.log(`${category} count:`, count); // Debug log to verify count
-        setReportCounts((prevCounts) => ({
-          ...prevCounts,
-          [category]: count, // Replace the previous count with the current count
-        }));
+        const ongoingCount = snapshot.docs.filter(
+          (doc) => doc.data().status === "Ongoing"
+        ).length;
+        const doneCount = snapshot.docs.filter(
+          (doc) => doc.data().status === "done"
+        ).length;
+        const reviewingCount = snapshot.docs.filter(
+          (doc) => doc.data().status === "reviewing"
+        ).length;
+        const pendingCount = snapshot.docs.filter(
+          (doc) => doc.data().status === "Pending"
+        ).length;
+
+        // Log the category and counts to the console
+        // console.log(
+        //   `${category} - Ongoing: ${ongoingCount}, Done: ${doneCount}, Reviewing: ${reviewingCount}, Pending: ${pendingCount}`
+        // );
+
+        // Accumulate total counts for each status
+        totalOngoing += ongoingCount;
+        totalDone += doneCount;
+        totalReviewing += reviewingCount;
+        totalPending += pendingCount;
+
+        // Set the counts in state (overwrites each time, you may want to accumulate counts across categories)
+        setReportCounts({
+          ongoing: totalOngoing,
+          done: totalDone,
+          reviewing: totalReviewing,
+          pending: totalPending,
+        });
+
+        // Log the total counts after every update
+        // console.log(
+        //   `Total Ongoing: ${totalOngoing}, Total Done: ${totalDone}, Total Reviewing: ${totalReviewing}, Total Pending: ${totalPending}`
+        // );
       });
     });
 
@@ -91,27 +129,26 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
 
   // Prepare data for the chart
   const chartData = {
-    labels: Object.keys(reportCounts),
+    labels: ["Ongoing", "Done", "Reviewing", "Pending"],
     datasets: [
       {
-        data: Object.values(reportCounts),
+        data: [
+          reportCounts.ongoing || 0,
+          reportCounts.done || 0,
+          reportCounts.reviewing || 0,
+          reportCounts.pending || 0,
+        ],
         backgroundColor: [
-          "rgba(255, 99, 132, 0.6)", // Fires
-          "rgba(54, 162, 235, 0.6)", // Street Lights
-          "rgba(255, 206, 86, 0.6)", // Potholes
-          "rgba(79, 192, 75, 0.6)", // Floods
-          "rgba(153, 102, 255, 0.6)", // Others
-          "rgba(255, 159, 64, 0.6)", // Road Accident
-          "rgba(35, 262, 162, 0.6)", // Teal
+          "rgba(75, 192, 192, 0.6)", // Ongoing
+          "rgba(98, 181, 91, 0.6)", // Done
+          "rgba(255, 159, 64, 0.6)", // Reviewing
+          "rgba(255, 99, 132, 0.6)", // Pending
         ],
         borderColor: [
-          "rgba(255, 99, 132, 1)", // Fires
-          "rgba(54, 162, 235, 1)", // Street Lights
-          "rgba(255, 206, 86, 1)", // Potholes
-          "rgba(79, 192, 75, 1)", // Floods
-          "rgba(153, 102, 255, 1)", // Others
-          "rgba(255, 159, 64, 1)", // Road Accident
-          "rgba(35, 262, 162, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(58, 168, 50, 1)",
+          "rgba(255, 159, 64, 1)",
+          "rgba(255, 99, 132, 1)",
         ],
         borderWidth: 1,
       },
@@ -119,9 +156,9 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
   };
 
   return (
-    <div className="w-screen flex-grow h-[400px] justify-center items-center mt-8 ml-8">
+    <div className="w-screen flex-grow h-[380px] justify-center items-center mt-8 ml-8">
       <div className="font-bold text-md text-main">
-        Distribution of Reports by Category
+        Distribution of Report Status
       </div>
 
       {/* Dropdown for Date Filter */}
@@ -145,7 +182,7 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
 
       {chartData.labels.length > 0 ? (
         <Pie
-          id="pie-chart"
+          id="pie-chart-status"
           data={chartData}
           options={{
             responsive: true,
@@ -168,7 +205,7 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
                   // Display the label and value for non-zero slices
                   return `${
                     context.chart.data.labels[context.dataIndex]
-                  }:${value}`;
+                  }: ${value}`;
                 },
               },
               tooltip: {
@@ -195,4 +232,4 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
   );
 };
 
-export default PieChart;
+export default Status;

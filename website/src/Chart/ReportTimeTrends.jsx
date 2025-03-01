@@ -34,13 +34,13 @@ ChartJS.register(
   Filler
 );
 
-const ReportTimeTrends = () => {
+const ReportTimeTrends = ({ dateFilter, setDateFilter }) => {
+  // Take setDateFilter as a prop
   const [reports, setReports] = useState([]);
   const [chartData, setChartData] = useState({
     labels: [], // Hour labels (e.g., "0:00", "1:00", ..., "23:00")
     datasets: [], // Datasets for the number of reports created at each hour
   });
-  const [dateFilter, setDateFilter] = useState("month");
 
   // Helper function to get the start of a day, week, month, or year
   const getStartOfPeriod = (filter) => {
@@ -177,7 +177,7 @@ const ReportTimeTrends = () => {
         </label>
         <select
           id="dateFilter"
-          onChange={(e) => setDateFilter(e.target.value)}
+          onChange={(e) => setDateFilter(e.target.value)} // Call parent function here
           value={dateFilter}
           className="p-1 border rounded-md text-xs border-main"
         >
@@ -188,9 +188,9 @@ const ReportTimeTrends = () => {
           <option value="all">All Time</option>
         </select>
       </div>
-
       {chartData.labels.length > 0 ? (
         <Line
+          id="report-time-trends-chart"
           data={chartData}
           options={{
             responsive: true,
@@ -270,7 +270,7 @@ const categoryColors = {
     borderColor: "rgba(255, 159, 64, 1)",
   },
   "fallen tree": {
-    backgroundColor: "rgba(75, 192, 192, 0.4)", // Teal
-    borderColor: "rgba(75, 192, 192, 1)",
+    backgroundColor: "rgba(35, 262, 162, 0.4)", // Teal
+    borderColor: "rgba(35, 262, 162, 1)",
   },
 };
