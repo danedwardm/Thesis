@@ -34,13 +34,12 @@ ChartJS.register(
   Filler
 );
 
-const ReportTimeTrends = () => {
+const ReportTimeTrends = ({ dateFilter, setDateFilter }) => {
   const [reports, setReports] = useState([]);
   const [chartData, setChartData] = useState({
     labels: [], // Hour labels (e.g., "0:00", "1:00", ..., "23:00")
     datasets: [], // Dataset for the number of reports created at each hour
   });
-  const [dateFilter, setDateFilter] = useState("month");
 
   const userId = localStorage.getItem("user_id"); // Get the current user ID from localStorage
 
@@ -159,7 +158,7 @@ const ReportTimeTrends = () => {
   }, [reports]);
 
   return (
-    <div className="w-[650px] flex-grow h-[400px] mt-8">
+    <div className="w-4/5 flex-grow h-[400px] mt-8 ml-8">
       <div className="font-bold text-md text-main">
         Report Trends Based on Time of the Day
       </div>
@@ -185,6 +184,7 @@ const ReportTimeTrends = () => {
 
       {chartData.labels.length > 0 ? (
         <Line
+          id="report-time-trends-chart"
           data={chartData}
           options={{
             responsive: true,
@@ -200,6 +200,9 @@ const ReportTimeTrends = () => {
                     return `${context.dataset.label}: ${context.raw} reports`;
                   },
                 },
+              },
+              datalabels: {
+                display: false, // Disable data labels
               },
             },
             scales: {
