@@ -34,13 +34,12 @@ ChartJS.register(
   Filler
 );
 
-const ReportTrends = () => {
+const ReportTrends = ({ dateFilter, setDateFilter }) => {
   const [reports, setReports] = useState([]);
   const [chartData, setChartData] = useState({
     labels: [], // Date labels (e.g., "2024-12-04", "2024-12-05", ...)
     datasets: [], // Dataset for the number of reports created on each date
   });
-  const [dateFilter, setDateFilter] = useState("month");
 
   const userId = localStorage.getItem("user_id"); // Get the current user ID from localStorage
 
@@ -194,6 +193,7 @@ const ReportTrends = () => {
 
       {chartData.labels.length > 0 ? (
         <Line
+          id="report-trends"
           data={chartData}
           options={{
             responsive: true,
@@ -209,6 +209,9 @@ const ReportTrends = () => {
                     return `${context.dataset.label}: ${context.raw} reports`;
                   },
                 },
+              },
+              datalabels: {
+                display: false, // Disable data labels
               },
             },
             scales: {
