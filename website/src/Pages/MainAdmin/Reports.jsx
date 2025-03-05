@@ -84,26 +84,37 @@ const Reports = ({ assigned_to_id }) => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9; // Number of items per page
-  const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
-  const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
-  const [selectedStatus, setSelectedStatus] = useState("Ongoing"); // Selected status filter
+  const itemsPerPage = 9; 
+  const [filterOpen, setFilterOpen] = useState(false); 
+  const [selectedReportType, setSelectedReportType] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState(""); 
   const [newReports, setNewReports] = useState([]);
 
-  // Filter data based on selected filters
   const filteredData = reports
   .filter(report => 
     (selectedStatus === "" || report.status === selectedStatus) &&
-    (selectedReportType === "" || report.type === selectedReportType)
-  )
-  .sort((a, b) => new Date(b.report_date) - new Date(a.report_date));
-  // Pagination logic
-  const totalItems = filteredData.length; // Total items based on filtered data
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+    (selectedReportType === "" || report.type_of_report === selectedReportType)
+  );
 
+  const sortedFilteredData = [...filteredData].sort((a, b) => new Date(b.report_date) - new Date(a.report_date));
+  useEffect(() => {
+    if (filteredData.length > 0) {
+      const sortedData = [...filteredData].sort((a, b) => new Date(b.report_date) - new Date(a.report_Date));
+      
+      sortedData.forEach(report => {
+        console.log(`Report Type: ${report.type_of_report}, Report Date: ${report.report_date}`);
+      });
+    } else {
+      console.log("No reports found.");
+    }
+  }, [filteredData]);
+  
+  const totalItems = sortedFilteredData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentData = sortedFilteredData.slice(indexOfFirstItem, indexOfLastItem);
+
 
   const updatedData = currentData.map((item) => {
     // Find the user who corresponds to the current item

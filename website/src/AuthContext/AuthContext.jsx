@@ -240,13 +240,16 @@ const AuthProvider = ({ children }) => {
           // Update the reports state
           setReports((prevReports) => {
             const combinedReports = [...prevReports, ...sortedReports];
+          
+            // Ensure reports are unique
             const uniqueReports = [
-              ...new Map(
-                combinedReports.map((item) => [item.id, item])
-              ).values(),
+              ...new Map(combinedReports.map((item) => [item.id, item])).values(),
             ];
-            return uniqueReports;
+          
+            // Strict sorting by latest date
+            return uniqueReports.sort((a, b) => new Date(b.report_date) - new Date(a.report_date));
           });
+                   
         }
       );
     });
