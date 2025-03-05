@@ -28,30 +28,36 @@ function App() {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-   
-    if (!popUp || !popUp.id || !popUp.title || !popUp.type) {
+    if (
+      !popUp ||
+      typeof popUp !== "object" ||
+      !popUp.id ||
+      !popUp.title ||
+      !popUp.type
+    ) {
       console.error("Invalid popUp object:", popUp);
       return; // Exit if popUp is invalid or missing required fields
     }
+
     const storedPopUpId = localStorage.getItem("popUpId");
     if (storedPopUpId === JSON.stringify(popUp.id)) {
       return; // Exit if the popUp has already been shown
-    } 
+    }
+
     localStorage.setItem("popUpId", JSON.stringify(popUp.id));
     setNotifications((prevNotifications) => [...prevNotifications, popUp]);
-    console.log(popUp)
-   
+    console.log(popUp);
+
     const timeoutId = setTimeout(() => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif.id !== popUp.id)
       );
       console.log("PopUp removed:", popUp);
-    }, Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000); 
+    }, Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000);
 
     return () => {
       clearTimeout(timeoutId);
     };
-
   }, [popUp]);
 
   const removeNotification = (id) => {

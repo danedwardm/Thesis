@@ -66,13 +66,17 @@ const Reports = () => {
     );
   });
 
+  const sortedData = filteredData.sort(
+    (a, b) => new Date(b.update_date) - new Date(a.update_date)
+  );
+
   // Pagination logic
-  const totalItems = filteredData.length; // Total items based on filtered data
+  const totalItems = sortedData.length; // Total items based on filtered data
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentData = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
   // Create an array of page numbers
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -266,194 +270,187 @@ const Reports = () => {
                 {currentData.length === 0 ? (
                   <p className="text-center text-gray-500">No reports found</p>
                 ) : (
-                  currentData
-                    .sort(
-                      (a, b) =>
-                        new Date(b.update_date) - new Date(a.update_date)
-                    )
-                    .map((data, index) => {
-                      const reportDate = new Date(data.report_date);
-                      const formattedDate = reportDate.toLocaleDateString(); // Format date
-                      const formattedTime = reportDate.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
-                      const updateDate = new Date(data.update_date);
-                      const formattedDate1 = updateDate.toLocaleDateString(); // Format date
-                      const formattedTime1 = updateDate.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
+                  currentData.map((data, index) => {
+                    const reportDate = new Date(data.report_date);
+                    const formattedDate = reportDate.toLocaleDateString(); // Format date
+                    const formattedTime = reportDate.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                    const updateDate = new Date(data.update_date);
+                    const formattedDate1 = updateDate.toLocaleDateString(); // Format date
+                    const formattedTime1 = updateDate.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
 
-                      return (
-                        <div
-                          key={index}
-                          className="bg-[#FAF5FF] w-[320px] h-[300px] border border-main rounded-lg p-6 flex flex-col mt-2 overflow-hidden"
-                        >
-                          <div className="flex flex-col flex-1 overflow-hidden">
-                            <div className="flex gap-4">
-                              <div className="flex items-center justify-center rounded-md">
-                                <div className="bg-square p-4 rounded-lg">
-                                  {getIcon(data.type_of_report.toLowerCase())}
-                                </div>
+                    return (
+                      <div
+                        key={index}
+                        className="bg-[#FAF5FF] w-[320px] h-[300px] border border-main rounded-lg p-6 flex flex-col mt-2 overflow-hidden"
+                      >
+                        <div className="flex flex-col flex-1 overflow-hidden">
+                          <div className="flex gap-4">
+                            <div className="flex items-center justify-center rounded-md">
+                              <div className="bg-square p-4 rounded-lg">
+                                {getIcon(data.type_of_report.toLowerCase())}
                               </div>
-                              <div className="flex flex-col justify-between py-1 w-full">
-                                <div className="grid gap-1 text-start">
-                                  <p className="text-xs font-bold text-[#2f2f2f] text-center uppercase truncate">
-                                    {data.custom_type
-                                      ? data.type_of_report +
-                                        " , " +
-                                        data.custom_type
-                                      : data.type_of_report}
+                            </div>
+                            <div className="flex flex-col justify-between py-1 w-full">
+                              <div className="grid gap-1 text-start">
+                                <p className="text-xs font-bold text-[#2f2f2f] text-center uppercase truncate">
+                                  {data.custom_type
+                                    ? data.type_of_report +
+                                      " , " +
+                                      data.custom_type
+                                    : data.type_of_report}
+                                </p>
+                                <p className="text-xs font-bold text-[#113e21] truncate">
+                                  {data.username}
+                                </p>
+                                <p className="text-xs font-normal text-[#2f2f2f] capitalize overflow-hidden text-ellipsis line-clamp-2 ">
+                                  {data.location}
+                                </p>
+                                <p
+                                  className={`text-xs font-bold capitalize truncate ${
+                                    data.is_validated
+                                      ? "text-[#007a3f]"
+                                      : "text-[#a10b00]"
+                                  }`}
+                                >
+                                  {data.is_validated
+                                    ? "VALIDATED"
+                                    : "NOT VALIDATED"}
+                                </p>
+                                <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
+                                  {data.assigned_to
+                                    ? data.assigned_to
+                                    : "Not Assigned"}
+                                </p>
+                                {/* Date and Time */}
+                                <p className="text-xs font-normal text-[#2f2f2f]">
+                                  Report Date: {formattedDate} at{" "}
+                                  {formattedTime}
+                                </p>
+                                {/* Date and Time */}
+                                <p className="text-xs font-normal text-[#2f2f2f]">
+                                  Last Update: {formattedDate1} at{" "}
+                                  {formattedTime1}
+                                </p>
+                                <p className="text-xs capitalize">
+                                  Status:{" "}
+                                  {data.status === "Pending" ? (
+                                    <span className="text-[#a10b00] font-bold">
+                                      {data.status.toUpperCase()}
+                                    </span>
+                                  ) : data.status === "done" ? (
+                                    <span className="text-[#007a3f] font-bold">
+                                      {data.status.toUpperCase()}
+                                    </span>
+                                  ) : data.status === "reviewing" ? (
+                                    <span className="text-[#6e4615] font-bold">
+                                      {data.status.toUpperCase()}
+                                    </span>
+                                  ) : data.status === "ongoing" ? (
+                                    <span className="text-[#FFA500] font-bold">
+                                      {data.status.toUpperCase()}
+                                    </span>
+                                  ) : (
+                                    <span className="text-[#363636] font-bold">
+                                      {data.status.toUpperCase()}
+                                    </span>
+                                  )}
+                                </p>
+                                {data.validation_time && (
+                                  <p className="text-xs font-normal text-[#2f2f2f] truncate">
+                                    {`Validation Time: `}
+                                    <strong>
+                                      {convertToDaysHoursMinutes(
+                                        data.validation_time
+                                      )}
+                                    </strong>
                                   </p>
-                                  <p className="text-xs font-bold text-[#113e21] truncate">
-                                    {data.username}
+                                )}
+                                {data.review_elapsed_time && (
+                                  <p className="text-xs font-normal text-[#2f2f2f] truncate">
+                                    {`Responding Time: `}
+                                    <strong>
+                                      {convertToDaysHoursMinutes(
+                                        data.review_elapsed_time
+                                      )}
+                                    </strong>
                                   </p>
-                                  <p className="text-xs font-normal text-[#2f2f2f] capitalize overflow-hidden text-ellipsis line-clamp-2 ">
-                                    {data.location}
+                                )}
+                                {data.report_closed_time && (
+                                  <p className="text-xs font-normal text-[#2f2f2f] truncate">
+                                    {`Report Close Time: `}
+                                    <strong>
+                                      {convertToDaysHoursMinutes(
+                                        data.report_closed_time
+                                      )}
+                                    </strong>
                                   </p>
-                                  <p
-                                    className={`text-xs font-bold capitalize truncate ${
-                                      data.is_validated
-                                        ? "text-[#007a3f]"
-                                        : "text-[#a10b00]"
-                                    }`}
-                                  >
-                                    {data.is_validated
-                                      ? "VALIDATED"
-                                      : "NOT VALIDATED"}
-                                  </p>
-                                  <p className="text-xs font-bold text-[#2f2f2f] capitalize truncate">
-                                    {data.assigned_to
-                                      ? data.assigned_to
-                                      : "Not Assigned"}
-                                  </p>
-                                  {/* Date and Time */}
+                                )}
+                                {data.status !== "done" && (
                                   <p className="text-xs font-normal text-[#2f2f2f]">
-                                    Report Date: {formattedDate} at{" "}
-                                    {formattedTime}
+                                    {`Report Open For: `}
+                                    <strong>
+                                      {timeElapsed(data.report_date)}
+                                    </strong>
                                   </p>
-                                  {/* Date and Time */}
-                                  <p className="text-xs font-normal text-[#2f2f2f]">
-                                    Last Update: {formattedDate1} at{" "}
-                                    {formattedTime1}
-                                  </p>
-                                  <p className="text-xs capitalize">
-                                    Status:{" "}
-                                    {data.status === "Pending" ? (
-                                      <span className="text-[#a10b00] font-bold">
-                                        {data.status.toUpperCase()}
-                                      </span>
-                                    ) : data.status === "done" ? (
-                                      <span className="text-[#007a3f] font-bold">
-                                        {data.status.toUpperCase()}
-                                      </span>
-                                    ) : data.status === "reviewing" ? (
-                                      <span className="text-[#6e4615] font-bold">
-                                        {data.status.toUpperCase()}
-                                      </span>
-                                    ) : data.status === "ongoing" ? (
-                                      <span className="text-[#FFA500] font-bold">
-                                        {data.status.toUpperCase()}
-                                      </span>
-                                    ) : (
-                                      <span className="text-[#363636] font-bold">
-                                        {data.status.toUpperCase()}
-                                      </span>
-                                    )}
-                                  </p>
-                                  {data.validation_time && (
-                                    <p className="text-xs font-normal text-[#2f2f2f] truncate">
-                                      {`Validation Time: `}
-                                      <strong>
-                                        {convertToDaysHoursMinutes(
-                                          data.validation_time
-                                        )}
-                                      </strong>
-                                    </p>
-                                  )}
-                                  {data.review_elapsed_time && (
-                                    <p className="text-xs font-normal text-[#2f2f2f] truncate">
-                                      {`Responding Time: `}
-                                      <strong>
-                                        {convertToDaysHoursMinutes(
-                                          data.review_elapsed_time
-                                        )}
-                                      </strong>
-                                    </p>
-                                  )}
-                                  {data.report_closed_time && (
-                                    <p className="text-xs font-normal text-[#2f2f2f] truncate">
-                                      {`Report Close Time: `}
-                                      <strong>
-                                        {convertToDaysHoursMinutes(
-                                          data.report_closed_time
-                                        )}
-                                      </strong>
-                                    </p>
-                                  )}
-                                  {data.status !== "done" && (
-                                    <p className="text-xs font-normal text-[#2f2f2f]">
-                                      {`Report Open For: `}
-                                      <strong>
-                                        {timeElapsed(data.report_date)}
-                                      </strong>
-                                    </p>
-                                  )}
-                                </div>
+                                )}
                               </div>
                             </div>
                           </div>
-                          <div className="flex justify-center items-center mt-4">
-                            <button
-                              className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
-                              onClick={() => {
-                                setShowReport(true);
-                                setName(data.username);
-                                setLocation(data.location);
-                                setReportType(
-                                  data.custom_type
-                                    ? data.type_of_report +
-                                        " , " +
-                                        data.custom_type
-                                    : data.type_of_report
-                                );
-                                setDescription(data.report_description);
-                                setDate(`${formattedDate} ${formattedTime}`);
-                                setStatus(data.status);
-                                setAssignedTo(data.department_id);
-                                setAttachment(data.image_path);
-                                setUpvote(data.upvote);
-                                setDownvote(data.downvote);
-                                setFeedback(data.feedback);
-                                setProof(data.proof);
-                                setIsValidated(data.is_validated);
-                                setReportId(data.id);
-                                setWorkers(data.workers);
-                                data.workerFeedback[0] &&
-                                  setWorkerFeedback(
-                                    data.workerFeedback[0].proof
-                                  );
-                                data.workerFeedback[0] &&
-                                  setWorkerFeedbackDesc(
-                                    data.workerFeedback[0].description
-                                  );
-                                setReportedType(data.type_of_report);
-                                setReportValidated(data.is_validated);
-                                setOpenTime(timeElapsed(data.report_date));
-                                setLat(data.latitude);
-                                setLong(data.longitude);
-                                setClosedTime(data.report_closed_time);
-                                setRespondTime(data.review_elapsed_time);
-                                setValidationTime(data.validation_time);
-                              }}
-                            >
-                              {"REVIEW"}
-                            </button>
-                          </div>
                         </div>
-                      );
-                    })
+                        <div className="flex justify-center items-center mt-4">
+                          <button
+                            className="bg-main text-white w-full py-2 px-4 font-semibold rounded-md hover:bg-textSecond hover:scale-105 ease-in-out duration-500 truncate"
+                            onClick={() => {
+                              setShowReport(true);
+                              setName(data.username);
+                              setLocation(data.location);
+                              setReportType(
+                                data.custom_type
+                                  ? data.type_of_report +
+                                      " , " +
+                                      data.custom_type
+                                  : data.type_of_report
+                              );
+                              setDescription(data.report_description);
+                              setDate(`${formattedDate} ${formattedTime}`);
+                              setStatus(data.status);
+                              setAssignedTo(data.department_id);
+                              setAttachment(data.image_path);
+                              setUpvote(data.upvote);
+                              setDownvote(data.downvote);
+                              setFeedback(data.feedback);
+                              setProof(data.proof);
+                              setIsValidated(data.is_validated);
+                              setReportId(data.id);
+                              setWorkers(data.workers);
+                              data.workerFeedback[0] &&
+                                setWorkerFeedback(data.workerFeedback[0].proof);
+                              data.workerFeedback[0] &&
+                                setWorkerFeedbackDesc(
+                                  data.workerFeedback[0].description
+                                );
+                              setReportedType(data.type_of_report);
+                              setReportValidated(data.is_validated);
+                              setOpenTime(timeElapsed(data.report_date));
+                              setLat(data.latitude);
+                              setLong(data.longitude);
+                              setClosedTime(data.report_closed_time);
+                              setRespondTime(data.review_elapsed_time);
+                              setValidationTime(data.validation_time);
+                            }}
+                          >
+                            {"REVIEW"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
                 )}
               </div>
 
