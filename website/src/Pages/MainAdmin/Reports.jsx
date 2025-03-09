@@ -20,7 +20,7 @@ import { useAuth } from "../../AuthContext/AuthContext";
 import axiosInstance from "../../axios-instance";
 
 const Reports = ({ assigned_to_id }) => {
-  const { reports, users } = useAuth();
+  const { reports, users, departments } = useAuth();
   const [showReport, setShowReport] = useState(false);
   const [name, setName] = useState("");
   const [reportType, setReportType] = useState("");
@@ -51,43 +51,43 @@ const Reports = ({ assigned_to_id }) => {
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // To store any errors
 
-  const departments = [
-    {
-      id: 1,
-      name: "Fire Department",
-    },
-    {
-      id: 2,
-      name: "Medical Department",
-    },
-    {
-      id: 3,
-      name: "Police Department",
-    },
-    {
-      id: 4,
-      name: "Street Maintenance Department",
-    },
-    {
-      id: 5,
-      name: "Pothole Repair Department",
-    },
-    {
-      id: 6,
-      name: "General Department",
-    },
-    {
-      id: 7,
-      name: "Department of Public Works",
-    },
-  ];
+  // const departments = [
+  //   {
+  //     id: 1,
+  //     name: "Fire Department",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Medical Department",
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Police Department",
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Street Maintenance Department",
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Pothole Repair Department",
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "General Department",
+  //   },
+  //   {
+  //     id: 7,
+  //     name: "Department of Public Works",
+  //   },
+  // ];
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12; // Number of items per page
   const [filterOpen, setFilterOpen] = useState(false); // State for dropdown filter
   const [selectedReportType, setSelectedReportType] = useState(""); // Selected report type filter
-  const [selectedStatus, setSelectedStatus] = useState(""); // Selected status filter
+  const [selectedStatus, setSelectedStatus] = useState("Ongoing"); // Selected status filter
   const [newReports, setNewReports] = useState([]);
 
   // Filter data based on selected filters
@@ -193,7 +193,9 @@ const Reports = ({ assigned_to_id }) => {
         return <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />;
     }
   };
-
+  useEffect(() => {
+   console.log(currentData)
+  },[])
   function convertToDaysHoursMinutes(time) {
     // Split time into hours and minutes
     const [hours, minutes] = time.split(":").map(Number);
