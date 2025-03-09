@@ -26,32 +26,44 @@ function App() {
 
   const handleOtpModalClose = () => setShowOtpModal(false);
   const [notifications, setNotifications] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const popUpId = useRef(null);
 
   useEffect(() => {
-   
-    if (!popUp || !popUp.id || !popUp.title || !popUp.type) {
+    if (!popUp || !popUp.id || !popUp.title) {
       console.error("Invalid popUp object:", popUp);
-      return; // Exit if popUp is invalid or missing required fields
+      return;
     }
+
     const storedPopUpId = localStorage.getItem("popUpId");
-    if (storedPopUpId === JSON.stringify(popUp.id)) {
-      return; // Exit if the popUp has already been shown
-    } 
-    localStorage.setItem("popUpId", JSON.stringify(popUp.id));
+    if (
+      storedPopUpId === String(popUp.id) ||
+      popUpId.current === String(popUp.id)
+    ) {
+      return; // Already shown this notification
+    }
+
+    // Mark the notification as shown
+    popUpId.current = popUp.id;
+    localStorage.setItem("popUpId", String(popUp.id));
+
+    // Add the pop-up to notifications
     setNotifications((prevNotifications) => [...prevNotifications, popUp]);
-    console.log(popUp)
-   
+    setIsOpen(true);
+    console.log("Notification shown:", popUp);
+
+    // Remove the notification after a random timeout (5 to 10 seconds)
     const timeoutId = setTimeout(() => {
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif.id !== popUp.id)
       );
-      console.log("PopUp removed:", popUp);
-    }, Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000); 
+      setIsOpen(false);
+      console.log("Notification removed:", popUp);
+    }, Math.floor(Math.random() * (50000 - 5000 + 1)) + 50000);
 
     return () => {
       clearTimeout(timeoutId);
     };
-
   }, [popUp]);
 
   const removeNotification = (id) => {
@@ -174,7 +186,7 @@ function App() {
           key={notif.id}
           message={notif.type}
           type={notif.title}
-          isOpen={true}
+          isOpen={isOpen}
           onClose={() => removeNotification(notif.id)}
           index={index} // Pass index for proper stacking
         />
