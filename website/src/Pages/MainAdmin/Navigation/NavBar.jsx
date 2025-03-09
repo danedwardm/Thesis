@@ -59,18 +59,22 @@ const NavBar = () => {
 
           // console.log("Fetching...", notifications)
           // Update the state with filtered notifications
-         
+
           const todayStart = new Date();
           todayStart.setHours(0, 0, 0, 0); // Set time to midnight for today's start
 
           const todayNotifications = notifications.filter((notification) => {
             const createdAt = notification.createdAt.toDate();
-            setPopUp({title: notification.title, type: notification.description, id: createdAt});
+            setPopUp({
+              title: notification.title,
+              type: notification.description,
+              id: createdAt,
+            });
             return createdAt >= todayStart;
           });
           setNotification(todayNotifications);
-        
-          localStorage.setItem("new_notif_counts", todayNotifications.length); 
+
+          localStorage.setItem("new_notif_counts", todayNotifications.length);
         },
         (error) => {
           console.error("Error fetching verification info:", error);
@@ -117,8 +121,9 @@ const NavBar = () => {
               onClick={toggleNotifs}
             >
               <MdNotificationsActive className="text-second text-3xl" />
-              {notification.length > 0 && <div className="absolute top-0 right-12 w-3 h-3 bg-red-500 rounded-full border-2 border-white"/>}
-
+              {notification.length > 0 && (
+                <div className="absolute top-0 right-12 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
+              )}
             </div>
             <div
               className="rounded-full bg-second w-[35px] h-[35px] flex items-center justify-center cursor-pointer"

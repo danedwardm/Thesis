@@ -1,4 +1,3 @@
-// PopUpNotif.js
 import React, { useEffect, useState } from "react";
 
 const PopUpNotif = ({ message, type, isOpen, onClose, index }) => {
@@ -9,8 +8,8 @@ const PopUpNotif = ({ message, type, isOpen, onClose, index }) => {
       setShow(true);
       setTimeout(() => {
         setShow(false);
-        setTimeout(onClose, 300); // Delay the close to let animation complete
-      }, 15000); // Close after 10 seconds
+        setTimeout(onClose, 50000); // Delay to allow animation to complete
+      }, 50000); // Auto-close after 15 seconds
     }
   }, [isOpen, onClose]);
 
@@ -19,8 +18,8 @@ const PopUpNotif = ({ message, type, isOpen, onClose, index }) => {
   return (
     <div
       style={{
-        zIndex: 9999 - index, // Ensure that newer notifications stack on top of older ones
-        bottom: `${index * 100 + 20}px`, // Increase vertical offset for each new notification
+        zIndex: 9999 - index, // Newer notifications stack on top
+        bottom: `${index * 100 + 20}px`, // Vertical offset for stacking
       }}
       className="fixed right-4 w-80 p-4 rounded-lg transform transition-all duration-300 ease-in-out"
     >

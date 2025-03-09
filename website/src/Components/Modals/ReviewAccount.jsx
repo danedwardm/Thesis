@@ -75,7 +75,7 @@ const ReviewAccount = ({
       const res = await axiosInstance.put(`/api/verify-user/${id}/`);
       if (res) {
         const verifyRef = collection(db, "verifyAccount");
-        console.log("Userid: ", userId)
+        console.log("Userid: ", userId);
         const q = query(verifyRef, where("user", "==", parseInt(userId)));
 
         // Update is_email_verified to true
@@ -83,6 +83,7 @@ const ReviewAccount = ({
         snapshot.forEach(async (doc) => {
           await updateDoc(doc.ref, { is_account_verified: true });
         });
+        location.reload();
 
         alert("User verified successfully!");
         // location.reload();
