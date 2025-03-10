@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Navbar from "./NavBar";
 import map from "../assets/map.png";
 import sos from "../assets/sos.png";
@@ -6,8 +6,19 @@ import time from "../assets/time.png";
 import { Link } from "react-router-dom";
 import pic1 from "../assets/pic1.jpg";
 import pic2 from "../assets/pic2.jpg";
+import Download from "../Components/Modals/Download";
 
 const Landing = () => {
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+
+  const handlePromtClick = () => {
+    setShowDownloadModal(true);
+  };
+
+  const handleLeave = () => {
+    setShowDownloadModal(false);
+    onClose(); // Close the AddAccount modal
+  };
   return (
     <div className="relative bg-second h-screen w-screen overflow-hidden">
       {/* Background Squares */}
@@ -122,12 +133,12 @@ const Landing = () => {
 
           {/* Call to Action */}
           <div className="flex justify-center items-center mb-10">
-            <Link
-              // to="/download"
+            <div
+              onClick={handlePromtClick}
               className="bg-main text-white py-3 px-10 rounded-lg text-md font-semibold uppercase hover:bg-accent transition-all duration-300"
             >
               Download CRISP
-            </Link>
+            </div>
           </div>
 
           {/* Footer */}
@@ -136,6 +147,10 @@ const Landing = () => {
           </div>
         </div>
       </div>
+      <Download
+        isVisible={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+      />
     </div>
   );
 };
