@@ -4,7 +4,10 @@ const axiosInstance = axios.create({
   baseURL: 'https://gar-kind-wasp.ngrok-free.app/',  
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'ngrok-skip-browser-warning': '1',
   },
+  withCredentials: false
 });
 
 
@@ -14,6 +17,8 @@ axiosInstance.interceptors.request.use(
       const token = localStorage.getItem('accessToken')
       if (token && config.headers) {
         config.headers['Authorization'] = `Bearer ${token}`;
+        console.log('Requesting:', config.baseURL + config.url);
+        console.log('Headers:', config.headers);
       }
       
     } catch (error) {

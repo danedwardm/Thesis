@@ -79,17 +79,19 @@ const Accounts = () => {
 
     fetchUsers();
   }, []);
-
-  const filteredUsers = users.filter((user) => {
-    const matchesType =
-      selectedAccountType === "" || user.role === selectedAccountType;
-    const matchesStatus =
-      selectedStatus === "" || user.account_status === selectedStatus;
-    const matchesVerified =
-      selectedVerified === "" ||
-      (selectedVerified === "Verified" ? user.is_verified : !user.is_verified);
-    return matchesType && matchesStatus && matchesVerified; // Only include users that match both filters
-  });
+  console.log("Users: ", users)
+  const filteredUsers = Array.isArray(users)
+  ? users.filter((user) => {
+      const matchesType =
+        selectedAccountType === "" || user.role === selectedAccountType;
+      const matchesStatus =
+        selectedStatus === "" || user.account_status === selectedStatus;
+      const matchesVerified =
+        selectedVerified === "" ||
+        (selectedVerified === "Verified" ? user.is_verified : !user.is_verified);
+      return matchesType && matchesStatus && matchesVerified;
+    })
+  : [];
 
   const handleAddAccount = () => {
     setShowAddAccount(true);

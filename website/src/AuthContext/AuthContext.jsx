@@ -362,31 +362,38 @@ const AuthProvider = ({ children }) => {
   const department = async () => {
     try {
       if (
-        account_type == "department_admin" ||
-        account_type == "departmentadmin" ||
-        account_type == "worker" ||
-        account_type == "citizen"
-      )
+        account_type === "department_admin" ||
+        account_type === "departmentadmin" ||
+        account_type === "worker" ||
+        account_type === "citizen"
+      ) {
         return;
-
-      const res = await axiosInstance.get("api/departments/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setDepartment((prev) => {
-        const newDepartments = res.data;
-        const uniqueDepartments = [
-          ...prev,
-          ...newDepartments.filter(
-            (dep) => !prev.some((existingDep) => existingDep.id === dep.id)
-          ),
-        ];
-        return uniqueDepartments;
-      });
+      }
+  
+      if(account_type === "superadmin" || account_type === "super_admin") {
+        const res = await axiosInstance.get("api/departments/");
+        console.log("API Response:", res); 
+  
+        // Ensure res.data is an array
+        const newDepartments = Array.isArray(res.data) ? res.data : [];
+    
+        setDepartment((prev) => {
+          const uniqueDepartments = [
+            ...prev,
+            ...newDepartments.filter(
+              (dep) => !prev.some((existingDep) => existingDep.id === dep.id)
+            ),
+          ];
+          return uniqueDepartments;
+        });
+      }
+  
+    
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching departments:", error);
     }
   };
+  
 
   const onLogin = async (email, password) => {
     try {
