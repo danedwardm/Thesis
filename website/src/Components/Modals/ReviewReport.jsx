@@ -5,16 +5,16 @@ import { RiAttachment2 } from "react-icons/ri";
 import { TiInfoLarge } from "react-icons/ti";
 import { PiImages } from "react-icons/pi";
 
-import ImageModal from "./ImageModal";
-import Feedback from "./Feedback";
-import DeleteReport from "./DeleteReport";
-import Map from "../../Components/Modals/Map";
-import Maps2 from "../../Components/Modals/Maps2";
-import ReportPDF from "../../Components/Modals/ReportPDF";
+import ImageModal from "./ImageModal.jsx";
+import Feedback from "./Feedback.jsx";
+import DeleteReport from "./DeleteReport.jsx";
+// import Map from "../../Components/Modals/Map";
+import Maps2 from "../../Components/Modals/Maps2.jsx";
+import ReportPDF from "../../Components/Modals/reportPDF.jsx";
 
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore"; // Add these imports for Firestore operations
 import { app } from "../../Firebase/firebaseConfig";
-import { useAuth } from "../../AuthContext/AuthContext";
+import { useAuth } from "../../AuthContext/AuthContext.jsx";
 import { use } from "react";
 
 const db = getFirestore(app);

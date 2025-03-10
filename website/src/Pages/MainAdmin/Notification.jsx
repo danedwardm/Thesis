@@ -1,33 +1,28 @@
-import React, { useEffect, useState, useRef } from "react";
-
-import Data from "../../JSON/callLogs.json";
+import React, { useEffect, useState } from "react";
 import Navbar from "./Navigation/NavBar";
 import NavText from "./Navigation/NavText";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import { HiOutlineDocumentReport } from "react-icons/hi";
-
-// Importing all the maps
-import NFloodSus from "../../assets/Maps/N-FloodSus.jpg";
-import NGroundLiq from "../../assets/Maps/N-GroundLiq.jpg";
-import NGroundSus from "../../assets/Maps/N-GroundSus.jpg";
-import NRainLand from "../../assets/Maps/N-RainLand.jpg";
-import NStorm from "../../assets/Maps/N-Storm.jpg";
-import NTsunami from "../../assets/Maps/N-Tsunami.jpg";
-import NWindSus from "../../assets/Maps/N-WindSus.jpg";
-import SFloodSus from "../../assets/Maps/S-FloodSus.jpg";
-import SGroundLiq from "../../assets/Maps/S-GroundLiq.jpg";
-import SGroundSus from "../../assets/Maps/S-GroundSus.jpg";
-import SRainLand from "../../assets/Maps/S-RainLand.jpg";
-import SStorm from "../../assets/Maps/S-Storm.jpg";
-import STsunami from "../../assets/Maps/S-Tsunami.jpg";
-import SWindSus from "../../assets/Maps/S-WindSus.jpg";
+import NFloodSus from "../../assets/Maps/N-FloodSus.JPG";
+import NGroundLiq from "../../assets/Maps/N-GroundLiq.JPG";
+import NGroundSus from "../../assets/Maps/N-GroundSus.JPG";
+import NRainLand from "../../assets/Maps/N-RainLand.JPG";
+import NStorm from "../../assets/Maps/N-Storm.JPG";
+import NTsunami from "../../assets/Maps/N-Tsunami.JPG";
+import NWindSus from "../../assets/Maps/N-WindSus.JPG";
+import SFloodSus from "../../assets/Maps/S-FloodSus.JPG";
+import SGroundLiq from "../../assets/Maps/S-GroundLiq.JPG";
+import SGroundSus from "../../assets/Maps/S-GroundSus.JPG";
+import SRainLand from "../../assets/Maps/S-RainLand.JPG";
+import SStorm from "../../assets/Maps/S-Storm.JPG";
+import STsunami from "../../assets/Maps/S-Tsunami.JPG";
+import SWindSus from "../../assets/Maps/S-WindSus.JPG";
 import { app } from "../../Firebase/firebaseConfig";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 const db = getFirestore(app);
 import ImageModal from "../../Components/Modals/ImageModal";
 
 // Weather Map Component
 import WeatherMap from "../../Components/Modals/WeatherMap"; // Assuming WeatherMap component is stored in Components folder
-import { addDoc, collection, getFirestore } from "firebase/firestore";
+
 
 const Notification = () => {
   const [formData, setFormData] = useState({
@@ -81,8 +76,7 @@ const Notification = () => {
 
   const sendNotificationToUsers = async (e) => {
     try {
-      e.preventDefault();
-
+   
       // Check if description is empty
       if (!formData.description.trim()) {
         alert("Description cannot be empty!");
@@ -92,6 +86,7 @@ const Notification = () => {
         alert("Report Type cannot be empty!");
         return;
       }
+      e.preventDefault();
 
       const notifRef = await addDoc(collection(db, "globalNotification"), {
         title: formData.reportType,

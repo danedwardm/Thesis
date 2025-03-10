@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000/',  
+  baseURL: 'https://gar-kind-wasp.ngrok-free.app/',  
   headers: {
     'Content-Type': 'application/json',
   },
