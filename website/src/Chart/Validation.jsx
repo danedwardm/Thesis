@@ -16,7 +16,12 @@ const db = getFirestore(app);
 // Register the components
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels); // Register the plugin
 
-const Validation = ({ dateFilter, setDateFilter }) => {
+const Validation = ({
+  dateFilter,
+  setDateFilter,
+  selectedCategory,
+  setCategoryFilter,
+}) => {
   const [reportCounts, setReportCounts] = useState({});
 
   // Helper function to get the start of a day, week, month, or year
@@ -43,18 +48,20 @@ const Validation = ({ dateFilter, setDateFilter }) => {
     }
   };
 
-  const fetchDocuments = async (filter) => {
+  const fetchDocuments = async (filter, category) => {
     // Reset counts to avoid displaying stale data
     setReportCounts({ true: 0, false: 0 });
     const categories = [
       "fire accident",
       "street light",
       "potholes",
-      "floods",
+      "flood",
       "others",
       "fallen tree",
       "road accident",
     ];
+    // If "all" is selected for category, fetch for all categories
+    const categoriesToFetch = category === "all" ? categories : [category];
 
     // Initialize totals for validated and not validated
     let totalValidated = 0;
@@ -63,7 +70,7 @@ const Validation = ({ dateFilter, setDateFilter }) => {
     // Create query for all reports
     let q = collection(db, "reports");
 
-    const unsubscribeFunctions = categories.map((category) => {
+    const unsubscribeFunctions = categoriesToFetch.map((category) => {
       let q = collection(db, `reports/${category}/reports`);
 
       if (filter !== "all") {
@@ -112,8 +119,8 @@ const Validation = ({ dateFilter, setDateFilter }) => {
   };
 
   useEffect(() => {
-    fetchDocuments(dateFilter);
-  }, [dateFilter]); // Fetch data whenever the date filter changes
+    fetchDocuments(dateFilter, selectedCategory);
+  }, [dateFilter, selectedCategory]); // Fetch data whenever the date filter changes
 
   // Prepare data for the chart
   const chartData = {
@@ -135,7 +142,7 @@ const Validation = ({ dateFilter, setDateFilter }) => {
       </div>
 
       {/* Dropdown for Date Filter */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="dateFilter" className="mr-2 font-semibold text-sm">
           Select Date Filter:{" "}
         </label>
@@ -151,7 +158,7 @@ const Validation = ({ dateFilter, setDateFilter }) => {
           <option value="year">This Year</option>
           <option value="all">All Time</option>
         </select>
-      </div>
+      </div> */}
 
       {chartData.labels.length > 0 ? (
         <Pie

@@ -58,7 +58,7 @@ const Analysis = () => {
       "fire accident",
       "street light",
       "potholes",
-      "floods",
+      "flood",
       "others",
       "fallen tree",
       "road accident",
@@ -129,7 +129,14 @@ const Analysis = () => {
     doc.setFontSize(10);
     doc.text("Community Report for this " + selectedFilter, 10, 40);
     doc.setFontSize(8);
-    doc.text("Generated on: " + new Date().toLocaleDateString(), 10, 45);
+    doc.text(
+      "Generated on: " +
+        new Date().toLocaleDateString() +
+        " at " +
+        new Date().toLocaleTimeString(),
+      10,
+      45
+    );
 
     // Move directly to the table section (on the first page)
     doc.setFont("helvetica", "bold");
@@ -140,19 +147,18 @@ const Analysis = () => {
 
     // Table Header
     const headers = [
-      "Username",
+      "Reported By",
       "Category",
+      "Report Date",
       "Location",
       "Status",
-      "Date",
-      "Time",
-      "Description",
+      "Latest Update",
     ];
     const tableStartY = 60;
     const rowHeight = 7;
 
     // Column positions (adjusted to fix header widths)
-    const colWidths = [20, 13, 25, 10, 13, 13, 25]; // Set appropriate column widths
+    const colWidths = [20, 13, 25, 35, 10, 25]; // Set appropriate column widths
 
     // Draw Table Header
     let xPosition = 10; // Starting position for the first column
@@ -192,11 +198,14 @@ const Analysis = () => {
       const reportFields = [
         report.username,
         report.category,
-        report.location.slice(0, 25),
+        `${new Date(report.report_date).toLocaleDateString()} at ${new Date(
+          report.report_date
+        ).toLocaleTimeString()}`,
+        report.location.slice(0, 30), // Take the first 25 characters of the location
         report.status.toUpperCase(),
-        new Date(report.report_date).toLocaleDateString(),
-        new Date(report.report_date).toLocaleTimeString(),
-        report.report_description.slice(0, 25),
+        `${new Date(report.update_date).toLocaleDateString()} at ${new Date(
+          report.update_date
+        ).toLocaleTimeString()}`,
       ];
 
       let rowXPosition = 10; // Starting position for the first column in each row

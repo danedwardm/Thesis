@@ -48,7 +48,7 @@ const categoryColors = {
     backgroundColor: "rgba(255, 206, 86, 0.4)", // Yellow
     borderColor: "rgba(255, 206, 86, 1)",
   },
-  floods: {
+  flood: {
     backgroundColor: "rgba(79, 192, 75, 0.4)", // Green
     borderColor: "rgba(79, 192, 75, 1)",
   },
@@ -66,7 +66,12 @@ const categoryColors = {
   },
 };
 
-const ReportTrends = ({ dateFilter, setDateFilter }) => {
+const ReportTrends = ({
+  dateFilter,
+  setDateFilter,
+  selectedCategory,
+  setCategoryFilter,
+}) => {
   const [reports, setReports] = useState([]);
   const [chartData, setChartData] = useState({
     labels: [],
@@ -98,21 +103,24 @@ const ReportTrends = ({ dateFilter, setDateFilter }) => {
   };
 
   // Fetch documents from Firestore with date filtering
-  const fetchDocuments = async (filter) => {
+  const fetchDocuments = async (filter, category) => {
     const categories = [
       "fire accident",
       "street light",
       "potholes",
-      "floods",
+      "flood",
       "others",
       "fallen tree",
       "road accident",
     ];
 
+    // If "all" is selected for category, fetch for all categories
+    const categoriesToFetch = category === "all" ? categories : [category];
+
     // Clear previous reports to avoid duplication
     setReports([]);
 
-    const unsubscribeFunctions = categories.map((category) => {
+    const unsubscribeFunctions = categoriesToFetch.map((category) => {
       let q = collection(db, `reports/${category}/reports`);
 
       if (filter !== "all") {
@@ -147,8 +155,8 @@ const ReportTrends = ({ dateFilter, setDateFilter }) => {
   };
 
   useEffect(() => {
-    fetchDocuments(dateFilter);
-  }, [dateFilter]); // Fetch data whenever the date filter changes
+    fetchDocuments(dateFilter, selectedCategory);
+  }, [dateFilter, selectedCategory]); // Fetch data whenever the date filter changes
 
   useEffect(() => {
     if (reports.length > 0) {
@@ -194,6 +202,12 @@ const ReportTrends = ({ dateFilter, setDateFilter }) => {
         labels: sortedLabels, // Use sorted dates as labels
         datasets: datasets,
       });
+    } else {
+      // If no reports, clear the chart data
+      setChartData({
+        labels: [], // No labels for x-axis
+        datasets: [], // No datasets to render
+      });
     }
   }, [reports]);
 
@@ -202,7 +216,7 @@ const ReportTrends = ({ dateFilter, setDateFilter }) => {
       <div className="font-bold text-md text-main">Report Date Trends</div>
 
       {/* Dropdown for Date Filter */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="dateFilter" className="mr-2 font-semibold text-sm">
           Select Date Filter:{" "}
         </label>
@@ -218,7 +232,7 @@ const ReportTrends = ({ dateFilter, setDateFilter }) => {
           <option value="year">This Year</option>
           <option value="all">All Time</option>
         </select>
-      </div>
+      </div> */}
 
       {chartData.labels.length > 0 ? (
         <Line

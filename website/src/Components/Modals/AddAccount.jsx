@@ -59,7 +59,7 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
       setStation(station);
       setStationAddress(station_address);
     }
-    console.log("User department:", department);
+    // console.log("User department:", department);
   }, [user, account_type]);
 
   const handleSubmit = async (e) => {
@@ -78,16 +78,16 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
     ) {
       setIncompleteInput(true);
       setIsLoading(false); // Stop loading spinner for incomplete fields
-      console.log(
-        "Fields: ",
-        username,
-        email,
-        phoneNumber,
-        station,
-        stationAddress,
-        password,
-        password_confirm
-      );
+      // console.log(
+      //   "Fields: ",
+      //   username,
+      //   email,
+      //   phoneNumber,
+      //   station,
+      //   stationAddress,
+      //   password,
+      //   password_confirm
+      // );
       setTimeout(() => {
         setIncompleteInput(false);
       }, 3000);
@@ -166,16 +166,16 @@ const AddAccount = ({ isVisible, onClose, account_type, departments }) => {
     }
 
     // Optionally reset form after submission
-    console.log({
-      username,
-      email,
-      phoneNumber,
-      department,
-      station,
-      stationAddress,
-      password,
-      password_confirm,
-    });
+    // console.log({
+    //   username,
+    //   email,
+    //   phoneNumber,
+    //   department,
+    //   station,
+    //   stationAddress,
+    //   password,
+    //   password_confirm,
+    // });
   };
 
   const handleStationAddressChange = (newLocation) => {

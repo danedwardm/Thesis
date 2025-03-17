@@ -3,9 +3,20 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import { useAuth } from "../../AuthContext/AuthContext";
+import {
+  onSnapshot,
+  collection,
+  getFirestore,
+  query,
+  where,
+} from "firebase/firestore";
+import { app } from "../../Firebase/firebaseConfig";
 
-const Map = ({ lat, lon }) => {
-  const { reports } = useAuth();
+const db = getFirestore(app);
+
+const Map = ({ lat, lon, selectedCategory }) => {
+  // const { reports } = useAuth();
+  const [reports, setReports] = useState([]);
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,6 +27,37 @@ const Map = ({ lat, lon }) => {
   const API_KEY = "b29aa0efcb4db33afa698232bfb7b3a2"; // Replace with your OpenWeatherMap API key
   const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
   // const WEATHER_API_URL = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
+
+  const fetchDocuments = async (category) => {
+    setReports([]); // Clear reports before fetching new data
+    const categories = [
+      "fire accident",
+      "street light",
+      "potholes",
+      "floods",
+      "others",
+      "fallen tree",
+      "road accident",
+    ];
+    const categoriesToFetch = category === "all" ? categories : [category];
+
+    const unsubscribeFunctions = categoriesToFetch.map((category) => {
+      let q = collection(db, `reports/${category}/reports`);
+
+      return onSnapshot(q, (snapshot) => {
+        const fetchedReports = snapshot.docs.map((doc) => doc.data());
+        setReports((prevReports) => [...prevReports, ...fetchedReports]);
+      });
+    });
+
+    return () => {
+      unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
+    };
+  };
+
+  useEffect(() => {
+    fetchDocuments(selectedCategory);
+  }, [selectedCategory]);
 
   useEffect(() => {
     // Fetch weather data
@@ -81,7 +123,7 @@ const Map = ({ lat, lon }) => {
           const {
             latitude,
             longitude,
-            id,
+            id, // This is the unique identifier
             status,
             location,
             report_description,
@@ -98,7 +140,6 @@ const Map = ({ lat, lon }) => {
                   <p>Location: {location}</p>
                   <p>Description: {report_description}</p>
                   <p>Status: {status}</p>
-                  {/* You can display other report details here */}
                 </div>
               </Popup>
             </Marker>

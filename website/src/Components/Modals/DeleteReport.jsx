@@ -103,9 +103,9 @@ const DeleteReport = ({ isVisible, onClose, reportId, reportedType }) => {
       // Use for...of to handle async operations properly
       for (const docSnapshot of querySnapshot.docs) {
         await deleteDoc(docSnapshot.ref);
-        console.log(
-          `Document with ID ${docSnapshot.id} deleted from ${collectionPath}`
-        );
+        // console.log(
+        //   `Document with ID ${docSnapshot.id} deleted from ${collectionPath}`
+        // );
       }
     } catch (error) {
       console.error(

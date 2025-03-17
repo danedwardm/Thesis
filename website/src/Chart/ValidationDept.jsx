@@ -51,7 +51,7 @@ const Validation = ({ dateFilter, setDateFilter }) => {
       "fire accident",
       "street light",
       "potholes",
-      "floods",
+      "flood",
       "others",
       "fallen tree",
       "road accident",

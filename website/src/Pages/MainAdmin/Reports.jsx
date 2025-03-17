@@ -193,9 +193,9 @@ const Reports = ({ assigned_to_id }) => {
         return <HiOutlineDocumentReport className="text-[#2f2f2f] text-xl" />;
     }
   };
-  useEffect(() => {
-   console.log(currentData)
-  },[])
+  // useEffect(() => {
+  //  console.log(currentData)
+  // },[])
   function convertToDaysHoursMinutes(time) {
     // Split time into hours and minutes
     const [hours, minutes] = time.split(":").map(Number);

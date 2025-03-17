@@ -91,9 +91,9 @@ const Accounts = () => {
 
   const currentUsers = sortedUsers.slice(indexOfFirstItem, indexOfLastItem);
   const statuses = [...new Set(Data.map((item) => item.status))];
-  useEffect(() => {
-    console.log("User: ", currentUsers);
-  }, []);
+  // useEffect(() => {
+  //   console.log("User: ", currentUsers);
+  // }, []);
   // Get unique report types and statuses for dropdown options
   // const accountType = [...new Set(Data.map((item) => item.type))];
   // const accountVerified = [...new Set(Data.map((item) => item.verified))];

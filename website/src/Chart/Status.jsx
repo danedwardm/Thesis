@@ -16,7 +16,12 @@ const db = getFirestore(app);
 // Register the components
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels); // Register the plugin
 
-const Status = ({ dateFilter, setDateFilter }) => {
+const Status = ({
+  dateFilter,
+  setDateFilter,
+  selectedCategory,
+  setCategoryFilter,
+}) => {
   const [reportCounts, setReportCounts] = useState({});
 
   // Helper function to get the start of a day, week, month, or year
@@ -43,18 +48,21 @@ const Status = ({ dateFilter, setDateFilter }) => {
     }
   };
 
-  const fetchDocuments = async (filter) => {
+  const fetchDocuments = async (filter, category) => {
     // Reset counts to avoid displaying stale data
     setReportCounts({ ongoing: 0, done: 0, reviewing: 0, pending: 0 });
     const categories = [
       "fire accident",
       "street light",
       "potholes",
-      "floods",
+      "flood",
       "others",
       "fallen tree",
       "road accident",
     ];
+
+    // If "all" is selected for category, fetch for all categories
+    const categoriesToFetch = category === "all" ? categories : [category];
 
     // Initialize totals for each status
     let totalOngoing = 0;
@@ -65,7 +73,7 @@ const Status = ({ dateFilter, setDateFilter }) => {
     // Create query for all reports
     let q = collection(db, "reports");
 
-    const unsubscribeFunctions = categories.map((category) => {
+    const unsubscribeFunctions = categoriesToFetch.map((category) => {
       let q = collection(db, `reports/${category}/reports`);
 
       if (filter !== "all") {
@@ -85,7 +93,7 @@ const Status = ({ dateFilter, setDateFilter }) => {
           (doc) => doc.data().status === "done"
         ).length;
         const reviewingCount = snapshot.docs.filter(
-          (doc) => doc.data().status === "reviewing"
+          (doc) => doc.data().status === "Under Review"
         ).length;
         const pendingCount = snapshot.docs.filter(
           (doc) => doc.data().status === "Pending"
@@ -124,8 +132,8 @@ const Status = ({ dateFilter, setDateFilter }) => {
   };
 
   useEffect(() => {
-    fetchDocuments(dateFilter);
-  }, [dateFilter]); // Fetch data whenever the date filter changes
+    fetchDocuments(dateFilter, selectedCategory);
+  }, [dateFilter, selectedCategory]); // Fetch data whenever the date filter changes
 
   // Prepare data for the chart
   const chartData = {
@@ -162,7 +170,7 @@ const Status = ({ dateFilter, setDateFilter }) => {
       </div>
 
       {/* Dropdown for Date Filter */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="dateFilter" className="mr-2 font-semibold text-sm">
           Select Date Filter:{" "}
         </label>
@@ -178,7 +186,7 @@ const Status = ({ dateFilter, setDateFilter }) => {
           <option value="year">This Year</option>
           <option value="all">All Time</option>
         </select>
-      </div>
+      </div> */}
 
       {chartData.labels.length > 0 ? (
         <Pie

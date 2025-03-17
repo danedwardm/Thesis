@@ -29,7 +29,24 @@ const Analysis = () => {
   const [isLoading1, setIsLoading1] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
   const [selectedFilter, setSelectedFilter] = useState("month"); // Time filter state
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [reports, setReports] = useState([]);
+
+  const categories = [
+    "fire accident",
+    "street light",
+    "potholes",
+    "flood",
+    "others",
+    "fallen tree",
+    "road accident",
+  ];
+
+  // Filter categories based on selected category
+  const filteredCategories =
+    selectedCategory === "all"
+      ? categories
+      : categories.filter((category) => category === selectedCategory);
 
   // Helper function to get the start of a day, week, month, or year
   const getStartOfPeriod = (filter) => {
@@ -56,21 +73,14 @@ const Analysis = () => {
   };
 
   // Fetch reports from Firestore with date filtering
-  const fetchDocuments = async (filter) => {
-    const categories = [
-      "fire accident",
-      "street light",
-      "potholes",
-      "floods",
-      "others",
-      "fallen tree",
-      "road accident",
-    ];
+  const fetchDocuments = async (filter, category) => {
+    // Filter categories based on selected category
+    const categoriesToFetch = category === "all" ? categories : [category];
 
     // Clear previous reports to avoid duplication
     setReports([]);
 
-    const unsubscribeFunctions = categories.map((category) => {
+    const unsubscribeFunctions = categoriesToFetch.map((category) => {
       let q = collection(db, `reports/${category}/reports`);
 
       if (filter !== "all") {
@@ -114,8 +124,9 @@ const Analysis = () => {
   };
 
   useEffect(() => {
-    fetchDocuments(selectedFilter);
-  }, [selectedFilter]);
+    // Call fetchDocuments when the selected filter or category changes
+    fetchDocuments(selectedFilter, selectedCategory);
+  }, [selectedFilter, selectedCategory]);
 
   const handleGenerateReportPDF = () => {
     setIsLoading(true);
@@ -130,7 +141,14 @@ const Analysis = () => {
     doc.setFontSize(10);
     doc.text("Community Report for this " + selectedFilter, 10, 40);
     doc.setFontSize(8);
-    doc.text("Generated on: " + new Date().toLocaleDateString(), 10, 45);
+    doc.text(
+      "Generated on: " +
+        new Date().toLocaleDateString() +
+        " at " +
+        new Date().toLocaleTimeString(),
+      10,
+      45
+    );
 
     // Move directly to the table section (on the first page)
     doc.setFont("helvetica", "bold");
@@ -141,19 +159,18 @@ const Analysis = () => {
 
     // Table Header
     const headers = [
-      "Username",
+      "Reported By",
       "Category",
+      "Report Date",
       "Location",
       "Status",
-      "Date",
-      "Time",
-      "Description",
+      "Latest Update",
     ];
     const tableStartY = 60;
     const rowHeight = 7;
 
     // Column positions (adjusted to fix header widths)
-    const colWidths = [20, 13, 25, 10, 13, 13, 25]; // Set appropriate column widths
+    const colWidths = [20, 13, 25, 35, 10, 25]; // Set appropriate column widths
 
     // Draw Table Header
     let xPosition = 10; // Starting position for the first column
@@ -193,11 +210,14 @@ const Analysis = () => {
       const reportFields = [
         report.username,
         report.category,
-        report.location.slice(0, 25),
+        `${new Date(report.report_date).toLocaleDateString()} at ${new Date(
+          report.report_date
+        ).toLocaleTimeString()}`,
+        report.location.slice(0, 30), // Take the first 25 characters of the location
         report.status.toUpperCase(),
-        new Date(report.report_date).toLocaleDateString(),
-        new Date(report.report_date).toLocaleTimeString(),
-        report.report_description.slice(0, 25),
+        `${new Date(report.update_date).toLocaleDateString()} at ${new Date(
+          report.update_date
+        ).toLocaleTimeString()}`,
       ];
 
       let rowXPosition = 10; // Starting position for the first column in each row
@@ -324,35 +344,86 @@ const Analysis = () => {
         <div className="relative h-[100vh] w-[100vw] flex flex-col items-center z-30 overflow-auto overflow-x-hidden ">
           <Navbar />
           <NavText />
-          <div className="grid grid-cols-1 lg:grid-cols-2 col-span-4 gap-16 justify-center items-center pt-5 mt-[30vh] md:mt-[30vh] lg:mt-[15vh] mb-[15vh]">
+          <div className="flex w-full items-start mt-[30vh] md:mt-[30vh] lg:mt-[15vh] ">
+            <div className="flex flex-row gap-5 mt-8 ml-8">
+              <div className="flex flex-col">
+                <h3 className="text-lg text-main font-bold mb-2">
+                  Select Report Time Range
+                </h3>
+                <select
+                  value={selectedFilter}
+                  onChange={(e) => setSelectedFilter(e.target.value)}
+                  className="p-2 border rounded-md border-main"
+                >
+                  <option value="today">Today</option>
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="year">This Year</option>
+                  <option value="all">All Time</option>
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <h3 className="text-lg text-main font-bold mb-2">
+                  Select Category
+                </h3>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="p-2 border rounded-md border-main"
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map((category, index) => (
+                    <option key={index} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 col-span-4 gap-16 justify-center items-center mb-[15vh]">
             <PieChart
               dateFilter={selectedFilter}
               setDateFilter={setSelectedFilter}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
             />
             <ReportByAreas
               dateFilter={selectedFilter}
               setDateFilter={setSelectedFilter}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
             />
             <ReportTrends
               dateFilter={selectedFilter}
               setDateFilter={setSelectedFilter}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
             />
             <ReportTimeTrends
               dateFilter={selectedFilter}
               setDateFilter={setSelectedFilter}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
             />
             <Validation
               dateFilter={selectedFilter}
               setDateFilter={setSelectedFilter}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
             />
             <Status
               dateFilter={selectedFilter}
               setDateFilter={setSelectedFilter}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
             />
           </div>
           <ClusterBar
             dateFilter={selectedFilter}
             setDateFilter={setSelectedFilter}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
           />
           <button
             className="mt-10 px-4 py-2 bg-main text-white rounded"
@@ -367,20 +438,41 @@ const Analysis = () => {
           {isModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
               <div className="bg-white p-6 rounded-md shadow-lg">
-                <h3 className="text-lg text-main font-bold mb-4">
-                  Select Report Time Range
-                </h3>
-                <select
-                  value={selectedFilter}
-                  onChange={(e) => setSelectedFilter(e.target.value)}
-                  className="p-2 border rounded-md"
-                >
-                  <option value="today">Today</option>
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                  <option value="year">This Year</option>
-                  <option value="all">All Time</option>
-                </select>
+                <div className="flex flex-row gap-5">
+                  <div className="flex flex-col">
+                    <h3 className="text-lg text-main font-bold mb-4">
+                      Select Report Time Range
+                    </h3>
+                    <select
+                      value={selectedFilter}
+                      onChange={(e) => setSelectedFilter(e.target.value)}
+                      className="p-2 border rounded-md border-main"
+                    >
+                      <option value="today">Today</option>
+                      <option value="week">This Week</option>
+                      <option value="month">This Month</option>
+                      <option value="year">This Year</option>
+                      <option value="all">All Time</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="text-lg text-main font-bold mb-4">
+                      Select Category
+                    </h3>
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="p-2 border rounded-md border-main"
+                    >
+                      <option value="all">All Categories</option>
+                      {categories.map((category, index) => (
+                        <option key={index} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
                 <div className="mt-4">
                   <button
                     className="mt-10 px-4 py-2 bg-main text-white rounded"

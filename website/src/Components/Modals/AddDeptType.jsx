@@ -44,7 +44,7 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
     if (!departmentType) {
       setIncompleteInput(true);
       setIsLoading(false);
-      console.log("Fields: ", departmentType);
+      // console.log("Fields: ", departmentType);
       setTimeout(() => {
         setIncompleteInput(false);
       }, 3000);
@@ -116,7 +116,7 @@ const AddDeptType = ({ isVisible, onClose, account_type }) => {
         `api/department/${parseInt(departmentToDelete.id)}/delete/`
       );
       if (res.status === 200 || res.status === 204) {
-        console.log("Department deleted successfully!");
+        alert("Department deleted successfully!");
         setDepts((prev) =>
           prev.filter((department) => department.id !== departmentToDelete.id)
         );
