@@ -45,11 +45,14 @@ const Login = () => {
     try {
       const res = await onLogin(email, password);
       if (res && res.account_type) {
-        console.log("Account type:", res.account_type);
-        if (res.account_type === "superadmin" || res.account_type === "super_admin") {
+        // console.log("Account type:", res.account_type);
+        if (
+          res.account_type === "superadmin" ||
+          res.account_type === "super_admin"
+        ) {
           if (res) {
             navigate("/admin/dashboard");
-          } 
+          }
         } else if (res.account_type === "department_admin") {
           if (res.is_email_verified) {
             navigate("/dept-admin/dashboard");

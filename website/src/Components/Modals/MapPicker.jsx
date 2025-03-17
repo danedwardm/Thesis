@@ -66,7 +66,7 @@ const MapPicker = ({ isVisible, onClose, onSelectLocation }) => {
             lat: results[0].center.lat,
             lng: results[0].center.lng,
           });
-          console.log("Geocode results: ", results);
+          // console.log("Geocode results: ", results);
         } else {
           alert("No locations found!");
           setSearchResults([]);

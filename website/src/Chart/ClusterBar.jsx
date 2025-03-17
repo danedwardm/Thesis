@@ -30,12 +30,17 @@ ChartJS.register(
 
 const db = getFirestore(app);
 
-const ReportAnalytics = ({ dateFilter, setDateFilter }) => {
+const ReportAnalytics = ({
+  dateFilter,
+  setDateFilter,
+  selectedCategory,
+  setCategoryFilter,
+}) => {
   const categories = [
     "fire accident",
     "street light",
     "potholes",
-    "floods",
+    "flood",
     "others",
     "fallen tree",
     "road accident",
@@ -44,6 +49,7 @@ const ReportAnalytics = ({ dateFilter, setDateFilter }) => {
   const [averages, setAverages] = useState({});
 
   useEffect(() => {
+    setAverages({});
     const getStartDate = () => {
       const now = new Date();
       switch (dateFilter) {
@@ -71,7 +77,11 @@ const ReportAnalytics = ({ dateFilter, setDateFilter }) => {
 
     const startDate = getStartDate();
 
-    const unsubscribeFunctions = categories.map((category) => {
+    // If "all" is selected for category, fetch for all categories
+    const categoriesToFetch =
+      selectedCategory === "all" ? categories : [selectedCategory];
+
+    const unsubscribeFunctions = categoriesToFetch.map((category) => {
       let q = collection(db, `reports/${category}/reports`);
 
       if (startDate) {
@@ -94,6 +104,7 @@ const ReportAnalytics = ({ dateFilter, setDateFilter }) => {
 
         snapshot.forEach((doc) => {
           const report = doc.data();
+          // console.log("Fetched Report:", report);
 
           // Only include if the field exists
           if (report.validation_time) {
@@ -130,7 +141,17 @@ const ReportAnalytics = ({ dateFilter, setDateFilter }) => {
     return () => {
       unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
     };
-  }, [dateFilter]); // Add dateFilter as a dependency here
+  }, [dateFilter, selectedCategory]); // Add dateFilter as a dependency here
+
+  // Check if averages are empty
+  const isDataEmpty =
+    Object.keys(averages).length === 0 ||
+    Object.values(averages).every(
+      (categoryData) =>
+        categoryData.avgValidationTime === 0 &&
+        categoryData.avgReviewTime === 0 &&
+        categoryData.avgClosedTime === 0
+    );
 
   // Prepare chart data
   const chartData = {
@@ -176,7 +197,7 @@ const ReportAnalytics = ({ dateFilter, setDateFilter }) => {
       <h2 className="font-bold text-md text-main">
         Report Processing Time Analysis
       </h2>
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="dateFilter" className="mr-2 font-semibold text-sm">
           Select Date Filter:{" "}
         </label>
@@ -192,8 +213,13 @@ const ReportAnalytics = ({ dateFilter, setDateFilter }) => {
           <option value="year">This Year</option>
           <option value="all">All Time</option>
         </select>
-      </div>
-      <Bar id="cluster-bar" data={chartData} options={options} />
+      </div> */}
+
+      {isDataEmpty ? (
+        <div className="text-center text-gray-500 mt-8">No data available</div>
+      ) : (
+        <Bar id="cluster-bar" data={chartData} options={options} />
+      )}
     </div>
   );
 };

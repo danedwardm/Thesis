@@ -15,7 +15,12 @@ Chart.register(...registerables);
 
 const db = getFirestore(app);
 
-const ReportByAreas = ({ dateFilter, setDateFilter }) => {
+const ReportByAreas = ({
+  dateFilter,
+  setDateFilter,
+  selectedCategory,
+  setCategoryFilter,
+}) => {
   const [reportCounts, setReportCounts] = useState({});
 
   // Helper function to get the start of a day, week, month, or year
@@ -43,21 +48,23 @@ const ReportByAreas = ({ dateFilter, setDateFilter }) => {
   };
 
   // Note: We're no longer declaring fetchDocuments as async.
-  const fetchDocuments = (filter) => {
+  const fetchDocuments = (filter, category) => {
     const categories = [
       "fire accident",
       "street light",
       "potholes",
-      "floods",
+      "flood",
       "others",
       "fallen tree",
       "road accident",
     ];
+    // If "all" is selected for category, fetch for all categories
+    const categoriesToFetch = category === "all" ? categories : [category];
 
     // We'll accumulate counts here
     const addressCounts = {};
 
-    const unsubscribeFunctions = categories.map((category) => {
+    const unsubscribeFunctions = categoriesToFetch.map((category) => {
       let collRef = collection(db, `reports/${category}/reports`);
       let q = collRef;
 
@@ -113,10 +120,12 @@ const ReportByAreas = ({ dateFilter, setDateFilter }) => {
   };
 
   useEffect(() => {
+    // Reset reportCounts before fetching new data
+    setReportCounts({});
     // Pass dateFilter into fetchDocuments so that filtering is applied
-    const unsubscribe = fetchDocuments(dateFilter);
+    const unsubscribe = fetchDocuments(dateFilter, selectedCategory);
     return unsubscribe;
-  }, [dateFilter]);
+  }, [dateFilter, selectedCategory]);
 
   const chartData = {
     labels: Object.keys(reportCounts),
@@ -138,7 +147,7 @@ const ReportByAreas = ({ dateFilter, setDateFilter }) => {
       </div>
 
       {/* Dropdown for Date Filter */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="dateFilter" className="mr-2 font-semibold text-sm">
           Select Date Filter:{" "}
         </label>
@@ -154,30 +163,35 @@ const ReportByAreas = ({ dateFilter, setDateFilter }) => {
           <option value="year">This Year</option>
           <option value="all">All Time</option>
         </select>
-      </div>
-      <Bar
-        id="report-by-areas"
-        data={chartData}
-        options={{
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (context) => `${context.raw} reports`,
+      </div> */}
+
+      {chartData.labels.length > 0 ? (
+        <Bar
+          id="report-by-areas"
+          data={chartData}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (context) => `${context.raw} reports`,
+                },
               },
             },
-          },
-          scales: {
-            x: { title: { display: true, text: "Locations" } },
-            y: {
-              title: { display: true, text: "Number of Reports" },
-              beginAtZero: true,
+            scales: {
+              x: { title: { display: true, text: "Locations" } },
+              y: {
+                title: { display: true, text: "Number of Reports" },
+                beginAtZero: true,
+              },
             },
-          },
-        }}
-      />
+          }}
+        />
+      ) : (
+        <div className="text-center text-gray-500 mt-8">No data available</div>
+      )}
     </div>
   );
 };

@@ -24,6 +24,22 @@ const Dashboard = () => {
     lat: 14.9767, // Default fallback coordinates (e.g., UCC South Campus)
     lng: 120.9705,
   });
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const categories = [
+    "fire accident",
+    "street light",
+    "potholes",
+    "flood",
+    "others",
+    "fallen tree",
+    "road accident",
+  ];
+
+  // Filter categories based on selected category
+  const filteredCategories =
+    selectedCategory === "all"
+      ? categories
+      : categories.filter((category) => category === selectedCategory);
 
   useEffect(() => {
     // Get current location using Geolocation API
@@ -148,17 +164,29 @@ const Dashboard = () => {
             </p>
           </div>
           {/* <div className="flex flex-col justify-center items-end px-3">
-            <button className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase hover:bg-textSecond hover:text-accent ease-in-out duration-500">
-              Filter
-            </button>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="flex justify-center items-center rounded-md bg-white border-main border text-xs text-main font-bold md:px-5 md:py-2 px-3 py-1 uppercase ease-in-out duration-500"
+            >
+              <option value="all">All Categories</option>
+              {categories.map((category, index) => (
+                <option key={index} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
           </div> */}
         </div>
 
         {/* Map */}
         <div className="w-full flex-grow bg-black md:mt-5 mt-3 border-2 border-t-main z-10">
           {/* <div ref={mapRef} style={mapContainerStyle}></div> */}
-
-          <Map lat={location.lat} lon={location.lng} />
+          <Map
+            lat={location.lat}
+            lon={location.lng}
+            selectedCategory={selectedCategory}
+          />
         </div>
       </div>
     </div>

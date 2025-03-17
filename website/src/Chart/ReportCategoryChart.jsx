@@ -64,7 +64,7 @@ const ReportCategoryChart = () => {
       "fire accident",
       "street light",
       "potholes",
-      "floods",
+      "flood",
       "others",
       "fallen tree",
       "road accident",

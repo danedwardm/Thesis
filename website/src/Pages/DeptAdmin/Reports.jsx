@@ -93,9 +93,9 @@ const Reports = () => {
   // const reportTypes = [...new Set(reports.map((item) => item.type_of_report))];
   const statuses = [...new Set(reports.map((item) => item.status))];
 
-  useEffect(() => {
-    console.log("Reports from AuthContext:", feedback);
-  }, [feedback]);
+  // useEffect(() => {
+  //   console.log("Reports from AuthContext:", feedback);
+  // }, [feedback]);
 
   const timeElapsed = (reportDate) => {
     const now = new Date();

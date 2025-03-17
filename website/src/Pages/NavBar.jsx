@@ -11,7 +11,7 @@ const NavBar = () => {
           <div className="flex justify-center items-center gap-2">
             <img src={logo} alt="/" className="w-[30px]" />
             <p className="hidden md:block font-semibold text-sm uppercase text-second">
-              Community Reporting Interface for Safety and Prevention
+              CRISP: Community Reporting Interface for Safety and Prevention
             </p>
             <p className="block md:hidden font-extrabold text-sm uppercase text-second">
               CRISP

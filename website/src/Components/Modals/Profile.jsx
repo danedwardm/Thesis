@@ -19,9 +19,9 @@ const Profile = ({ isVisible, onClose }) => {
   // Assuming you get the password from the data
   const [userPassword] = Data.map((data) => data.password);
 
-  useEffect(() => {
-    console.log("User", user); // Log user when it's available
-  }, [user]);
+  // useEffect(() => {
+  //   console.log("User", user); // Log user when it's available
+  // }, [user]);
 
   const handleChangePassword = () => {
     if (currentPassword === userPassword) {
@@ -43,7 +43,7 @@ const Profile = ({ isVisible, onClose }) => {
   const handlePasswordChange = () => {
     if (newPassword === reenterNewPassword) {
       // Handle password change logic here
-      console.log("Password changed successfully");
+      alert("Password changed successfully");
       onClose();
     } else {
       setErrorMessage("Passwords do not match");

@@ -31,7 +31,7 @@ function App() {
 
   useEffect(() => {
     if (!popUp || !popUp.id || !popUp.title) {
-      console.error("Invalid popUp object:", popUp);
+      // console.error("Invalid popUp object:", popUp);
       return;
     }
 
@@ -50,7 +50,7 @@ function App() {
     // Add the pop-up to notifications
     setNotifications((prevNotifications) => [...prevNotifications, popUp]);
     setIsOpen(true);
-    console.log("Notification shown:", popUp);
+    // console.log("Notification shown:", popUp);
 
     // Remove the notification after a random timeout (5 to 10 seconds)
     const timeoutId = setTimeout(() => {
@@ -58,7 +58,7 @@ function App() {
         prevNotifications.filter((notif) => notif.id !== popUp.id)
       );
       setIsOpen(false);
-      console.log("Notification removed:", popUp);
+      // console.log("Notification removed:", popUp);
     }, Math.floor(Math.random() * (50000 - 5000 + 1)) + 50000);
 
     return () => {

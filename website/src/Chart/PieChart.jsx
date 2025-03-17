@@ -16,7 +16,12 @@ const db = getFirestore(app);
 // Register the components
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels); // Register the plugin
 
-const PieChart = ({ dateFilter, setDateFilter }) => {
+const PieChart = ({
+  dateFilter,
+  setDateFilter,
+  selectedCategory,
+  setCategoryFilter,
+}) => {
   const [reportCounts, setReportCounts] = useState({});
 
   // Helper function to get the start of a day, week, month, or year
@@ -43,7 +48,7 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
     }
   };
 
-  const fetchDocuments = async (filter) => {
+  const fetchDocuments = async (filter, category) => {
     // Reset counts to avoid displaying stale data
     setReportCounts({});
 
@@ -51,13 +56,15 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
       "fire accident",
       "street light",
       "potholes",
-      "floods",
+      "flood",
       "others",
       "fallen tree",
       "road accident",
     ];
+    // If "all" is selected for category, fetch for all categories
+    const categoriesToFetch = category === "all" ? categories : [category];
 
-    const unsubscribeFunctions = categories.map((category) => {
+    const unsubscribeFunctions = categoriesToFetch.map((category) => {
       let q = collection(db, `reports/${category}/reports`);
 
       if (filter !== "all") {
@@ -86,8 +93,8 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
   };
 
   useEffect(() => {
-    fetchDocuments(dateFilter);
-  }, [dateFilter]); // Fetch data whenever the date filter changes
+    fetchDocuments(dateFilter, selectedCategory);
+  }, [dateFilter, selectedCategory]); // Fetch data whenever the date filter changes
 
   // Prepare data for the chart
   const chartData = {
@@ -125,7 +132,7 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
       </div>
 
       {/* Dropdown for Date Filter */}
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label htmlFor="dateFilter" className="mr-2 font-semibold text-sm">
           Select Date Filter:{" "}
         </label>
@@ -141,7 +148,7 @@ const PieChart = ({ dateFilter, setDateFilter }) => {
           <option value="year">This Year</option>
           <option value="all">All Time</option>
         </select>
-      </div>
+      </div> */}
 
       {chartData.labels.length > 0 ? (
         <Pie

@@ -64,13 +64,13 @@ const Accounts = () => {
       try {
         const account_type = localStorage.getItem("accountType");
         if (!account_type === "superadmin") {
-          console.error("You are not superadmin!");
+          // console.error("You are not superadmin!");
           return;
         }
         const response = await axiosInstance.get("api/users/");
         localStorage.setItem("users_count", response.data.length);
         setUsers(response.data);
-        console.log("Users:", response.data);
+        // console.log("Users:", response.data);
       } catch (err) {
         setError("Failed to fetch users.");
         console.error("Error fetching users:", err); // Log any errors
@@ -172,10 +172,10 @@ const Accounts = () => {
         [user.id]: null, // Ensure it's set to null initially to indicate loading
       }));
 
-      console.log(
-        "Fetching verification status for user:",
-        userVerificationStatus
-      );
+      // console.log(
+      //   "Fetching verification status for user:",
+      //   userVerificationStatus
+      // );
 
       // Listen for verification status
       onSnapshot(q, (snapshot) => {

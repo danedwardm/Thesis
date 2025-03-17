@@ -70,7 +70,7 @@ const AuthProvider = ({ children }) => {
       try {
         const account_type = localStorage.getItem("accountType");
         if (account_type !== "department_admin") {
-          console.log("you are not department admin");
+          // console.log("you are not department admin");
           return;
         }
         const res = await axiosInstance.get("api/worker/accounts/");
@@ -438,7 +438,7 @@ const AuthProvider = ({ children }) => {
       setToken(access);
       fetchUserInfo(access);
       if (account_type === "superadmin" || account_type === "super_admin") {
-          department();
+        department();
       }
       return { ...res.data, is_email_verified }; // Adding the is_email_verified here
     } catch (error) {
@@ -452,7 +452,7 @@ const AuthProvider = ({ children }) => {
           alert(detailMessage);
         }
       } else {
-        console.log("Error", error.message);
+        // console.log("Error", error.message);
       }
     }
   };
