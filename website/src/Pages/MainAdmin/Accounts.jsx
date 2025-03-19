@@ -411,9 +411,9 @@ const Accounts = () => {
                         <th scope="col" className="text-center p-3 truncate">
                           Type
                         </th>
-                        <th scope="col" className="text-center p-3 truncate">
+                        {/* <th scope="col" className="text-center p-3 truncate">
                           Status
-                        </th>
+                        </th> */}
                         <th scope="col" className="text-center p-3 truncate">
                           Update Date
                         </th>
@@ -471,7 +471,7 @@ const Accounts = () => {
                               </p>
                             )}
                           </td>
-                          <td className="p-4 text-center font-semibold uppercase">
+                          {/* <td className="p-4 text-center font-semibold uppercase">
                             {data.account_status == "Active" ||
                             data.account_status == "active" ? (
                               <p className="w-full font-bold truncate text-[#007a3f]">
@@ -492,7 +492,7 @@ const Accounts = () => {
                                 {data.account_status}
                               </p>
                             )}
-                          </td>
+                          </td> */}
                           <td className="p-4 text-center">
                             <p className="w-full truncate">
                               {formatDate(data.date_joined)}
