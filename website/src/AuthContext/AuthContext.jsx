@@ -129,6 +129,17 @@ const AuthProvider = ({ children }) => {
                 db,
                 `reports/${category}/reports/${reportId}/workerFeedback`
               );
+              const falseCount = collection(
+                db,
+                `reports/${category}/reports/${reportId}/reported`
+              );
+              const querySnapshot = await getDocs(falseCount);
+
+              const falseCountDescriptions = querySnapshot.docs.map((doc) => {
+                const data = doc.data();
+                return data.report_count; // Return only the report_count value
+              });
+              // const reportCount = querySnapshot.size;
 
               const userFeedbackSnapshot = await getDocs(userFeedbackRef);
               const workerFeedbackSnapshot = await getDocs(workerFeedbackRef);
@@ -154,6 +165,7 @@ const AuthProvider = ({ children }) => {
                 id: doc.id, // Ensure Firestore id is included
                 userFeedback: userFeedbackDescriptions,
                 workerFeedback: workerFeedbackDescriptions,
+                reportCount: falseCountDescriptions,
               };
             })
           );

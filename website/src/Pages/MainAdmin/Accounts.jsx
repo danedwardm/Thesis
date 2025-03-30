@@ -548,14 +548,14 @@ const Accounts = () => {
               </div>
 
               {/* small screen  */}
-              <div className="block md:hidden px-5 py-5">
+              <div className="w-auto p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:justify-start justify-center items-center md:hidden">
                 {currentUsers.length === 0 ? (
                   <p className="text-center text-gray-500">No users found</p>
                 ) : (
                   currentUsers.map((data) => (
                     <div
                       key={data.id}
-                      className="bg-[#FAF5FF] min-w-[250px] max-w-[300px] min-h-[250px] border border-main rounded-lg px-6 py-6 flex flex-col mt-2"
+                      className="bg-[#FAF5FF] w-full h-full border border-main rounded-lg p-6 flex flex-col mt-2 overflow-hidden"
                     >
                       <div className="flex flex-col flex-1">
                         <div className="flex gap-4">
