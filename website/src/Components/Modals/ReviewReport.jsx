@@ -46,6 +46,7 @@ const ReviewReport = ({
   respondTime,
   validationTime,
   workers,
+  falseCount,
 }) => {
   if (!isVisible) return null;
 
@@ -458,6 +459,20 @@ const ReviewReport = ({
                       </div>
                     </div>
                   </div>
+                  <div className="w-1/3 flex flex-col items-center justify-center">
+                    <div className="flex items-center justify-start w-full py-2 px-1">
+                      <p className="text-xs font-semibold ">Mark as False</p>
+                    </div>
+                    <div className="w-full flex items-center justify-center p-4 bg-white rounded-md border border-main">
+                      <div className="w-full flex bg-white resize-none outline-none text-xs items-center justify-center">
+                        <p className="text-xs font-bold text-gray-500 truncate">
+                          {Array.isArray(falseCount) && falseCount.length === 0
+                            ? "0"
+                            : falseCount}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div className="w-full flex flex-row gap-4 items-center justify-center truncate">
                   <div className="w-1/3 flex flex-col items-center justify-center">
@@ -541,7 +556,8 @@ const ReviewReport = ({
                   </div>
                 </div>
                 <div className="w-full flex flex-col items-center justify-center">
-                  {reportStatus === "done" ? (
+                  {reportStatus === "done" ||
+                  reportStatus === "Under Review" ? (
                     <>
                       <div className="w-full flex flex-row items-center justify-center mt-2 gap-3">
                         {attachment && attachment.length > 0 ? (

@@ -35,7 +35,7 @@ const Analysis = () => {
   const categories = [
     "fire accident",
     "street light",
-    "potholes",
+    "pothole",
     "flood",
     "others",
     "fallen tree",
@@ -67,6 +67,19 @@ const Analysis = () => {
         now.setMonth(0, 1); // Set to the first day of the current year
         now.setHours(0, 0, 0, 0);
         return now;
+      case "3 months":
+        const threeMonthsAgo = new Date(now);
+        threeMonthsAgo.setMonth(now.getMonth() - 3); // Subtract 3 months
+        threeMonthsAgo.setDate(1); // Set to the first day of that month
+        threeMonthsAgo.setHours(0, 0, 0, 0); // Set time to midnight
+        return threeMonthsAgo;
+
+      case "6 months":
+        const sixMonthsAgo = new Date(now);
+        sixMonthsAgo.setMonth(now.getMonth() - 6); // Subtract 6 months
+        sixMonthsAgo.setDate(1); // Set to the first day of that month
+        sixMonthsAgo.setHours(0, 0, 0, 0); // Set time to midnight
+        return sixMonthsAgo;
       default:
         return null; // All-time (no filter)
     }
@@ -357,8 +370,10 @@ const Analysis = () => {
                 >
                   <option value="today">Today</option>
                   <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                  <option value="year">This Year</option>
+                  <option value="month">This Past Month</option>
+                  <option value="3 months">This Past 3 Months</option>
+                  <option value="6 months">This Past 6 Months</option>
+                  <option value="year">This Past Year</option>
                   <option value="all">All Time</option>
                 </select>
               </div>
@@ -450,8 +465,10 @@ const Analysis = () => {
                     >
                       <option value="today">Today</option>
                       <option value="week">This Week</option>
-                      <option value="month">This Month</option>
-                      <option value="year">This Year</option>
+                      <option value="month">This Past Month</option>
+                      <option value="3 months">This Past 3 Months</option>
+                      <option value="6 months">This Past 6 Months</option>
+                      <option value="year">This Past Year</option>
                       <option value="all">All Time</option>
                     </select>
                   </div>

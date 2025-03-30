@@ -50,37 +50,7 @@ const Reports = ({ assigned_to_id }) => {
   const [workers, setWorkers] = useState([]);
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // To store any errors
-
-  // const departments = [
-  //   {
-  //     id: 1,
-  //     name: "Fire Department",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Medical Department",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Police Department",
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Street Maintenance Department",
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "Pothole Repair Department",
-  //   },
-  //   {
-  //     id: 6,
-  //     name: "General Department",
-  //   },
-  //   {
-  //     id: 7,
-  //     name: "Department of Public Works",
-  //   },
-  // ];
+  const [falseCount, setFalseCount] = useState(0); // To store any errors
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -533,6 +503,7 @@ const Reports = ({ assigned_to_id }) => {
                             setClosedTime(data.report_closed_time);
                             setRespondTime(data.review_elapsed_time);
                             setValidationTime(data.validation_time);
+                            setFalseCount(data.reportCount);
                           }}
                         >
                           {data.is_validated ? "REVIEW" : "VALIDATE"}
@@ -616,6 +587,7 @@ const Reports = ({ assigned_to_id }) => {
         respondTime={respondTime}
         validationTime={validationTime}
         workers={workers}
+        falseCount={falseCount}
       />
     </>
   );
