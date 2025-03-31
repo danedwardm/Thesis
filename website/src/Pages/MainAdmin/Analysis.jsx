@@ -172,6 +172,7 @@ const Analysis = () => {
 
     // Table Header
     const headers = [
+      "#",
       "Reported By",
       "Category",
       "Report Date",
@@ -183,7 +184,7 @@ const Analysis = () => {
     const rowHeight = 7;
 
     // Column positions (adjusted to fix header widths)
-    const colWidths = [20, 13, 25, 35, 10, 25]; // Set appropriate column widths
+    const colWidths = [2, 18, 13, 25, 35, 10, 25]; // Set appropriate column widths
 
     // Draw Table Header
     let xPosition = 10; // Starting position for the first column
@@ -221,13 +222,14 @@ const Analysis = () => {
       }
 
       const reportFields = [
+        String(index + 1),
         report.username,
         report.category,
         `${new Date(report.report_date).toLocaleDateString()} at ${new Date(
           report.report_date
         ).toLocaleTimeString()}`,
         report.location.slice(0, 30), // Take the first 25 characters of the location
-        report.status.toUpperCase(),
+        report.status.toUpperCase().slice(0, 10),
         `${new Date(report.update_date).toLocaleDateString()} at ${new Date(
           report.update_date
         ).toLocaleTimeString()}`,
@@ -275,7 +277,7 @@ const Analysis = () => {
     // Define the charts and their positions on the second page
     const chartPromises = [
       captureChart("pie-chart", 20, 15, 70, 60),
-      captureChart("report-by-areas", 110, 15, 90, 60),
+      // captureChart("report-by-areas", 110, 15, 90, 60),
       captureChart("report-trends", 10, 85, 90, 60),
       captureChart("report-time-trends-chart", 110, 85, 90, 60),
       captureChart("pie-chart-status", 20, 152, 60, 55),
@@ -394,9 +396,28 @@ const Analysis = () => {
                   ))}
                 </select>
               </div>
+
+              <button
+                className="mt-9 ml-24 px-4 py-2 bg-main text-white rounded"
+                onClick={() => setIsModalOpen(true)} // Open the modal on button click
+              >
+                Generate Report
+              </button>
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 col-span-4 gap-16 justify-center items-center mb-[15vh]">
+            <Validation
+              dateFilter={selectedFilter}
+              setDateFilter={setSelectedFilter}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
+            <Status
+              dateFilter={selectedFilter}
+              setDateFilter={setSelectedFilter}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
             <PieChart
               dateFilter={selectedFilter}
               setDateFilter={setSelectedFilter}
@@ -421,18 +442,6 @@ const Analysis = () => {
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
             />
-            <Validation
-              dateFilter={selectedFilter}
-              setDateFilter={setSelectedFilter}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-            />
-            <Status
-              dateFilter={selectedFilter}
-              setDateFilter={setSelectedFilter}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-            />
           </div>
           <ClusterBar
             dateFilter={selectedFilter}
@@ -440,12 +449,6 @@ const Analysis = () => {
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
           />
-          <button
-            className="mt-10 px-4 py-2 bg-main text-white rounded"
-            onClick={() => setIsModalOpen(true)} // Open the modal on button click
-          >
-            Generate Report
-          </button>
 
           <div className="mb-[15vh]"></div>
 
